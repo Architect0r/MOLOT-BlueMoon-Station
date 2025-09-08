@@ -185,3 +185,51 @@
 	icon_state = "cutters"
 	toolspeed = 0.2
 	random_color = FALSE
+// BLUEMOON ADD START black skin
+	unique_reskin = list(
+		"Carbonized" = list(
+			RESKIN_ICON_STATE_FILE = 'modular_bluemoon/icons/obj/advancedtools_black.dmi',
+			RESKIN_ICON_STATE = "cutters_black",
+		),
+		"Titanium" = list(
+			RESKIN_ICON_STATE = "cutters",
+		)
+	)
+
+/obj/item/wirecutters/advanced/reskin_obj(mob/user)
+	if(current_skin == "Carbonized")
+		desc = "A set of reproduction alien wirecutters, they have a carbon handle with an exceedingly sharp blade."
+// BLUEMOON ADD END
+
+//BLUEMOON ADD START - переношу с ТГ Т2 инструменты для учёных
+/obj/item/wirecutters/science
+	name = "Hybrid cutters"
+	desc = "Quite similar to the jaws of life, this tool combines the utility of a crowbar and a set of wirecutters without the hydraulic force required to pry open doors."
+	icon_state = "jaws_sci_cutter"
+	item_state = "jawsoflife"
+	lefthand_file = 'modular_sand/icons/mob/inhands/equipment/tools_lefthand.dmi'
+	righthand_file = 'modular_sand/icons/mob/inhands/equipment/tools_righthand.dmi'
+	custom_materials = list(/datum/material/iron=150,/datum/material/silver=50,/datum/material/titanium=25)
+
+	usesound = 'sound/items/jaws_cut.ogg'
+	toolspeed = 0.25
+	random_color = FALSE
+
+/obj/item/wirecutters/science/suicide_act(mob/user)
+	user.visible_message("<span class='suicide'>[user] is wrapping \the [src] around [user.ru_ego()] neck. It looks like [user.ru_who()] trying to rip [user.ru_ego()] head off!</span>")
+	playsound(loc, 'sound/items/jaws_cut.ogg', 50, 1, -1)
+	if(iscarbon(user))
+		var/mob/living/carbon/C = user
+		var/obj/item/bodypart/BP = C.get_bodypart(BODY_ZONE_HEAD)
+		if(BP)
+			BP.drop_limb()
+			playsound(loc,pick('sound/misc/desceration-01.ogg','sound/misc/desceration-02.ogg','sound/misc/desceration-01.ogg') ,50, 1, -1)
+	return (BRUTELOSS)
+
+/obj/item/wirecutters/science/attack_self(mob/user)
+	playsound(get_turf(user), 'sound/items/change_jaws.ogg', 50, 1)
+	var/obj/item/crowbar/science/pryjaws = new /obj/item/crowbar/science(drop_location())
+	pryjaws.name = name
+	to_chat(user, "<span class='notice'>You attach the pry jaws to [src].</span>")
+	qdel(src)
+	user.put_in_active_hand(pryjaws)

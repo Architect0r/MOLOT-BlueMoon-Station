@@ -137,17 +137,23 @@
 		new /obj/effect/spawner/bundle/crate/surplusrifle(C)
 
 /datum/supply_pack/security/sechardsuit
-	name = "Sec Hardsuit"
-	desc = "Один защитный костюм с небольшим баллоном воздуха и маской."
-	cost = 3000 // half of SWAT gear for have the armor and half the gear
+	name = "Sec Hardsuits crate"
+	desc = "Три защитных костюма для ловли негодяев в открытом космосе! В комплекте поставляется балон и маска."
+	cost = 9000 // half of SWAT gear for have the armor and half the gear
 	contains = list(/obj/item/clothing/suit/space/hardsuit/security,
+					/obj/item/tank/internals/air,
+					/obj/item/clothing/mask/gas,
+					/obj/item/clothing/suit/space/hardsuit/security,
+					/obj/item/tank/internals/air,
+					/obj/item/clothing/mask/gas,
+					/obj/item/clothing/suit/space/hardsuit/security,
 					/obj/item/tank/internals/air,
 					/obj/item/clothing/mask/gas)
 	crate_name = "sec hardsuit crate"
 
 /datum/supply_pack/security/securitybarriers
 	name = "Security Barrier Grenades"
-	desc = "Остановите наплыв с помощью четырех гранат защитного барьера. Для открытия требуется доступ СБ."
+	desc = "Остановите штурм с помощью четырех гранат защитного барьера. Для открытия требуется доступ СБ."
 	contains = list(/obj/item/grenade/barrier,
 					/obj/item/grenade/barrier,
 					/obj/item/grenade/barrier,

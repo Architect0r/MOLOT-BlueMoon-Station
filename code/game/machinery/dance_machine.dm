@@ -17,7 +17,8 @@
 	var/list/queuedplaylist = list()
 	var/queuecooldown //This var exists solely to prevent accidental repeats of John Mulaney's 'What's New Pussycat?' incident. Intentional, however......
 	var/repeat = FALSE //BLUEMOON ADD зацикливание плейлистов
-	var/one_area_play = FALSE //BLUEMOON ADD переменная проигрыша джукбокса в одной зоне (для инфдорм)
+	var/area_priority = TRUE //BLUEMOON ADD стационарные джукбоксы имеют приоритет игры внутри своей зоны
+	var/area/privatized_area = null //BLUEMOON ADD зона которая будет забрана для конкретного джукбокса
 
 /obj/machinery/jukebox/disco
 	name = "radiant dance machine mark IV"
@@ -99,10 +100,17 @@
 	// 	var/list/track_data = list(name = S.song_name)
 	// 	data["songs"] += list(track_data)
 	// BLUEMOON DEL END
+	// BLUEMOON EDIT START: Better Jukebox
 	data["queued_tracks"] = list()
-	for(var/datum/track/S in queuedplaylist)
-		var/list/track_data = list(name = S.song_name)
-		data["queued_tracks"] += list(track_data)
+	for (var/i = 1, i <= queuedplaylist.len, i++)
+		var/datum/track/S = queuedplaylist[i]
+		data["queued_tracks"] += list(
+			list(
+				index = i,
+				name = S.song_name
+			)
+		)
+	// BLUEMOON EDIT END: Better Jukebox
 	data["track_selected"] = null
 	data["track_length"] = null
 	if(playing)
@@ -113,6 +121,13 @@
 	data["cost_for_play"] = queuecost
 	data["has_access"] = allowed(user)
 	data["repeat"] = repeat		//BLUEMOON ADD
+	// BLUEMOON EDIT:START
+	var/list/all_song_names = list()
+	for (var/datum/track/T in SSjukeboxes.songs)
+		all_song_names += T.song_name
+	data["songs"] = all_song_names
+	data["favorite_tracks"] = user?.client?.prefs?.favorite_tracks
+	// BLUEMOON EDIT:END
 	return data
 
 /obj/machinery/jukebox/ui_act(action, list/params)
@@ -205,9 +220,13 @@
 	if(!SSjukeboxes.freejukeboxchannels.len)
 		say("Cannot play song: limit of currently playing tracks has been exceeded.")
 		return FALSE
+	var/area/juke_area = get_area(src)
+	if(juke_area.jukebox_privatized_by && juke_area.jukebox_privatized_by != src)
+		say("Vibration sensor error. A reduction in the number of jukeboxes in the area is required.")
+		return FALSE
 	// BLUEMOON ADD END
 	playing = queuedplaylist[1]
-	var/jukeboxslottotake = SSjukeboxes.addjukebox(src, playing, volume/35, one_area_play) //BLUEMOON EDIT
+	var/jukeboxslottotake = SSjukeboxes.addjukebox(src, playing, volume/35)
 	if(jukeboxslottotake)
 		active = TRUE
 		update_icon()
@@ -216,6 +235,13 @@
 		//BLUEMOON ADD повтор плейлиста (трек добавляется в конец плейлиста)
 		if(repeat)
 			queuedplaylist += queuedplaylist[1]
+		// BLUEMOON ADD стационарные джукбоксы забирают приоритет зоны себе и если сидеть в этой зоне играет только их музыка
+		if(area_priority)
+			if(privatized_area)
+				privatized_area.jukebox_privatized_by = null
+			juke_area.jukebox_privatized_by = src
+			privatized_area = juke_area
+
 		//BLUEMOON ADD END
 		queuedplaylist.Cut(1, 2)
 		say("Сейчас играет: [playing.song_name]")
@@ -503,6 +529,8 @@
 	lying_prev = 0
 
 /obj/machinery/jukebox/proc/dance_over()
+	if(privatized_area)
+		privatized_area.jukebox_privatized_by = null
 	var/position = SSjukeboxes.findjukeboxindex(src)
 	if(!position)
 		return

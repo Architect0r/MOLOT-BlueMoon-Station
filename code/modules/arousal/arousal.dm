@@ -1,15 +1,17 @@
 /mob/living
-	var/mb_cd_length = 5 SECONDS						//5 second cooldown for masturbating because fuck spam.
-	var/mb_cd_timer = 0									//The timer itself
+	//var/mb_cd_length = 1 SECONDS						//5 second cooldown for masturbating because fuck spam. // BLUEMOON EDIT commented
+	var/last_climax = 0									// BLUEMOON EDIT
 
 /mob/living/carbon/human
+	var/arousal_rate = 1
+/*
 	var/saved_underwear = ""//saves their underwear so it can be toggled later
 	var/saved_undershirt = ""
 	var/saved_socks = ""
 	var/hidden_underwear = FALSE
 	var/hidden_undershirt = FALSE
 	var/hidden_socks = FALSE
-	var/arousal_rate = 1
+
 
 //Mob procs
 /mob/living/carbon/human/verb/underwear_toggle()
@@ -39,9 +41,9 @@
 		log_message("[on_off ? "removed" : "put on"] all [ru_ego()] undergarments.", LOG_EMOTE)
 
 	update_body(TRUE)
+*/
 
-
-/mob/living/carbon/human/proc/adjust_arousal(strength, cause = "manual toggle", aphro = FALSE,maso = FALSE) // returns all genitals that were adjust
+/mob/living/carbon/human/proc/adjust_arousal(strength, cause = "manual toggle", aphro = FALSE,maso = FALSE, silent = FALSE) // returns all genitals that were adjust
 	var/list/obj/item/organ/genital/genit_list = list()
 	if(!client?.prefs.arousable || (aphro && (client?.prefs.cit_toggles & NO_APHRO)) || (maso && !HAS_TRAIT(src, TRAIT_MASO)))
 		return // no adjusting made here
@@ -50,10 +52,10 @@
 		if(istype(G, /obj/item/organ/genital/penis))
 			//SPLURT edit
 			if(CHECK_BITFIELD(G.genital_flags, GENITAL_CHASTENED) && enabling)
-				to_chat(src, "<span class='userlove'>Your [pick(GLOB.dick_nouns)] twitches against its cage!</span>")
+				to_chat(src, "<span class='userlove'>Твой [pick("член","пенис")] дергается в своей клетке!</span>") // BLUEMOON EDIT
 				continue
 			if(CHECK_BITFIELD(G.genital_flags, GENITAL_IMPOTENT) && enabling)
-				to_chat(src, "<span class='userlove'>Your [pick(GLOB.dick_nouns)] simply won't go up!</span>")
+				to_chat(src, "<span class='userlove'>Твой [pick("член","пенис")] просто не может возбудиться!</span>") // BLUEMOON EDIT
 				continue
 		//
 		if(G.genital_flags & GENITAL_CAN_AROUSE && !G.aroused_state && prob(abs(strength)*G.sensitivity * arousal_rate))
@@ -62,6 +64,9 @@
 			update_body(TRUE)
 			if(G.aroused_state)
 				genit_list += G
+	if(enabling && !silent)
+		for(var/obj/item/organ/genital/g in genit_list)
+			to_chat(src, span_userlove("[g.arousal_verb]!"))
 	return genit_list
 
 /obj/item/organ/genital/proc/climaxable(mob/living/carbon/human/H, silent = FALSE) //returns the fluid source (ergo reagents holder) if found.
@@ -84,6 +89,7 @@
 		var/obj/item/organ/genital/penis/P = sender
 		condomning = locate(/obj/item/genital_equipment/condom) in P.contents
 	sender.generate_fluid(R)
+	last_climax = world.time // BLUEMOON ADD
 	log_message("Кончает [sender] благодаря [target]", LOG_EMOTE)
 
 	client?.plug13.send_emote(PLUG13_EMOTE_GROIN, PLUG13_STRENGTH_MAX, PLUG13_DURATION_ORGASM)
@@ -131,15 +137,93 @@
 			// sandstorm edit - advanced cum drip
 			var/amount_to_transfer = R.total_volume * (spill ? sender.fluid_transfer_factor : 1)
 			var/mob/living/carbon/human/cummed_on = target
-			if(istype(cummed_on))
+			if(!istype(cummed_on)) // not human
+				R.trans_to(target, amount_to_transfer, log = TRUE)
+			else // if human
 				var/datum/reagents/copy = new()
 				R.copy_to(copy, R.total_volume)
-				// Nope, on the mouth doesn't count.
-				if(istype(sender, /obj/item/organ/genital/penis) && (istype(receiver, /obj/item/organ/genital/vagina) || istype(receiver, /obj/item/organ/genital/anus)))	//проблема с портальными трусами, работает 50/50
-					if(copy.total_volume > 0)
-						cummed_on.apply_status_effect(STATUS_EFFECT_DRIPPING_CUM, copy, get_blood_dna_list(), receiver)
-			R.trans_to(target, amount_to_transfer, log = TRUE)
-		//
+
+				// BLUEMOON EDIT START
+				var/it_a_portal = FALSE
+
+				if(anonymous) //most likely a portal fleshlight
+					// Universal list of liquid transfer cases via portalpanties
+					var/list/portal_cases = list(
+						list( // receiver is wearing portal panties as a mask
+							"panties" = cummed_on.wear_mask,
+							"plight" = get_active_held_item()
+						),
+						list( // sender is wearing portal panties
+							"panties" = w_underwear,
+							"plight" = cummed_on.get_active_held_item()
+						),
+						list( // receiver is wearing portal panties
+							"panties" = cummed_on.w_underwear,
+							"plight" = get_active_held_item()
+						)
+					)
+
+					for(var/case in portal_cases)
+						var/obj/item/clothing/underwear/briefs/panties/portalpanties/p_panties = case["panties"]
+						if(!istype(p_panties))
+							continue
+
+						var/obj/item/portallight/plight = case["plight"]
+						if(!istype(plight))
+							continue
+
+						// checking that this is exactly the right fleshlight and portal
+						if(plight.portalunderwear != p_panties)
+							continue
+
+						it_a_portal = TRUE // We are absolutely sure that this is a portal (i guess) -> anonymous + checks
+
+						// checking that sender is either the target of the fleshlight or the target of the portal
+						if(sender.name != plight.targetting && sender.name != p_panties.targetting)
+							continue
+
+						// checking if last_genital is sender P.S. because this process is called in all scenarios, and I won't/don't to fix it.
+						if(last_genital != sender)
+							continue
+
+						// if the sender is the vagina, but the receiver is not the mouth, it is unacceptable
+						if(istype(sender, /obj/item/organ/genital/vagina) && !istype(receiver, /obj/item/organ/stomach))
+							continue
+
+						R.trans_to(target, amount_to_transfer, log = TRUE)
+
+						// sender = penis, in vagina or anus
+						if(istype(sender, /obj/item/organ/genital/penis) && (istype(receiver, /obj/item/organ/genital/vagina) || istype(receiver, /obj/item/organ/genital/anus)))
+							if(copy.total_volume > 0)
+								cummed_on.apply_status_effect(STATUS_EFFECT_DRIPPING_CUM, copy, get_blood_dna_list(), receiver)
+						break
+
+				if(!it_a_portal && (!last_genital || last_genital.type == sender.type)) // some lewd interactions are broken, so we checking type
+					if(istype(receiver, /obj/item/organ/stomach))	//in mouth
+						switch(sender.type)
+							if(/obj/item/organ/genital/penis)
+								if(src.last_lewd_datum?.required_from_user_exposed == INTERACTION_REQUIRE_PENIS && src.last_lewd_datum?.required_from_target == INTERACTION_REQUIRE_MOUTH)	//panel user is sender
+									R.trans_to(target, amount_to_transfer, log = TRUE)
+								else if(cummed_on.last_lewd_datum?.required_from_user == INTERACTION_REQUIRE_MOUTH && cummed_on.last_lewd_datum?.required_from_target_exposed == INTERACTION_REQUIRE_PENIS)	//panel user is receiver
+									R.trans_to(target, amount_to_transfer, log = TRUE)
+							if(/obj/item/organ/genital/vagina)
+								if(src.last_lewd_datum?.required_from_user_exposed == INTERACTION_REQUIRE_VAGINA && src.last_lewd_datum?.required_from_target == INTERACTION_REQUIRE_MOUTH)
+									R.trans_to(target, amount_to_transfer, log = TRUE)
+								else if(cummed_on.last_lewd_datum?.required_from_user == INTERACTION_REQUIRE_MOUTH && cummed_on.last_lewd_datum?.required_from_target_exposed == INTERACTION_REQUIRE_VAGINA)
+									R.trans_to(target, amount_to_transfer, log = TRUE)
+							//most likely not needed here
+							// if(/obj/item/organ/genital/breasts)
+							// 	if(src.last_lewd_datum?.required_from_user_exposed == INTERACTION_REQUIRE_BREASTS && src.last_lewd_datum?.required_from_target == INTERACTION_REQUIRE_MOUTH)
+							// 		R.trans_to(target, amount_to_transfer, log = TRUE)
+							// 	else if(cummed_on.last_lewd_datum?.required_from_user == INTERACTION_REQUIRE_MOUTH && cummed_on.last_lewd_datum?.required_from_target_exposed == INTERACTION_REQUIRE_BREASTS)
+							// 		R.trans_to(target, amount_to_transfer, log = TRUE)
+					else if(istype(sender, /obj/item/organ/genital/penis))	//not in mouth and penis orgasm
+					// BLUEMOON EDIT END
+						R.trans_to(target, amount_to_transfer, log = TRUE)
+						if(istype(receiver, /obj/item/organ/genital/vagina) || istype(receiver, /obj/item/organ/genital/anus))
+							if(copy.total_volume > 0)
+								cummed_on.apply_status_effect(STATUS_EFFECT_DRIPPING_CUM, copy, get_blood_dna_list(), receiver)
+
 	sender.last_orgasmed = world.time
 	R.clear_reagents()
 	//sandstorm edit - gain momentum from dirty deeds.
@@ -175,7 +259,7 @@
 		return
 	if(mb_time)
 		to_chat(src,"<span class='userlove'>Вы начали [G.masturbation_verb] прямо над <b>[container]</b>. [G.ru_name_capital] в готовности к этому...</span>")
-		if(!do_after(src, mb_time, target = src) || !in_range(src, container) || !G.climaxable(src, TRUE))
+		if(!do_after(src, mb_time, target = src, timed_action_flags = (IGNORE_HELD_ITEM|IGNORE_INCAPACITATED)) || !in_range(src, container) || !G.climaxable(src, TRUE))
 			return
 	to_chat(src,"<span class='userlove'>[G.ru_name_capital] стимулируется вашими же усилиями, вы пытаетесь наполнить <b>[container]</b>.</span>")
 	message_admins("[ADMIN_LOOKUPFLW(src)] использует [ru_ego()] [G.name], чтобы наполнить <b>[container]</b> [G.get_fluid_name()].")
@@ -184,13 +268,16 @@
 
 /mob/living/carbon/human/proc/pick_climax_genitals(silent = FALSE)
 	var/list/genitals_list
-	var/list/worn_stuff = get_equipped_items()
+	// BLUEMOON EDIT START
 
 	for(var/obj/item/organ/genital/G in internal_organs)
-		if((G.genital_flags & CAN_CLIMAX_WITH) && G.is_exposed(worn_stuff)) //filter out what you can't masturbate with
+		if((G.genital_flags & CAN_CLIMAX_WITH) && (G.is_exposed() || G.always_accessible)) //filter out what you can't masturbate with
 			LAZYADD(genitals_list, G)
 	if(LAZYLEN(genitals_list))
-		var/obj/item/organ/genital/ret_organ = input(src, "Чем?", "Климаксировать", null) as null|obj in genitals_list
+		for(var/obj/item/organ/genital/listed in genitals_list)
+			genitals_list[listed] = new /mutable_appearance(listed)
+		var/obj/item/organ/genital/ret_organ = genitals_list.len == 1 ? genitals_list[1] : show_radial_menu(src, src, genitals_list)
+		// BLUEMOON EDIT END
 		//SPLURT edit
 		if(CHECK_BITFIELD(ret_organ.genital_flags, GENITAL_CHASTENED))
 			visible_message("<span class='userlove'><b>\The [src]</b> fumbles with their cage with a whine!</span>",
@@ -202,34 +289,40 @@
 	else if(!silent)
 		to_chat(src, "<span class='warning'>Вы не можете достичь кульминации без наличия гениталий.</span>")
 
-/mob/living/carbon/human/proc/pick_partner(silent = FALSE)
+// BLUEMOON EDIT START
+/mob/living/carbon/human/proc/pick_partner(silent = FALSE, covering = FALSE)
 	var/list/partners = list()
-	if(pulling)
-		partners += pulling
-	if(pulledby)
-		partners += pulledby
-	//Now we got both of them, let's check if they're proper
+	for(var/mob/living/L in view(1))
+		if(L != src && L.ckey && L.mind && Adjacent(L))
+			if(!iscarbon(L))
+				LAZYADD(partners, L)
+			else
+				var/mob/living/carbon/C = L
+				if(covering || C.exposed_genitals.len || C.is_groin_exposed() || C.is_chest_exposed() || !C.is_mouth_covered()) //Anything through_clothing or covering
+					LAZYADD(partners, L)
+
 	for(var/mob/living/L in partners)
-		if(!L.client || !L.mind) // can't consent, not a partner
-			partners -= L
-		if(iscarbon(L))
-			var/mob/living/carbon/C = L
-			if(!C.exposed_genitals.len && !C.is_groin_exposed() && !C.is_chest_exposed() && C.is_mouth_covered()) //Nothing through_clothing, no proper partner.
-				partners -= C
+		partners[L] = new /mutable_appearance(L)
 	//NOW the list should only contain correct partners
 	if(!partners.len)
 		if(!silent)
 			to_chat(src, "<span class='warning'>Вы не можете сделать это в одиночку.</span>")
 		return //No one left.
-	var/mob/living/target = input(src, "С кем?", "Партнёр по Совокуплению", null) as null|anything in partners //pick one, default to null
+
+	var/mob/living/target = partners.len == 1 ? partners[1] : show_radial_menu(src, src, partners, radius = 40, require_near = TRUE) // BLUEMOON EDIT
+
 	if(target && in_range(src, target))
-		to_chat(src,"<span class='notice'>Ожидание согласия...</span>")
-		var/consenting = input(target, "Вы хотите, чтобы [src] кончил совместно с вами?","Механика Кульминации","Нет") in list("Да","Нет")
-		if(consenting == "Да")
+		if(covering && target.client?.prefs.cit_toggles & CUM_ONTO)
 			return target
 		else
-			message_admins("[ADMIN_LOOKUPFLW(src)] tried to climax with [target], but [target] did not consent.")
-			log_consent("[key_name(src)] tried to climax with [target], but [target] did not consent.")
+		// BLUEMOON EDIT END
+			to_chat(src,"<span class='notice'>Ожидание согласия...</span>")
+			var/consenting = alert(target, "Вы хотите, чтобы [src] кончил[src.ru_a()] [covering ? "на вас" : "совместно с вами"]?","Механика Кульминации","Да","Нет")
+			if(consenting == "Да")
+				return target
+			else
+				message_admins("[ADMIN_LOOKUPFLW(src)] tried to climax with [target], but [target] did not consent.")
+				log_consent("[key_name(src)] tried to climax with [target], but [target] did not consent.")
 
 /mob/living/carbon/human/proc/pick_climax_container(silent = FALSE)
 	var/list/containers_list = list()
@@ -242,7 +335,11 @@
 			containers_list += C
 
 	if(containers_list.len)
-		var/obj/item/reagent_containers/SC = input(src, "В или на что? (Отмена, если никуда)", null)  as null|obj in containers_list
+		//BLUEMOON EDIT START
+		for(var/obj/item/reagent_containers/C in containers_list)
+			containers_list[C] = new /mutable_appearance(C)
+		var/obj/item/reagent_containers/SC = containers_list.len == 1 ? containers_list[1] : show_radial_menu(src, src, containers_list, require_near = TRUE)
+		//BLUEMOON EDIT END
 		if(SC && CanReach(SC))
 			return SC
 	else if(!silent)
@@ -269,10 +366,6 @@
 //skyrat edit - forced partner and spillage
 /mob/living/carbon/human/proc/mob_climax(forced_climax = FALSE, cause = "", var/mob/living/forced_partner = null, var/forced_spillage = TRUE, var/obj/item/organ/genital/forced_receiving_genital = null, anonymous = FALSE)
 	set waitfor = FALSE
-	if(mb_cd_timer > world.time)
-		if(!forced_climax) //Don't spam the message to the victim if forced to come too fast
-			to_chat(src, "<span class='warning'>Вы должны подождать [DisplayTimeText((mb_cd_timer - world.time), TRUE)] до того, как можете сделать это снова!</span>")
-		return
 
 	if(!(client?.prefs.arousable || !ckey) || !has_dna())
 		return
@@ -292,9 +385,8 @@
 				continue
 			var/mob/living/partner
 			var/check_target
-			var/list/worn_stuff = get_equipped_items()
 
-			if(forced_receiving_genital || G.is_exposed(worn_stuff))
+			if(forced_receiving_genital || G.is_exposed() || G.always_accessible) // BLUEMOON EDIT
 				if(pulling) //Are we pulling someone? Priority target, we can't be making option menus for this, has to be quick
 					if(isliving(pulling)) //Don't fuck objects
 						check_target = pulling
@@ -307,6 +399,13 @@
 						var/mob/living/carbon/C = check_target
 						if(C.exposed_genitals.len || C.is_groin_exposed() || C.is_chest_exposed()) //Are they naked enough?
 							partner = C
+						// BLUEMMON ADD START
+						else
+							for(var/obj/item/organ/genital/partner_G in C.internal_organs)
+								if(partner_G.always_accessible)
+									partner = C
+									break
+						// BLUEMMON ADD END
 					else //A cat is fine too
 						partner = check_target
 				//skyrat edit
@@ -325,7 +424,6 @@
 			mob_climax_outside(G, mb_time = 0) //removed climax timer for sudden, forced orgasms
 		//Now all genitals that could climax, have.
 		//Since this was a forced climax, we do not need to continue with the other stuff
-		mb_cd_timer = world.time + mb_cd_length
 		return
 	//If we get here, then this is not a forced climax and we gotta check a few things.
 
@@ -334,7 +432,25 @@
 		return
 
 	//Ok, now we check what they want to do.
-	var/choice = input(src, "Выбор Сексуальной Активности", "Сексуальная Активность:") as null|anything in list("Оргазмировать в одиночестве","Оргазмировать совместно с кем-то", "Оргазмировать на кого-то (CTRL+ЛКМ)", "Наполнить контейнер половыми жидкостями")
+	// BLUEMOON EDIT START
+	var/static/list/options = list(
+		"Оргазмировать в одиночестве" = list("icon" = 'icons/obj/genitals/hud.dmi', "state" = "arousal"),
+		"Оргазмировать совместно с кем-то" = list("icon" = 'modular_sand/icons/mob/dogborg.dmi', "state" = "pleasuremaw"),
+		"Оргазмировать на кого-то" = list("icon" = 'modular_splurt/icons/effects/cumoverlay.dmi', "state" = "cum_large"),
+		"Наполнить контейнер половыми жидкостями" = list("icon" = 'modular_splurt/icons/obj/drinks.dmi', "state" = "cumchalice")
+	)
+
+	var/list/choices = list()
+	for(var/text in options)
+		var/info = options[text]
+		var/mutable_appearance/app = new /mutable_appearance()
+		app.icon = info["icon"]
+		app.icon_state = info["state"]
+		app.name = text
+		choices[text] = app
+
+	var/choice = show_radial_menu(src, src, choices, require_near = FALSE)
+
 	if(!choice)
 		return
 
@@ -348,14 +464,12 @@
 		if("Оргазмировать совместно с кем-то")
 			//We need no hands, we can be restrained and so on, so let's pick an organ
 			var/obj/item/organ/genital/picked_organ = pick_climax_genitals()
-			var/obj/item/organ/genital/picked_target = null
 			if(picked_organ)
 				var/mob/living/partner = pick_partner() //Get someone
-				if(partner)
-					picked_target = pick_receiving_organ(partner)
-					var/spillage = input(src, "Would your fluids spill outside?", "Choose overflowing option", "Yes") as null|anything in list("Yes", "No")
-					if(spillage && in_range(src, partner))
-						mob_climax_partner(picked_organ, partner, spillage == "Yes" ? TRUE : FALSE, Lgen = picked_target)
+				if(partner && in_range(src, partner))
+					var/spillage = alert(src, "Кончить внутрь?", "При возможности", "Да", "Нет")
+					if(in_range(src, partner))
+						mob_climax_partner(picked_organ, partner, spillage == "Нет" ? TRUE : FALSE, Lgen = pick_receiving_organ(partner))
 		if("Наполнить контейнер половыми жидкостями")
 			//We'll need hands and no restraints.
 			if(!available_rosie_palms(FALSE, /obj/item/reagent_containers))
@@ -368,15 +482,15 @@
 				var/obj/item/reagent_containers/fluid_container = pick_climax_container()
 				if(fluid_container && available_rosie_palms(TRUE, /obj/item/reagent_containers))
 					mob_fill_container(picked_organ, fluid_container)
-		if("Оргазмировать на кого-то (CTRL+ЛКМ)")
+		if("Оргазмировать на кого-то")
 			//We need no hands, we can be restrained and so on, so let's pick an organ
 			var/obj/item/organ/genital/picked_organ = pick_climax_genitals()
 			if(picked_organ)
-				var/mob/living/partner = pick_partner() //Get someone
-				if(partner)
+				var/mob/living/partner = pick_partner(covering = TRUE) //Get someone
+				if(partner && in_range(src, partner))
 					mob_climax_over(picked_organ, partner, TRUE)
 
-	mb_cd_timer = world.time + mb_cd_length
+	// BLUEMOON EDIT END
 
 /mob/living/carbon/human/verb/climax_verb()
 	set category = "IC"

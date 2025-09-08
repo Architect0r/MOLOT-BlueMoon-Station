@@ -12,10 +12,9 @@
 	hitsound = 'modular_bluemoon/Ren/Sound/USHM_hit.ogg'
 	desc = "УШМ с алмазным диском и четырёх тактовым двигателем на жидкой плазме. Что ещё может быть нужно, когда требуется взять штурмом чью то крепость? "
 	force = 30
-	attack_speed = CLICK_CD_MELEE * 1.5
 	throwforce = 10
-	wound_bonus = 40
-	armour_penetration = 20
+	wound_bonus = 35
+	armour_penetration = 30
 	sharpness = SHARP_EDGED
 	attack_verb = list("slashed", "sliced", "shredded")
 
@@ -47,7 +46,7 @@
 /// Melter
 /obj/item/gun/energy/pulse/pistol/inteq
 	name = "Melter"
-	desc = "<span class='danger'>Не направлять рабочую часть на живых существ</span>"
+	desc = "<span class='danger'>Не направлять рабочую часть на органику</span>"
 	icon = 'modular_bluemoon/Ren/Icons/Obj/guns.dmi'
 	icon_state = "melter"
 	charge_delay = 4
@@ -95,7 +94,7 @@
 
 /obj/item/gun/energy/laser/canceller
 	name = "Canceller"
-	desc = "Энергетический пистолет довольно старого образца. Создан для использования спецслужбами Солнечной Федерации, но со временем был замещён более удачными образцами. Выглядит сильно модернезированым."
+	desc = "Энергетический пистолет довольно старого образца. Создан для использования спецслужбами Солнечной Федерации, но со временем был замещён более удачными образцами. Выглядит сильно модернизированным."
 	icon_state = "canceller"
 	item_state = "canceller"
 	icon = 'modular_bluemoon/Ren/Icons/Obj/guns.dmi'
@@ -242,7 +241,7 @@
 	else
 		..()
 
-/obj/item/gun/energy/m2a100/afterattack(atom/target as mob|obj|turf, mob/living/user as mob|obj, flag, params) //what I tried to do here is just add a check to see if the cover is open or not and add an icon_state change because I can't figure out how c-20rs do it with overlays
+/obj/item/gun/energy/m2a100/afterattack(atom/target as mob|obj|turf, mob/living/user as mob|obj, flag, params)
 	if(cover_open)
 		to_chat(user, "<span class='warning'>[src]'s cover is open! Close it before firing!</span>")
 	else
@@ -253,7 +252,7 @@
 /obj/item/gun/energy/laser/sniper
 
 	name = "Omni rifle"
-	desc = ""
+	desc = "Sniper Energy Rifle against Drones"
 	icon = 'modular_bluemoon/Ren/Icons/Obj/40x32.dmi'
 	icon_state = "railgun"
 	item_state = "railgun"
@@ -331,6 +330,45 @@
 	build_path = /obj/item/ammo_box/magazine/garand/rubber
 	category = list("Imported")
 
+/obj/item/disk/design_disk/adv/ammo/ks23
+	name = "Ammo Design Disk"
+	desc = "Вставь в автолат, чтобы печатать крутые патроны."
+
+/obj/item/disk/design_disk/adv/ammo/ks23/Initialize(mapload)
+	. = ..()
+	var/datum/design/ammo_ks23/N = new
+	var/datum/design/ammo_ks23/slugs/E = new
+	var/datum/design/ammo_ks23/buckshot23/G = new
+	var/datum/design/ammo_ks23/rubbershot23/R = new
+	blueprints[1] = N
+	blueprints[2] = E
+	blueprints[3] = G
+	blueprints[4] = R
+
+/datum/design/ammo_ks23
+	name = "ammo box (KS23 slugs)"
+	desc = "Ammo for KS23."
+	id = "ammo_ks23"
+	build_type = AUTOLATHE
+	materials = list(/datum/material/iron = 28000)
+	build_path = /obj/item/ammo_box/slug23
+	category = list("Imported")
+
+/datum/design/ammo_ks23/slugs
+	name = "ammo box (KS23 rubber slugs)"
+	id = "ammo_ks23_rs"
+	build_path = /obj/item/ammo_box/slug_rubber23
+
+/datum/design/ammo_ks23/buckshot23
+	name = "ammo box (KS23 buckshots)"
+	id = "ammo_ks23_bs"
+	build_path = /obj/item/ammo_box/buckshot23
+
+/datum/design/ammo_ks23/rubbershot23
+	name = "ammo box (KS23 rubbershots)"
+	id = "ammo_ks23_rsh"
+	build_path = /obj/item/ammo_box/rubbershot23
+
 ///Дорожный знак
 /obj/item/spear/stop
 	name = "Stop sign"
@@ -380,25 +418,25 @@
 // Сабля Каракурт
 /obj/item/storage/belt/sabre/karakurt
 	name = "Karakurt sheath"
-	desc = "Ножны со встроеным отсеком для ядом. Постоянно поддерживают элегантное оружие в подобающем виде."
+	desc = "Ножны со встроенным отсеком для ядом. Постоянно поддерживают элегантное оружие в подобающем виде."
 	icon_state = "isheath"
 	item_state = "isheath"
 	force = 5
 	throwforce = 15
 	w_class = WEIGHT_CLASS_BULKY
 	attack_verb = list("bashed", "slashes", "prods", "pokes")
-	fitting_swords = list(/obj/item/melee/sabre/karakurt)
-	starting_sword = /obj/item/melee/sabre/karakurt
+	fitting_swords = list(/obj/item/melee/rapier/karakurt)
+	starting_sword = /obj/item/melee/rapier/karakurt
 
-/obj/item/melee/sabre/karakurt/get_belt_overlay()
+/obj/item/melee/rapier/karakurt/get_belt_overlay()
 	if(istype(loc, /obj/item/storage/belt/sabre/karakurt))
 		return mutable_appearance('icons/obj/clothing/belt_overlays.dmi', "karakurt")
 	return ..()
 
-/obj/item/melee/sabre/karakurt/get_worn_belt_overlay(icon_file)
+/obj/item/melee/rapier/karakurt/get_worn_belt_overlay(icon_file)
 	return mutable_appearance(icon_file, "-karakurt")
 
-/obj/item/melee/sabre/karakurt
+/obj/item/melee/rapier/karakurt
 	name = "Karakurt"
 	desc = "<span class='nicegreen'>Лучше не трогать это лезвие руками</span>"
 	icon_state = "karakurt"
@@ -408,7 +446,7 @@
 	armour_penetration = 50
 	block_parry_data = /datum/block_parry_data/traitor_rapier
 
-/obj/item/melee/sabre/karakurt/attack(mob/living/target, mob/living/user)
+/obj/item/melee/rapier/karakurt/attack(mob/living/target, mob/living/user)
 	. = ..()
 	if(iscarbon(target))
 		if(HAS_TRAIT(user, TRAIT_PACIFISM))

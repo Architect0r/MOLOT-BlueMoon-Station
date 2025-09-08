@@ -397,12 +397,22 @@
 	departmental_flags = DEPARTMENTAL_FLAG_SERVICE
 
 /datum/design/buffer
-	name = "Floor Buffer Upgrade"
+	name = "(janicart) Floor Buffer Upgrade"
 	desc = "A floor buffer that can be attached to vehicular janicarts."
 	id = "buffer"
 	build_type = PROTOLATHE
 	materials = list(/datum/material/iron = 3000, /datum/material/glass = 200)
-	build_path = /obj/item/janiupgrade
+	build_path = /obj/item/janicart_upgrade/buffer
+	category = list("Equipment")
+	departmental_flags = DEPARTMENTAL_FLAG_SERVICE
+
+/datum/design/vacuum
+	name = "(janicart) Vacuum upgrade"
+	desc = "A vacuum that can be attached to vehicular janicarts."
+	id = "vacuum"
+	build_type = PROTOLATHE
+	materials = list(/datum/material/iron = 3000, /datum/material/glass = 200)
+	build_path = /obj/item/janicart_upgrade/vacuum
 	category = list("Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_SERVICE
 
@@ -771,6 +781,18 @@
 	category = list("Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_ENGINEERING
 
+//BLUEMOON ADD START - добовляю расширенные балоны в автолат
+
+/datum/design/extended_emergency
+	name = "Extended emergency oxygen tank"
+	id = "extendedemergency"
+	build_type = AUTOLATHE | NO_PUBLIC_LATHE
+	materials = list(/datum/material/iron = 1500)
+	build_path = /obj/item/tank/internals/emergency_oxygen/engi/empty
+	category = list("hacked", "Misc")
+
+//BLUEMOON ADD END
+
 /////////////////////////////////////////
 /////////////////Tape////////////////////
 /////////////////////////////////////////
@@ -801,6 +823,18 @@
 	build_path = /obj/item/stack/sticky_tape/pointy
 	category = list("Equipment")
 	departmental_flags = DEPARTMENTAL_FLAG_SERVICE
+
+//BLUEMOON ADD START - добовляю расширенные балоны в автолат
+
+/datum/design/extended_emergency
+	name = "Extended emergency oxygen tank"
+	id = "extendedemergency"
+	build_type = AUTOLATHE | NO_PUBLIC_LATHE
+	materials = list(/datum/material/iron = 1500)
+	build_path = /obj/item/tank/internals/emergency_oxygen/engi/empty
+	category = list("hacked", "Misc")
+
+//BLUEMOON ADD END
 
 /////////////////////////////////////////
 /////////////////Shuttle Upgrades////////

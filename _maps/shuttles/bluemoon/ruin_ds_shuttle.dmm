@@ -24,14 +24,14 @@
 /obj/structure/chair/comfy/shuttle{
 	name = "tactical chair"
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "d" = (
 /obj/effect/turf_decal/siding/thinplating_new/dark,
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 1
 	},
-/obj/effect/turf_decal/stripes/red/line,
+/obj/effect/turf_decal/stripes/red,
 /obj/structure/chair/comfy/shuttle{
 	dir = 8;
 	name = "tactical chair"
@@ -87,7 +87,7 @@
 	specialfunctions = 4;
 	pixel_x = 26
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "h" = (
 /obj/machinery/light/small/directional/south,
@@ -98,19 +98,19 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 4
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 4
 	},
 /turf/open/floor/mineral/plastitanium/red,
 /area/shuttle/sbc_corvette)
 "i" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 4
 	},
 /obj/machinery/computer/camera_advanced/shuttle_docker/caravan/syndicate4{
 	dir = 8
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "j" = (
 /obj/machinery/porta_turret/syndicate/pod{
@@ -140,7 +140,7 @@
 	name = "Syndicate Corvette Ready Room"
 	},
 /obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
-/turf/open/floor/iron/dark/textured_large,
+/turf/open/floor/plasteel/dark/textured/large,
 /area/shuttle/sbc_corvette)
 "o" = (
 /obj/machinery/light/small/directional/west{
@@ -160,7 +160,7 @@
 	req_access_txt = "151";
 	pixel_x = -30
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "p" = (
 /obj/machinery/door/poddoor/preopen{
@@ -176,7 +176,7 @@
 	dir = 1
 	},
 /obj/effect/turf_decal/siding/thinplating_new/dark,
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 1
 	},
 /turf/open/floor/mineral/plastitanium/red,
@@ -190,13 +190,13 @@
 	dir = 1
 	},
 /obj/effect/turf_decal/siding/thinplating_new/dark,
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 1
 	},
 /turf/open/floor/mineral/plastitanium/red,
 /area/shuttle/sbc_corvette)
 "u" = (
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "v" = (
 /obj/structure/chair/comfy/shuttle{
@@ -205,7 +205,7 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 8
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium/red,
@@ -215,7 +215,7 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 1
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 1
 	},
 /obj/structure/railing{
@@ -228,7 +228,7 @@
 /turf/open/floor/mineral/plastitanium,
 /area/shuttle/sbc_corvette)
 "A" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 4
 	},
 /obj/structure/table/reinforced/plastitaniumglass,
@@ -240,12 +240,12 @@
 	specialfunctions = 4;
 	pixel_x = -6
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "C" = (
 /obj/structure/closet/syndicate/personal,
 /obj/effect/turf_decal/siding/thinplating_new/dark,
-/obj/effect/turf_decal/stripes/red/line,
+/obj/effect/turf_decal/stripes/red,
 /obj/structure/railing,
 /turf/open/floor/mineral/plastitanium,
 /area/shuttle/sbc_corvette)
@@ -253,19 +253,19 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 9
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 6
 	},
 /turf/open/floor/mineral/plastitanium/red,
 /area/shuttle/sbc_corvette)
 "F" = (
-/turf/open/floor/iron/dark/small,
+/turf/open/floor/plasteel/dark/smooth/small,
 /area/shuttle/sbc_corvette)
 "G" = (
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 6
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 9
 	},
 /turf/open/floor/mineral/plastitanium/red,
@@ -276,7 +276,7 @@
 	id_tag = "SBC_corvette_leader_bolt"
 	},
 /obj/effect/mapping_helpers/airlock/access/all/syndicate/general,
-/turf/open/floor/iron/dark/textured_large,
+/turf/open/floor/plasteel/dark/textured/large,
 /area/shuttle/sbc_corvette)
 "I" = (
 /obj/structure/window/reinforced/survival_pod{
@@ -305,7 +305,7 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 4
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 4
 	},
 /turf/open/floor/mineral/plastitanium/red,
@@ -318,19 +318,19 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 8
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 8
 	},
 /turf/open/floor/mineral/plastitanium/red,
 /area/shuttle/sbc_corvette)
 "O" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 4
 	},
 /obj/machinery/computer/shuttle/caravan/syndicate4{
 	dir = 8
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "P" = (
 /obj/machinery/door/airlock/external{
@@ -354,16 +354,16 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 5
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 10
 	},
 /turf/open/floor/mineral/plastitanium/red,
 /area/shuttle/sbc_corvette)
 "T" = (
-/turf/open/floor/iron/dark/diagonal,
+/turf/open/floor/plasteel/dark/smooth/diagonal,
 /area/shuttle/sbc_corvette)
 "U" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 8
 	},
 /obj/structure/table,
@@ -374,7 +374,7 @@
 	pixel_x = 4;
 	pixel_y = 3
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "V" = (
 /obj/machinery/light/small/directional/west{
@@ -384,31 +384,31 @@
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 1
 	},
-/obj/effect/turf_decal/stripes/red/line,
+/obj/effect/turf_decal/stripes/red,
 /turf/open/floor/mineral/plastitanium/red,
 /area/shuttle/sbc_corvette)
 "X" = (
 /obj/effect/turf_decal/siding/thinplating_new/dark{
 	dir = 10
 	},
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 5
 	},
 /turf/open/floor/mineral/plastitanium/red,
 /area/shuttle/sbc_corvette)
 "Y" = (
-/obj/effect/turf_decal/stripes/red/line,
+/obj/effect/turf_decal/stripes/red,
 /obj/machinery/computer/crew{
 	dir = 1
 	},
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 "Z" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 1
 	},
 /obj/machinery/computer/camera_advanced/syndie,
-/turf/open/floor/iron/dark,
+/turf/open/floor/plasteel/dark,
 /area/shuttle/sbc_corvette)
 
 (1,1,1) = {"

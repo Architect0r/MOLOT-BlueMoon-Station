@@ -5,7 +5,7 @@
 //	You do not need to raise this if you are adding new values that have sane defaults.
 //	Only raise this value when changing the meaning/format/name/layout of an existing value
 //	where you would want the updater procs below to run
-#define SAVEFILE_VERSION_MAX	59.1
+#define SAVEFILE_VERSION_MAX	60
 
 /*
 SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Carn
@@ -390,6 +390,30 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	if(current_version < 58)
 		S["screentip_images"] = TRUE // This was meant to default active, i'm so sorry. Turn it off if you must.
 
+	if(current_version < 59.2) //BLUEMOON ADD Удаление квирков веса и перевод их в отдельную переменную
+		var/list/quirks = S["all_quirks"]
+		if(quirks.Find("Лёгкий"))
+			all_quirks.Remove("Лёгкий")
+			S["body_weight"] = NAME_WEIGHT_LIGHT
+		else if(quirks.Find("Тяжёлый"))
+			all_quirks.Remove("Тяжёлый")
+			S["body_weight"] = NAME_WEIGHT_HEAVY
+		else if(quirks.Find("Сверхтяжёлый"))
+			all_quirks.Remove("Сверхтяжёлый")
+			S["body_weight"] = NAME_WEIGHT_HEAVY_SUPER
+
+	// BLUEMOON ADD - улучшение эмоут панели
+	if(current_version < 60)
+		var/list/new_custom_emote_panel = list()
+		for(var/emote_key in custom_emote_panel)
+			var/emote_name = html_encode(custom_emote_panel[emote_key])
+			if(!emote_name)
+				continue
+			// Если у игрока были эмоуты с одинаковыми названиями, но разными ключами, некоторые из них могут быть потеряны.
+			// Но это уже проблемы игрока...
+			new_custom_emote_panel[emote_name] = list("type" = TGUI_PANEL_EMOTE_TYPE_DEFAULT, "key" = emote_key)
+		custom_emote_panel = new_custom_emote_panel
+
 /datum/preferences/proc/load_path(ckey,filename="preferences.sav")
 	if(!ckey)
 		return
@@ -708,11 +732,6 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["view_pixelshift"], view_pixelshift)
 	WRITE_FILE(S["eorg_enabled"], eorg_enabled)
 
-	var/mob/living/carbon/human/H = parent.mob
-	if(istype(H))
-		H.set_antag_target_indicator() // Update consent HUD
-	//
-
 	//SKYRAT CHANGES BEGIN
 	WRITE_FILE(S["see_chat_emotes"], see_chat_emotes)
 	//SKYRAT CHANGES END
@@ -722,8 +741,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	else
 		WRITE_FILE(S["unlockable_loadout"], safe_json_encode(list()))
 
-	if(parent && !silent)
-		to_chat(parent, span_notice("Saved preferences!"))
+	if(parent)
+		if(ishuman(parent?.mob))
+			var/mob/living/carbon/human/H = parent.mob
+			H.set_antag_target_indicator() // Update consent HUD
+
+		if(!silent)
+			to_chat(parent, span_notice("Saved preferences!"))
 
 	return S
 
@@ -947,7 +971,11 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	S["headshot"] 							>> features["headshot_link"] //SPLURT edit
 	S["headshot1"] 							>> features["headshot_link1"] //BLUEMOON edit
 	S["headshot2"] 							>> features["headshot_link2"] //BLUEMOON edit
+	S["headshot_naked"] 						>> features["headshot_naked_link"] //BLUEMOON ADD
+	S["headshot_naked1"] 					>> features["headshot_naked_link1"] //BLUEMOON ADD
+	S["headshot_naked2"] 					>> features["headshot_naked_link2"] //BLUEMOON ADD
 	S["shriek_type"] 						>> shriek_type // BLUEMOON ADD - выбор вида крика для квирка
+	S["summon_nickname"] 					>> summon_nickname // BLUEMOON ADD - выбор прозвища для призываемого
 	S["feature_hardsuit_with_tail"] 		>> features["hardsuit_with_tail"]
 	S["persistent_scars"] 					>> persistent_scars
 	S["scars1"] 							>> scars_list["1"]
@@ -1464,7 +1492,8 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["hair_color"]							, hair_color)
 	WRITE_FILE(S["facial_hair_color"]					, facial_hair_color)
 	WRITE_FILE(S["eye_type"]							, eye_type)
-	WRITE_FILE(S["shriek_type"]							, shriek_type) // BLUEMOON AD
+	WRITE_FILE(S["shriek_type"]							, shriek_type) // BLUEMOON ADD
+	WRITE_FILE(S["summon_nickname"]						, summon_nickname) // BLUEMOON ADD
 	WRITE_FILE(S["feature_hardsuit_with_tail"]			, features["hardsuit_with_tail"])
 	WRITE_FILE(S["left_eye_color"]						, left_eye_color)
 	WRITE_FILE(S["right_eye_color"]						, right_eye_color)
@@ -1684,6 +1713,12 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 	WRITE_FILE(S["headshot1"], features["headshot_link1"])
 	WRITE_FILE(S["headshot2"], features["headshot_link2"])
 	//SPLURT EDIT END
+	// BLUEMOON ADD START
+	WRITE_FILE(S["headshot_naked"], features["headshot_naked_link"])
+	WRITE_FILE(S["headshot_naked1"], features["headshot_naked_link1"])
+	WRITE_FILE(S["headshot_naked2"], features["headshot_naked_link2"])
+	// BLUEMOON ADD END
+
 
 	//gear loadout
 	if(islist(loadout_data))
@@ -1708,8 +1743,13 @@ SAVEFILE UPDATING/VERSIONING - 'Simplified', or rather, more coder-friendly ~Car
 
 	bluemoon_character_pref_save(S)
 
-	if(parent && !silent)
-		to_chat(parent, span_notice("Saved character slot!"))
+	if(parent)
+		if(ishuman(parent?.mob))
+			var/mob/living/carbon/human/H = parent.mob
+			H.set_antag_target_indicator() // Update consent HUD
+
+		if(!silent)
+			to_chat(parent, span_notice("Saved character slot!"))
 
 	return S
 

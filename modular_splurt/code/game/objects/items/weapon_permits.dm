@@ -22,6 +22,7 @@ GLOBAL_VAR_INIT(weapon_permits_issued, 0)
 	var/locked = FALSE
 	// Выдан ли роли при спавне
 	var/special = FALSE
+	var/access_to_issue = ACCESS_ARMORY
 
 /obj/item/clothing/accessory/permit/Initialize(mapload)
 	. = ..()
@@ -156,7 +157,7 @@ GLOBAL_VAR_INIT(weapon_permits_issued, 0)
 		var/obj/item/card/id/redactor_card = redactor.get_id_card()
 		if(!redactor_card)
 			return FALSE
-		if(ACCESS_ARMORY in redactor_card.GetAccess())
+		if(access_to_issue in redactor_card.GetAccess())
 			return TRUE
 	return FALSE
 
@@ -321,13 +322,13 @@ GLOBAL_VAR_INIT(weapon_permits_issued, 0)
 /obj/item/clothing/accessory/permit/special/bartender
 	name = "Bartender's weapons permit"
 	desc = "Я точно не вынесу этот чертовски большой, длинный и привлекательный... дробовик за пределы отдела. Честно-честно."
-	permitted_weapons = "Барменовский дробовик с нелетальными патронами"
+	permitted_weapons = "Барменский дробовик с нелетальными патронами"
 	notes = "Бармену разрешено хранить и использовать свой дробовик с нелетальными патронами для успокоения буйных посетителей на территории бара в рамках своих норм рабочих процедур и космического закона."
 
 /obj/item/clothing/accessory/permit/special/bouncer
 	name = "Bouncer's weapons permit"
 	desc = "Ну надо же вышибале чем-то вышибать, да?"
-	permitted_weapons = "Нелетальное энергооружие, наручники и их варианты, болы, перцовый баллончик"
+	permitted_weapons = "Вооружение вторичной категории и специализированного типа, в том числе пистолеты и парализаторы, наручники и их варианты, болы, а также перцовый баллончик; Указанное выше вооружение допускается к ношению и использованию с любым ударно-спусковым механизмом (бойком)."
 	notes = "Сотрудник охраны сервиса имеет право использовать своё вооружение только в случае защиты своей жизни или жизни других. Применение вооружения также допустимо против неадекватных членов персонала, что игнорируют просьбы и предупреждения от сотрудников сервисного отдела."
 
 /obj/item/clothing/accessory/permit/special/security

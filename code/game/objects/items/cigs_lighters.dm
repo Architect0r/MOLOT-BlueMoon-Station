@@ -117,6 +117,7 @@ CIGARETTE PACKETS ARE IN FANCY.DM
 	var/type_butt = /obj/item/cigbutt
 	var/lastHolder = null
 	var/smoketime = 300
+	var/vapetime = 0
 	var/chem_volume = 30
 	var/list/list_reagents = list(/datum/reagent/drug/nicotine = 15)
 	heat = 1000
@@ -227,12 +228,16 @@ CIGARETTE PACKETS ARE IN FANCY.DM
 	if(isliving(loc))
 		M.IgniteMob()
 	smoketime--
+	vapetime++
 	if(smoketime < 1)
 		new type_butt(location)
 		if(ismob(loc))
 			to_chat(M, "<span class='notice'>Your [name] goes out.</span>")
 		qdel(src)
 		return
+	if((vapetime > rand(4, 8)))
+		new /obj/effect/particle_effect/smoke/cigsmoke(location)
+		vapetime = 0
 	open_flame()
 	if(reagents && reagents.total_volume)
 		handle_reagents()
@@ -562,6 +567,7 @@ CIGARETTE PACKETS ARE IN FANCY.DM
 	. += lighter_overlay
 
 /obj/item/lighter/ignition_effect(atom/A, mob/user)
+	playsound(src, 'modular_sand/sound/items/lighter/light.ogg', 50, 0)
 	if(get_temperature())
 		. = "<span class='rose'>Одним плавным движением [user] поджигает [A]. Блин, круто!</span>"
 
@@ -586,10 +592,12 @@ CIGARETTE PACKETS ARE IN FANCY.DM
 	user.DelayNextAction(CLICK_CD_MELEE)
 	if(user.is_holding(src))
 		if(!lit)
+			// SANDSTORM EDIT
+			playsound(src, 'modular_sand/sound/items/lighter/open.ogg', 50, 0)
+			// End of edit
 			set_lit(TRUE)
 			if(fancy)
 				user.visible_message("Одним плавным движением <b>[user]</b> открывает и зажигает '[src]'!", "<span class='notice'><b>Вы одним плавным движением открываете и зажигаете '[src]'!</b>.</span>")
-				playsound(src, 'sound/weapons/zippolight.ogg', 40, TRUE)
 			else
 				var/prot = FALSE
 				var/mob/living/carbon/human/H = user
@@ -612,10 +620,12 @@ CIGARETTE PACKETS ARE IN FANCY.DM
 					playsound(src, pick('sound/weapons/lighter1.ogg', 'sound/weapons/lighter2.ogg', 'sound/weapons/lighter3.ogg'), 75, 1)
 
 		else
+			// SANDSTORM EDIT
+			playsound(src, 'modular_sand/sound/items/lighter/close.ogg', 50, 0)
+			// Edit end
 			set_lit(FALSE)
 			if(fancy)
 				user.visible_message("Вы слышите тихий щелчок со стороны <b>[user]</b>.", "<span class='notice'><b>Вы практически бесшумно закрыли '[src]'.</b></span>")
-				playsound(src, 'sound/weapons/zippoclose.ogg', 40, TRUE)
 			else
 				user.visible_message("<b>[user]</b> закрыли '[src]' одним плавным движением.", "<span class='notice'><b>Вы закрыли '[src]' одним плавным движением.</b></span>")
 	else

@@ -25,6 +25,7 @@
 #define PROTOLATHE		(1<<1)	//New stuff. Uses materials/chemicals
 #define AUTOLATHE		(1<<2)	//Uses materials only.
 #define TOYLATHE		(1<<3)	//Glass/metal/plastic. Meant for toys.
+#define MAKESHIFTLATHE  (1<<3)
 #define NO_PUBLIC_LATHE	(1<<4)	//prevents the design from being auto-unlocked by public auto(y)lathes.
 #define MECHFAB			(1<<5) 	//Remember, objects utilising this flag should have construction_time and construction_cost vars.
 #define BIOGENERATOR	(1<<6) 	//Uses biomass
@@ -32,6 +33,7 @@
 #define SMELTER			(1<<8) 	//uses various minerals
 #define NANITE_COMPILER (1<<9) //Prints nanite disks
 #define AUTOBOTTLER  	(1<<10) //Uses booze, for printing
+#define BIOAEGIS 		(1<<11) //BLUEMOON ADD. Organs and Co
 //Note: More then one of these can be added to a design but imprinter and lathe designs are incompatable.
 
 //Modular computer/NTNet defines

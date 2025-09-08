@@ -88,8 +88,7 @@
 	dir = 5
 	},
 /obj/machinery/jukebox{
-	req_one_access = null;
-	one_area_play = 1
+	req_one_access = null
 	},
 /turf/open/floor/wood/wood_tiled,
 /area/hilbertshotel)
@@ -344,7 +343,7 @@
 	pixel_x = 13
 	},
 /obj/structure/mirror/directional/east,
-/turf/open/floor/iron/white/small,
+/turf/open/floor/plasteel/white/smooth/small,
 /area/hilbertshotel)
 "tX" = (
 /obj/effect/turf_decal/siding/wood{
@@ -670,7 +669,10 @@
 	pixel_x = 10
 	},
 /obj/item/sharpener{
-	pixel_x = -5
+	pixel_x = -5;
+	used = 1;
+	desc = "A block that makes things sharp. At least, it used to.";
+	name = "worn out whetstone"
 	},
 /turf/open/floor/plasteel/cafeteria,
 /area/hilbertshotel)
@@ -782,7 +784,7 @@
 /obj/structure/toilet{
 	dir = 4
 	},
-/turf/open/floor/iron/white/small,
+/turf/open/floor/plasteel/white/smooth/small,
 /area/hilbertshotel)
 "TX" = (
 /obj/structure/chair/pew,
@@ -796,7 +798,7 @@
 /area/hilbertshotel)
 "Uq" = (
 /obj/structure/mineral_door/paperframe,
-/turf/open/floor/iron/white/small,
+/turf/open/floor/plasteel/white/smooth/small,
 /area/hilbertshotel)
 "Ur" = (
 /obj/structure/window/reinforced/tinted,
@@ -806,7 +808,7 @@
 	dir = 4
 	},
 /obj/item/soap/deluxe,
-/turf/open/floor/iron/white/small,
+/turf/open/floor/plasteel/white/smooth/small,
 /area/hilbertshotel)
 "Vt" = (
 /turf/open/floor/wood/wood_large,
@@ -831,7 +833,7 @@
 /obj/machinery/light/small{
 	dir = 4
 	},
-/turf/open/floor/iron/white/small,
+/turf/open/floor/plasteel/white/smooth/small,
 /area/hilbertshotel)
 "WR" = (
 /obj/structure/window/reinforced,

@@ -50,6 +50,7 @@
 		/datum/language/modular_bluemoon/acratarian, // BLUEMOON ADD - язык акрадоров
 		/datum/language/modular_bluemoon/cetria, // BLUEMOON ADD - язык кеткринов
 		/datum/language/modular_bluemoon/demonic, // BLUEMOON ADD - демонический
+		/datum/language/modular_splurt/nyanese, //SPLURT change - meow meow!
 	))
 	healing_factor = STANDARD_ORGAN_HEALING*5 //Fast!!
 	decay_factor = STANDARD_ORGAN_DECAY/2
@@ -78,7 +79,9 @@
 		qdel(src)
 
 /obj/item/organ/tongue/Insert(mob/living/carbon/M, special = 0, drop_if_replaced = TRUE)
-	..()
+	. = ..()
+	if(!.)
+		return
 	if(say_mod && M.dna && M.dna.species)
 		M.dna.species.say_mod = say_mod
 	if(length(initial_accents) || length(accents))
@@ -208,6 +211,7 @@
 
 /obj/item/organ/tongue/alien/hybrid
 	name = "xenohybrid tongue"
+	initial_accents = null
 
 // /obj/item/organ/tongue/alien/hybrid/Initialize(mapload)
 // 	. = ..()
@@ -227,7 +231,9 @@
 	var/list/phomeme_types = list(/datum/accent/span/sans, /datum/accent/span/papyrus)
 
 /obj/item/organ/tongue/bone/Initialize(mapload)
-	initial_accents += pick(phomeme_types)
+	var/datum/accent/span/picked_phomeme = pick(phomeme_types)
+	phomeme_type = picked_phomeme.span_flag
+	LAZYADD(initial_accents, picked_phomeme)
 	. = ..()
 
 /obj/item/organ/tongue/bone/applyOrganDamage(var/d, var/maximum = maxHealth)
@@ -244,6 +250,27 @@
 	if(chattering)
 		chatter(speech_args[SPEECH_MESSAGE], phomeme_type, source)
 	..()
+
+/obj/item/organ/tongue/bone/Insert(mob/living/carbon/M, special, drop_if_replaced)
+	. = ..()
+	if(!.)
+		return
+	RegisterSignal(owner, COMSIG_MOVABLE_BARK, PROC_REF(intercept_bark))
+
+/obj/item/organ/tongue/bone/proc/intercept_bark()
+	SIGNAL_HANDLER
+	return chattering ? TRUE : NONE
+
+/obj/item/organ/tongue/bone/Remove(special)
+	. = ..()
+	var/mob/living/carbon/organ_mob = . || null
+	if(!istype(organ_mob))
+		return
+	UnregisterSignal(organ_mob, COMSIG_MOVABLE_BARK)
+
+/obj/item/organ/tongue/bone/chatter
+	name = "chattering bone \"tongue\""
+	chattering = TRUE
 
 /obj/item/organ/tongue/bone/plasmaman
 	name = "plasma bone \"tongue\""

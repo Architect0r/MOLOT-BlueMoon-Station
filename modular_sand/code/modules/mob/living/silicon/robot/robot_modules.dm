@@ -23,24 +23,25 @@
 	basic_modules = list(
 		/obj/item/assembly/flash/cyborg,
 		/obj/item/borg/sight/thermal,
-		/obj/item/extinguisher,
+		/obj/item/extinguisher/mini,
 		/obj/item/weldingtool/experimental,
-		/obj/item/screwdriver/nuke,
+		/obj/item/screwdriver/cyborg,
 		/obj/item/wrench/cyborg,
 		/obj/item/crowbar/cyborg,
 		/obj/item/wirecutters/cyborg,
 		/obj/item/multitool/cyborg,
 		/obj/item/gripper,
-		/obj/item/cyborg_clamp,
+		/obj/item/gripper/medical,
 		/obj/item/lightreplacer/cyborg,
 		/obj/item/stack/sheet/metal/cyborg,
 		/obj/item/stack/sheet/glass/cyborg,
 		/obj/item/stack/sheet/rglass/cyborg,
 		/obj/item/stack/rods/cyborg,
 		/obj/item/stack/tile/plasteel/cyborg,
-		/obj/item/dest_tagger/borg,
 		/obj/item/stack/cable_coil/cyborg,
+		/obj/item/storage/part_replacer/bluespace/cyborg,
 		/obj/item/restraints/handcuffs/cable/zipties,
+		/obj/item/melee/baton/loaded,
 		/obj/item/stack/medical/gauze/cyborg,
 		/obj/item/shockpaddles/cyborg,
 		/obj/item/healthanalyzer/advanced,
@@ -50,10 +51,13 @@
 		/obj/item/scalpel/advanced,
 		/obj/item/gun/medbeam,
 		/obj/item/reagent_containers/borghypo/syndicate,
+		/obj/item/stack/medical/bone_gel,
+		/obj/item/bonesetter,
+		/obj/item/organ_storage,
+		/obj/item/borg/cyborghug/medical,
 		/obj/item/borg/lollipop,
-		/obj/item/holosign_creator/cyborg,
-		/obj/item/stamp/chameleon,
-		/obj/item/borg_shapeshifter
+		/obj/item/borg_shapeshifter,
+		/obj/item/cyborg_inducer
 		)
 
 	ratvar_modules = list(
@@ -88,7 +92,8 @@
 		"Meka" = image(icon = 'modular_splurt/icons/mob/robots_32x64.dmi', icon_state = "mekasyndi"), // SPLURT Addon (Bubbers Port)
 		"M-Meka" = image(icon = 'modular_splurt/icons/mob/robots_32x64.dmi', icon_state = "mmekasyndi"), // SPLURT Addon (Bubbers Port)
 		"F-Meka" = image(icon = 'modular_splurt/icons/mob/robots_32x64.dmi', icon_state = "fmekasyndi"), // SPLURT Addon (Bubbers Port)
-		"K4T" = image(icon = 'modular_splurt/icons/mob/robots_32x64.dmi', icon_state = "k4tsyndi") // SPLURT Addon (Bubbers Port)
+		"K4T" = image(icon = 'modular_splurt/icons/mob/robots_32x64.dmi', icon_state = "k4tsyndi"), // SPLURT Addon (Bubbers Port)
+		"Dullahan" = image(icon = 'modular_splurt/icons/mob/robots_32x64.dmi', icon_state = "dullahansyndi")
 		))
 	var/syndiejack_icon = show_radial_menu(R, R , syndicatejack_icons, custom_check = CALLBACK(src, PROC_REF(check_menu), R), radius = 42, require_near = TRUE)
 	switch(syndiejack_icon)
@@ -161,6 +166,11 @@
 			hasrest = TRUE
 		if("K4T")
 			cyborg_base_icon = "k4tsyndi"
+			cyborg_icon_override = 'modular_splurt/icons/mob/robots_32x64.dmi'
+			hat_offset = 3
+			hasrest = TRUE
+		if("Dullahan")
+			cyborg_base_icon = "dullahansyndi"
 			cyborg_icon_override = 'modular_splurt/icons/mob/robots_32x64.dmi'
 			hat_offset = 3
 			hasrest = TRUE

@@ -1,5 +1,5 @@
 /obj/machinery/rnd/production/protolathe
-	name = "Hacked Protolat"
+	name = "Hacked Protolathe"
 	desc = "Принтер с абсолютным доступом к большинству технологий. Запрещён к использованию в многих Корпорациях с делением власти меж множеством Отделов."
 	icon_state = "protolathe"
 	circuit = /obj/item/circuitboard/machine/protolathe
@@ -16,7 +16,8 @@
 								"Ammo",
 								"Firing Pins",
 								"Computer Parts",
-								"MODsuit Designs"
+								"MODsuit Designs",
+								"Organic Designs" //BLUEMOON ADD: New category for fleshcrafting and some heinous shit to ever exist.
 								)
 	production_animation = "protolathe_n"
 	allowed_buildtypes = PROTOLATHE

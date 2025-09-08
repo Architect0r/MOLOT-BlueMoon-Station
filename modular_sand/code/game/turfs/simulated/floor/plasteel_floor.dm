@@ -4,9 +4,6 @@
 /turf/open/floor/plasteel/dark
 	floor_tile = /obj/item/stack/tile/plasteel/dark
 
-/turf/open/floor/plasteel/chapel
-	floor_tile = /obj/item/stack/tile/plasteel/chapel
-
 /turf/open/floor/plasteel/showroomfloor
 	floor_tile = /obj/item/stack/tile/plasteel/shower
 
@@ -14,7 +11,7 @@
 	floor_tile = /obj/item/stack/tile/plasteel/freezer
 
 /turf/open/floor/plasteel/cafeteria
-	floor_tile = /obj/item/stack/tile/plasteel/kitchen
+	floor_tile = /obj/item/stack/tile/plasteel/cafeteria
 
 /turf/open/floor/plasteel/grimy
 	floor_tile = /obj/item/stack/tile/plasteel/grimy

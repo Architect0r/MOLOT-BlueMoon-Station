@@ -90,8 +90,10 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	var/dangerous_existence //A flag for transformation spells that tells them "hey if you turn a person into one of these without preperation, they'll probably die!"
 	///Affects the speech message, for example: Motharula flutters, "My speech message is flutters!"
 	var/say_mod = "says"
-	///What languages this species can understand and say. Use a [language holder datum][/datum/language_holder] in this var.
-	var/species_language_holder = /datum/language_holder
+	/// What languages this species can understand and say.
+	/// Use a [language holder datum][/datum/language_holder] typepath in this var.
+	/// Should never be null.
+	var/datum/language_holder/species_language_holder = /datum/language_holder/human_basic
 	/**
 	  * Visible CURRENT bodyparts that are unique to a species.
 	  * DO NOT USE THIS AS A LIST OF ALL POSSIBLE BODYPARTS AS IT WILL FUCK
@@ -563,6 +565,16 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 		for(var/obj/item/bodypart/B in C.bodyparts)
 			B.change_bodypart_status(BODYPART_HYBRID, FALSE, TRUE) // Makes all Bodyparts 'robotic'.
 
+	// All languages associated with this language holder are added with source [LANGUAGE_SPECIES]
+	// rather than source [LANGUAGE_ATOM], so we can track what to remove if our species changes again
+	var/datum/language_holder/gaining_holder = GLOB.prototype_language_holders[species_language_holder]
+	for(var/language in gaining_holder.understood_languages)
+		C.grant_language(language, UNDERSTOOD_LANGUAGE, LANGUAGE_SPECIES)
+	for(var/language in gaining_holder.spoken_languages)
+		C.grant_language(language, SPOKEN_LANGUAGE, LANGUAGE_SPECIES)
+	for(var/language in gaining_holder.blocked_languages)
+		C.add_blocked_language(language, LANGUAGE_SPECIES)
+
 	SEND_SIGNAL(C, COMSIG_SPECIES_GAIN, src, old_species)
 
 /datum/species/proc/update_species_slowdown(mob/living/carbon/human/H)
@@ -861,8 +873,8 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				var/mutable_appearance/right_eye = mutable_appearance('icons/mob/eyes.dmi', right_state, -BODY_LAYER)
 				BLUEMOON REMOVAL END - EYES*/
 				//BLUEMON ADD - EYES. Это грубый костыль, чтобы не нужно было изменять оригинальный dmi файл
-				var/mutable_appearance/left_eye = mutable_appearance('modular_bluemoon/eyes/eyes.dmi', left_state, -BODY_LAYER)
-				var/mutable_appearance/right_eye = mutable_appearance('modular_bluemoon/eyes/eyes.dmi', right_state, -BODY_LAYER)
+				var/mutable_appearance/left_eye = mutable_appearance('modular_bluemoon/icons/mob/eyes.dmi', left_state, -BODY_LAYER)
+				var/mutable_appearance/right_eye = mutable_appearance('modular_bluemoon/icons/mob/eyes.dmi', right_state, -BODY_LAYER)
 				//BLUEMON END - EYES. Туда скопированы оригинальные глаза. Если сплюрт добавит новые, нужно добавить их и сюда.
 				//bro tip: можно сделать так, чтобы если не находил глаза в оригинале, ссылался на новый файл. Но автору не хватило сил
 				left_eye.category = "HEAD"
@@ -962,7 +974,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	if(found_action && (!tauric || (H.dna.features["taur"] != "Naga" && H.dna.features["taur"] != "Naga (coiled)")))
 		found_action.Remove(H)
 
-	if(!found_action && tauric && H.dna.features["taur"] == "Naga")
+	if(!found_action && tauric && (H.dna.features["taur"] == "Naga" || H.dna.features["taur"] == "Naga (coiled)"))
 		found_action = new /datum/action/innate/ability/coiling()
 		found_action.Grant(H)
 
@@ -1298,7 +1310,8 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 		var/takes_crit_damage = !HAS_TRAIT(H, TRAIT_NOCRITDAMAGE)
 		if((H.health < H.crit_threshold) && takes_crit_damage)
 			if(!HAS_TRAIT(H, TRAIT_ROBOTIC_ORGANISM))
-				H.adjustBruteLoss(1)
+				if(!HAS_TRAIT(H, TRAIT_RESTORATIVE_METABOLISM)) //Война регена с уроном, за свою цену имеют право иметь синергию
+					H.adjustBruteLoss(1)
 			else
 				H.adjustToxLoss(1, toxins_type = TOX_SYSCORRUPT) // BLUEMOON CHANGES - вместо урона ожогами, у синтетиков начинают пегреваться внутренности, что выражено уроном токсинами
 
@@ -1745,7 +1758,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	if(radiation > RAD_MOB_HAIRLOSS)
 		if(prob(15) && !(H.hair_style == "Bald") && (HAIR in species_traits))
 			to_chat(H, "<span class='danger'>Your hair starts to fall out in clumps...</span>")
-			addtimer(CALLBACK(src, PROC_REF(go_bald), H), 50)
+			go_bald(H)
 
 /datum/species/proc/go_bald(mob/living/carbon/human/H)
 	if(QDELETED(H))	//may be called from a timer
@@ -1980,6 +1993,8 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 				user.emote("scream")
 			return FALSE
 		// BLUEMOON EDIT END
+		if(iscatperson(target))
+			target.emote(pick("nya","meow"))
 		//SPLURT ADDITION START
 		if(HAS_TRAIT(target, TRAIT_JIGGLY_ASS))
 			if(!COOLDOWN_FINISHED(src, ass))
@@ -2008,9 +2023,11 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 						target_message = span_lewd("[user] шлёпает по сочной заднице [target]! Она [pick("пульсирует","покачивается","трясётся","хлопает","колеблется","трясётся")] после хорошего удара и мешает вам стоять ровно!"))
 				return FALSE
 		//SPLURT ADDITION END
-		target.adjust_arousal(20,"masochism", maso = TRUE)
-		if (ishuman(target) && HAS_TRAIT(target, TRAIT_MASO) && target.has_dna() && prob(10))
-			target.mob_climax(forced_climax=TRUE, cause = "masochism")
+		// BLUEMOON EDIT START || It's easy to get aroused, but it's hard to cum.
+		if(ishuman(target) && HAS_TRAIT(target, TRAIT_MASO) && target.has_dna() && prob(40))
+			target.adjust_arousal(20,"masochism", maso = TRUE)
+			target.handle_post_sex(NORMAL_LUST, null, null)
+		// BLUEMOON EDIT END
 		if (!HAS_TRAIT(target, TRAIT_PERMABONER))
 			stop_wagging_tail(target)
 		// playsound(target.loc, 'sound/weapons/slap.ogg', 50, 1, -1) // BLUEMOON REMOVAL - это дубль звука сверху (почему он вообще существует?)
@@ -2288,10 +2305,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 			return
 		// BLUEMOON ADD START
 		var/shove_up_stamina_cost = MAX_STAMINA_HEALTH * CONFIG_GET(number/percent_stamina_cost_shove_up)
-		if(HAS_TRAIT(user, TRAIT_BLUEMOON_HEAVY_SUPER)) // сверхтяжёлые персонажи поднимаются в два раза тяжелее
-			shove_up_stamina_cost *= 2
-		else if(HAS_TRAIT(user, TRAIT_BLUEMOON_HEAVY)) // тяжёлые персонажи поднимаются в 1.5 раза тяжелее
-			shove_up_stamina_cost *= 1.5
+		shove_up_stamina_cost *= max(0.25, 1 + ((user.mob_weight - MOB_WEIGHT_NORMAL) * 0.5))
 		// BLUEMOON ADD END
 		if(!user.UseStaminaBuffer(shove_up_stamina_cost, TRUE)) // BLUEMOON CHANGES
 			return
@@ -2311,8 +2325,8 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	if(attacker_style && attacker_style.disarm_act(user,target))
 		return TRUE
 	// BLUEMOON ADDITION AHEAD
-	if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY_SUPER)) // Большие персонажей могут сбивать с ног только другие большие персонажи (и халк)
-		if(!HAS_TRAIT(user, TRAIT_BLUEMOON_HEAVY_SUPER))
+	if(target.mob_weight > MOB_WEIGHT_HEAVY) // Большие персонажей могут сбивать с ног только другие большие персонажи (и халк)
+		if(user.mob_weight < MOB_WEIGHT_HEAVY_SUPER)
 			if(!user.dna.check_mutation(HULK))
 				to_chat(user, span_warning("Слишком много весит!"))
 				return
@@ -2340,9 +2354,9 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 		SEND_SIGNAL(target, COMSIG_HUMAN_DISARM_HIT, user, user.zone_selected)
 
 		if(CHECK_MOBILITY(target, MOBILITY_STAND))
-			target.adjustStaminaLoss(5)
+			target.adjustStaminaLoss(5 + user.dna.species.disarm_bonus) // BLUEMOON EDIT - xenohybrids_improvements - добавлено "+ disarm_bonus"
 		else
-			target.adjustStaminaLoss(IS_STAMCRIT(target)? 2 : 10)
+			target.adjustStaminaLoss((IS_STAMCRIT(target)? 2 : 10) + user.dna.species.disarm_bonus) // BLUEMOON EDIT - xenohybrids_improvements - добавлено "+ disarm_bonus"
 
 		if(target.is_shove_knockdown_blocked())
 			return
@@ -2403,7 +2417,7 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 						target.visible_message("<span class='danger'>[target.name] drops \the [target_held_item]!!</span>",
 							"<span class='danger'>You drop \the [target_held_item]!!</span>", null, COMBAT_MESSAGE_RANGE)
 						append_message += ", causing them to drop [target_held_item]"
-		target.ShoveOffBalance(SHOVE_OFFBALANCE_DURATION)
+		target.ShoveOffBalance(SHOVE_OFFBALANCE_DURATION + user.dna.species.disarm_bonus) // BLUEMOON EDIT - xenohybrids_improvements - добавлено "+ disarm_bonus"
 		log_combat(user, target, "shoved", append_message)
 
 /datum/species/proc/apply_damage(damage, damagetype = BRUTE, def_zone = null, blocked, mob/living/carbon/human/H, forced = FALSE, spread_damage = FALSE, wound_bonus = 0, bare_wound_bonus = 0, sharpness = SHARP_NONE)
@@ -2436,7 +2450,13 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 	switch(damagetype)
 		if(BRUTE)
 			H.damageoverlaytemp = 20
-			var/damage_amount
+			// BLUEMOON EDIT START
+			var/damage_amount = forced ? damage : damage * hit_percent * brutemod * H.physiology.brute_mod
+			// Да, проверка специально написана, до проверки на прочную кожу
+			if(HAS_TRAIT(H, TRAIT_MASO))
+				if(!(H.IsSleeping() || H.stat >= 2 || H.IsUnconscious())) // BLUEMOON ADD - персонаж не спит, не без сознания и не мертв
+					H.handle_post_sex(min(damage_amount, HIGH_LUST), null, null)
+			// BLUEMOON EDIT END
 			if (HAS_TRAIT(H, TRAIT_TOUGHT) && !forced) // проверка на трейт стойкости
 				if (damage < 10) //если урон до применения модификаторов не привышает 10, то он не учитывается
 					if(HAS_TRAIT(H, TRAIT_ROBOTIC_ORGANISM))
@@ -2450,12 +2470,10 @@ GLOBAL_LIST_EMPTY(roundstart_race_names)
 			if(BP)
 				if(BP.receive_damage(damage_amount, 0, wound_bonus = wound_bonus, bare_wound_bonus = bare_wound_bonus, sharpness = sharpness))
 					H.update_damage_overlays()
-					if(HAS_TRAIT(H, TRAIT_MASO) && prob(damage_amount))
-						if(!(H.IsSleeping() || H.stat >= 2 || H.IsUnconscious())) // BLUEMOON ADD - персонаж не спит, не без сознания и не мертв
-							H.mob_climax(forced_climax=TRUE, cause = "masochism")
-
+			//BLUEMOON EDIT START
 			else//no bodypart, we deal damage with a more general method.
 				H.adjustBruteLoss(damage_amount)
+			//BLUEMOON EDIT END
 		if(BURN)
 			H.damageoverlaytemp = 20
 			var/damage_amount = forced ? damage : damage * hit_percent * burnmod * H.physiology.burn_mod

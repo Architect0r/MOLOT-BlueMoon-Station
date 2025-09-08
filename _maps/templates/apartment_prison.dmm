@@ -1,6 +1,6 @@
 //MAP CONVERTED BY dmm2tgm.py THIS HEADER COMMENT PREVENTS RECONVERSION, DO NOT REMOVE
 "ax" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 9
 	},
 /turf/open/floor/padded,
@@ -202,7 +202,7 @@
 /obj/item/reagent_containers/food/snacks/grown/onion,
 /obj/item/choice_beacon/ingredients,
 /obj/item/choice_beacon/ingredients,
-/obj/effect/turf_decal/bot_white,
+/obj/effect/turf_decal/bot/white,
 /obj/item/storage/box/ingredients/carnivore,
 /obj/item/storage/box/ingredients/wildcard,
 /obj/item/storage/fancy/egg_box,
@@ -225,7 +225,7 @@
 /obj/effect/turf_decal/siding/wood{
 	dir = 10
 	},
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "gE" = (
 /obj/machinery/door/airlock/centcom{
@@ -253,7 +253,7 @@
 /obj/structure/closet/secure_closet/personal{
 	req_access = list(12)
 	},
-/obj/effect/turf_decal/bot,
+/obj/effect/turf_decal/bot/yellow,
 /obj/effect/turf_decal/tile/red{
 	dir = 1
 	},
@@ -271,13 +271,13 @@
 	},
 /area/hilbertshotel)
 "ig" = (
-/obj/effect/turf_decal/stripes/white/line{
+/obj/effect/turf_decal/stripes/white{
 	dir = 1
 	},
 /turf/open/floor/plasteel,
 /area/hilbertshotel)
 "iq" = (
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "iV" = (
 /obj/effect/turf_decal/tile/yellow,
@@ -437,7 +437,7 @@
 	dir = 6
 	},
 /obj/item/storage/box/fancy_maid_kit,
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "mk" = (
 /turf/closed/wall,
@@ -476,7 +476,7 @@
 	name = "prisoner closet";
 	req_access = list(12)
 	},
-/obj/effect/turf_decal/bot_white,
+/obj/effect/turf_decal/bot/white,
 /obj/effect/turf_decal/tile/red{
 	dir = 1
 	},
@@ -829,10 +829,10 @@
 /obj/effect/turf_decal/siding/wood{
 	dir = 5
 	},
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "zB" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 4
 	},
 /turf/open/floor/padded,
@@ -919,7 +919,7 @@
 /obj/effect/turf_decal/siding/wood{
 	dir = 8
 	},
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "Ch" = (
 /obj/effect/turf_decal/tile/yellow{
@@ -953,11 +953,11 @@
 /obj/machinery/light{
 	dir = 1
 	},
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "CS" = (
 /obj/structure/chair/office/dark,
-/obj/item/toy/plush/silly_neko_plushie{
+/obj/item/toy/plush/bm/silly_neko_plushie{
 	pixel_y = 6;
 	pixel_x = 3
 	},
@@ -969,7 +969,7 @@
 /obj/effect/turf_decal/siding/wood{
 	dir = 4
 	},
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "DV" = (
 /obj/structure/sink{
@@ -1042,23 +1042,23 @@
 /turf/open/floor/plasteel,
 /area/hilbertshotel)
 "IY" = (
-/obj/effect/turf_decal/stripes/white/line{
+/obj/effect/turf_decal/stripes/white{
 	dir = 5
 	},
-/turf/open/floor/iron/terracotta/small,
+/turf/open/floor/plasteel/terracotta/small,
 /area/hilbertshotel)
 "Ka" = (
-/obj/effect/turf_decal/stripes/white/line{
+/obj/effect/turf_decal/stripes/white{
 	dir = 6
 	},
-/turf/open/floor/iron/terracotta/small,
+/turf/open/floor/plasteel/terracotta/small,
 /area/hilbertshotel)
 "Kh" = (
 /obj/structure/closet/secure_closet/personal{
 	name = "prisoner closet";
 	req_access = list(12)
 	},
-/obj/effect/turf_decal/bot_white,
+/obj/effect/turf_decal/bot/white,
 /obj/effect/turf_decal/tile/red{
 	dir = 1
 	},
@@ -1089,7 +1089,7 @@
 /turf/open/floor/plasteel,
 /area/hilbertshotel)
 "Kw" = (
-/obj/effect/turf_decal/stripes/line{
+/obj/effect/turf_decal/stripes/yellow/line{
 	dir = 9
 	},
 /turf/open/floor/plasteel,
@@ -1107,7 +1107,7 @@
 /turf/open/floor/plasteel,
 /area/hilbertshotel)
 "KG" = (
-/obj/effect/turf_decal/stripes/red/line{
+/obj/effect/turf_decal/stripes/red{
 	dir = 10
 	},
 /turf/open/floor/padded,
@@ -1270,7 +1270,7 @@
 	dir = 6;
 	network = list("prison-dorm")
 	},
-/turf/open/floor/iron/grimy,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "Pf" = (
 /obj/item/kirbyplants/random,
@@ -1454,7 +1454,7 @@
 	},
 /area/hilbertshotel)
 "TF" = (
-/obj/effect/turf_decal/stripes/line{
+/obj/effect/turf_decal/stripes/yellow/line{
 	dir = 5
 	},
 /turf/open/floor/plasteel,
@@ -1515,21 +1515,21 @@
 	},
 /area/hilbertshotel)
 "Vz" = (
-/obj/machinery/research_table/slaver,
 /obj/effect/turf_decal/siding/wood,
-/turf/open/floor/iron/grimy,
+/obj/machinery/research_table,
+/turf/open/floor/plasteel/grimy,
 /area/hilbertshotel)
 "VI" = (
 /obj/machinery/vr_sleeper{
 	dir = 8
 	},
-/obj/effect/turf_decal/stripes/white/line{
+/obj/effect/turf_decal/stripes/white{
 	dir = 10
 	},
 /obj/machinery/light/cold/directional{
 	dir = 4
 	},
-/turf/open/floor/iron/terracotta/small,
+/turf/open/floor/plasteel/terracotta/small,
 /area/hilbertshotel)
 "VZ" = (
 /obj/effect/turf_decal/tile/yellow{
@@ -1648,13 +1648,13 @@
 	},
 /area/hilbertshotel)
 "ZL" = (
-/obj/effect/turf_decal/stripes/white/line{
+/obj/effect/turf_decal/stripes/white{
 	dir = 9
 	},
 /obj/machinery/vr_sleeper{
 	dir = 8
 	},
-/turf/open/floor/iron/terracotta/small,
+/turf/open/floor/plasteel/terracotta/small,
 /area/hilbertshotel)
 
 (1,1,1) = {"

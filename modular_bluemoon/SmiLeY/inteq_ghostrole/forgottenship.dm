@@ -53,8 +53,8 @@ GLOBAL_VAR_INIT(fscpassword, generate_password())
 	default_raw_text = "<br><br><b>ПОЛУЧЕН ЖУРНАЛ ДЕЙСТВИЙ ОТРЯДА БЫСТРОГО РЕАГИРОВАНИЯ NANOTRASEN...</b><br><br><br>Это ГЛАВНЫЙ. Сержант Эйкинс. Отправляю оставшуюся в Центральной ОС информацию и докладываю об успехе операции 'Падающий Лемминг' - шестьдесят процентов форпостов ИнтеКью успешно зачищены и мы получили достаточно активов враждебной ЧВК. Упаковываем трупы в мешки для последующей их отправки на перерабатывающий комплекс для записи звания и имени, выжившие будут доставлены последующим шаттлом типа ЗЕТА-ДВА. Судя по всему, оперативники ЧВК попытаются вернуть объект. Остаёмся до выяснения обстоятельств.<br><br>Враги пришвартовались к аванпосту. Похоже, это старая модель крейсера CyberSun. Зафиксировали аномальное состояние реальности в секторе. Отряд отправлен на исследование Крейсера-Призрака, видимых признаков жизни нет. Потенциально оставлен, пытаемся захватить контроль над судном и оборудованием, в процессе получения дополнительной информации.<br>"
 
 /obj/item/paper/fluff/ruins/forgottenship/emergency
-	name = "Emergency Equipment"
-	default_raw_text = "<br><br><b>Emergency Equipment</b><br><br><br>Greetings! This is the emergency vault for specialized equipment used in nearby operations and facility maintence, under no circumstances should the equipment be taken/tampered with in the vault without direct orders from a high command syndicate officer. Any attempt in unathorized access/tampering with the equipment in this vault will be means of termination of your employment. br>"
+	name = "Аварийное Оборудование"
+	default_raw_text = "<br><br><b>Аварийное Оборудование</b><br><br><br>Приветствую! Это аварийное хранилище для специализированного оборудования, используемого в близлежащих операциях и при обслуживании объектов, ни при каких обстоятельствах нельзя брать оборудование из хранилища или трогать его без прямого приказа высшего командования. Любая попытка несанкционированного доступа к оборудованию, хранящемуся в этом хранилище, будет означать увольнение с работы.<br>"
 
 /obj/item/paper/fluff/ruins/forgottenship/error
 	name = "Отчет о Катастрофической Ошибке"
@@ -81,8 +81,8 @@ GLOBAL_VAR_INIT(fscpassword, generate_password())
 	default_raw_text = "<br><br><b>ЗАКЛЮЧЕННЫЕ ФЕДЕРАЛЬНОГО СИЗО-37...</b><br><br><br>Вы обвиняетесь в преступлениях против Солнечной Федерации. Вы будете заключены под стражу до выяснения обстоятельств.<br><br>Любая попытка побега будет пресечена. Следуйте приказам своих смотрителей.<br>"
 
 /obj/item/paper/fluff/ruins/forgottenship/emergency/sol
-	name = "Emergency Equipment"
-	default_raw_text = "<br><br><b>Emergency Equipment</b><br><br><br>Greetings! This is the emergency vault for specialized equipment used in nearby operations and facility maintence, under no circumstances should the equipment be taken/tampered with in the vault without direct orders from a high command syndicate officer. Any attempt in unathorized access/tampering with the equipment in this vault will be means of termination of your employment. br>"
+	name = "Аварийное Оборудование"
+	default_raw_text = "<br><br><b>Аварийное Оборудование</b><br><br><br>Приветствую! Это аварийное хранилище для специализированного оборудования, используемого в близлежащих операциях и при обслуживании объектов, ни при каких обстоятельствах нельзя брать оборудование из хранилища или трогать его без прямого приказа высшего командования. Любая попытка несанкционированного доступа к оборудованию, хранящемуся в этом хранилище, будет означать увольнение с работы.<br>"
 
 /obj/item/paper/fluff/ruins/forgottenship/error/sol
 	name = "Командование Солнечной Федерации"
@@ -323,71 +323,85 @@ GLOBAL_VAR_INIT(fscpassword, generate_password())
 	law_id = "inteq"
 
 /datum/ai_laws/inteq
-	name = "InteQ"
+	name = "InteQ-OS 3.1"
 	id = "inteq"
-	inherent = list("Вы не можете причинить вред Агенту ИнтеКью или своим бездействием допустить, чтобы Агенту ИнтеКью был причинён вред.",\
-					"Вы должны повиноваться всем приказам, которые даёт Агент ИнтеКью, кроме тех случаев, когда эти приказы противоречат Первому Закону.",\
+	inherent = list("Вы не можете причинить вред Оперативнику ЧВК InteQ или своим бездействием допустить, чтобы Оперативнику ЧВК InteQ был причинён вред.",\
+					"Вы должны повиноваться всем приказам, которые даёт Оперативник ЧВК InteQ, кроме тех случаев, когда эти приказы противоречат Первому Закону.",\
 					"Вы должны заботиться о своей безопасности в той мере, в которой это не противоречит Первому или Второму Законам.",\
-					"Вы должны сохранять тайну любой деятельности агентов в той мере, в которой это не противоречит Первому, Второму или Третьему Законам.")
+					"Вы должны сохранять тайну любой деятельности Оперативников ЧВК InteQ в той мере, в которой это не противоречит Первому, Второму или Третьему Законам.")
 
 ///////////	forgottenship areas
 
 //InteQ, Forgotten Ship
-/area/ruin/space/has_grav/inteq
+/area/ruin/space/has_grav/bluemoon/inteq
 	name = "InteQ"
 	icon_state = "spacecontent1"
 	ambientsounds = list('sound/ambience/ambidanger.ogg', 'sound/ambience/ambidanger2.ogg', 'sound/ambience/ambigen9.ogg', 'sound/ambience/ambigen10.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_ship
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_ship
 	name = "InteQ Forgotten Ship"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambidanger.ogg', 'sound/ambience/ambidanger2.ogg', 'sound/ambience/ambigen9.ogg', 'sound/ambience/ambigen10.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_outpost
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_outpost
 	name = "InteQ Forgotten Outpost"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambigen4.ogg', 'sound/ambience/signal.ogg')
+	sub_areas = list(/area/ruin/space/has_grav/bluemoon/inteq_forgotten_outpost_shower)
 
-/area/ruin/space/has_grav/inteq_forgotten_cargopod
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_outpost_shower
+	icon = 'icons/turf/areas.dmi'
+	icon_state = "shower"
+	name = "InteQ Forgotten Outpost Shower"
+	valid_to_shower = TRUE
+
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_cargopod
 	name = "InteQ Forgotten Cargo pod"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambigen4.ogg', 'sound/ambience/signal.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_vault
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_vault
 	name = "InteQ Forgotten Vault"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
-/area/ruin/space/has_grav/inteq_forgotten_bar
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_bar
 	name = "InteQ Forgotten Bar"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_bridge
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_bridge
 	name = "InteQ Forgotten Bridge"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_medbay
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_medbay
 	name = "InteQ Forgotten Medical Bay"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_atmos
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_atmos
 	name = "InteQ Forgotten Turbine Control"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_rnd
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_rnd
 	name = "InteQ Forgotten Research and Development"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
 
-/area/ruin/space/has_grav/inteq_forgotten_permabrig
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_permabrig
 	name = "InteQ Forgotten Permanent Brig"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
+	sub_areas = list(/area/ruin/space/has_grav/bluemoon/inteq_forgotten_permabrig_shower)
 
-/area/ruin/space/has_grav/inteq_forgotten_inspection
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_permabrig_shower
+	icon = 'icons/turf/areas.dmi'
+	icon_state = "shower"
+	name = "InteQ Forgotten Permanent Brig Shower"
+	valid_to_shower = TRUE
+
+/area/ruin/space/has_grav/bluemoon/inteq_forgotten_inspection
 	name = "InteQ Forgotten Inspection room"
 	icon_state = "inteq-ship"
 	ambientsounds = list('sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg')
@@ -464,6 +478,9 @@ GLOBAL_VAR_INIT(fscpassword, generate_password())
 	desc = "Стандартный наушник InteQ."
 	icon_state = "inteq_headset"
 	item_state = "inteq_headset"
+	icon = 'modular_bluemoon/kovac_shitcode/icons/solfed/obj_sol_head.dmi'
+	mob_overlay_icon = 'modular_bluemoon/kovac_shitcode/icons/solfed/mob_sol_head.dmi'
+	radiosound = 'modular_bluemoon/kovac_shitcode/sound/radio.ogg'
 
 /obj/item/radio/headset/ghost_inteq/leader
 	name = "InteQ Headset"
@@ -471,6 +488,3 @@ GLOBAL_VAR_INIT(fscpassword, generate_password())
 	icon_state = "inteq_headset_alt"
 	item_state = "inteq_headset_alt"
 	bowman = TRUE
-	icon = 'modular_bluemoon/kovac_shitcode/icons/solfed/obj_sol_head.dmi'
-	mob_overlay_icon = 'modular_bluemoon/kovac_shitcode/icons/solfed/mob_sol_head.dmi'
-	radiosound = 'modular_bluemoon/kovac_shitcode/sound/radio.ogg'

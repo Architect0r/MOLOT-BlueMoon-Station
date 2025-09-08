@@ -266,7 +266,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 "fuzzy" = FALSE,
 "color_scheme" = OLD_CHARACTER_COLORING,
 "neckfire" = FALSE,
-"neckfire_color" = "ffffff"
+"neckfire_color" = "ffffff",
+"puddle_slime_fea" = FALSE
 )
 
 	var/list/custom_emote_panel = list() //user custom emote panel
@@ -283,7 +284,8 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	var/bark_pitch = 1
 	var/bark_variance = 0.2
 	COOLDOWN_DECLARE(bark_previewing)
-	COOLDOWN_DECLARE(deathsound_preview) // BLUEMOON ADD - пользовательский эмоут смерти
+	COOLDOWN_DECLARE(deathsound_preview)	// BLUEMOON ADD - пользовательский эмоут смерти
+	COOLDOWN_DECLARE(laugh_preview)			// BLUEMOON ADD - выбор своего смеха
 
 	/// Security record note section
 	var/security_records
@@ -511,11 +513,14 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			dat += "<HR>"
 
 			dat += "<center>"
-			var/savefile/client_file = new(user.client.Import())
+			var/file = user.client.Import()
+			var/savefile/client_file
 			var/savefile_name
-			if(istype(client_file, /savefile))
-				if(!client_file["deleted"] || savefile_needs_update(client_file) != -2)
-					client_file["real_name"] >> savefile_name
+			if(file)
+				client_file = new(file)
+				if(istype(client_file, /savefile))
+					if(!client_file["deleted"] || savefile_needs_update(client_file) != -2)
+						client_file["real_name"] >> savefile_name
 			dat += "Local storage: [savefile_name ? savefile_name : "Empty"]"
 			dat += "<br />"
 			dat += "<a href='?_src_=prefs;preference=export_slot'>Export current slot</a>"
@@ -765,22 +770,38 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						dat += "[TextPreview(medical_records)]..."
 
 					// BLUEMOON ADD
-					dat += "<h2>Headshot 1 Image</h2>"
+					dat += "<h2>Headshots</h2>"
+
 					dat += "<a href='?_src_=prefs;preference=headshot'><b>Set Headshot 1 Image</b></a><br>"
 					if(features["headshot_link"])
 						dat += "<img src='[features["headshot_link"]]' style='border: 1px solid black' width='140px' height='140px'>"
 					dat += "<br><br>"
 
-					dat += "<h2>Headshot 2 Image</h2>"
 					dat += "<a href='?_src_=prefs;preference=headshot1'><b>Set Headshot 2 Image</b></a><br>"
 					if(features["headshot_link1"])
 						dat += "<img src='[features["headshot_link1"]]' style='border: 1px solid black' width='140px' height='140px'>"
 					dat += "<br><br>"
 
-					dat += "<h2>Headshot 3 Image</h2>"
 					dat += "<a href='?_src_=prefs;preference=headshot2'><b>Set Headshot 3 Image</b></a><br>"
 					if(features["headshot_link2"])
 						dat += "<img src='[features["headshot_link2"]]' style='border: 1px solid black' width='140px' height='140px'>"
+					//dat += "<br><br>"
+
+					dat += "<h2>Naked (NSFW) Headshots</h2>"
+
+					dat += "<a href='?_src_=prefs;preference=headshot_naked'><b>Set Headshot 1 Image</b></a><br>"
+					if(features["headshot_naked_link"])
+						dat += "<img src='[features["headshot_naked_link"]]' style='border: 1px solid black' width='140px' height='140px'>"
+					dat += "<br><br>"
+
+					dat += "<a href='?_src_=prefs;preference=headshot_naked1'><b>Set Headshot 2 Image</b></a><br>"
+					if(features["headshot_naked_link1"])
+						dat += "<img src='[features["headshot_naked_link1"]]' style='border: 1px solid black' width='140px' height='140px'>"
+					dat += "<br><br>"
+
+					dat += "<a href='?_src_=prefs;preference=headshot_naked2'><b>Set Headshot 3 Image</b></a><br>"
+					if(features["headshot_naked_link2"])
+						dat += "<img src='[features["headshot_naked_link2"]]' style='border: 1px solid black' width='140px' height='140px'>"
 					dat += "<br><br>"
 					// BLUEMOON ADD END
 					dat += "</td></tr></table>"
@@ -833,8 +854,10 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						dat += "<span style='border: 1px solid #161616; background-color: #[features["mcolor3"]];'><font color='[color_hex2num(features["mcolor3"]) < 200 ? "FFFFFF" : "000000"]'>#[features["mcolor3"]]</font></span> <a href='?_src_=prefs;preference=mutant_color3;task=input'>Change</a><BR>"
 						mutant_colors = TRUE
 
-						dat += "<b>Sprite Size:</b> <a href='?_src_=prefs;preference=body_size;task=input'>[features["body_size"]*100]%</a><br>"
+						dat += "<b>Body Size:</b> <a href='?_src_=prefs;preference=body_size;task=input'>[features["body_size"]*100]%</a><br>"
+						dat += "<b>Normalized Size:</b> <a href='?_src_=prefs;preference=normalized_size;task=input'>[features["normalized_size"]*100]%</a><br>"
 						dat += "<b>Scaled Appearance:</b> <a href='?_src_=prefs;preference=toggle_fuzzy;task=input'>[fuzzy ? "Fuzzy" : "Sharp"]</a><br>"
+						dat += "<b>Weight:</b> <a href='?_src_=prefs;preference=body_weight;task=input'>[all_quirks.Find("Пожиратель") ? NAME_WEIGHT_NORMAL : body_weight]</a><br>" //BLUEMOON ADD вес персонажей
 
 					if(!(NOEYES in pref_species.species_traits))
 						dat += "<h3>Eye Type</h3>"
@@ -954,6 +977,14 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						dat += "<h3>Body sprite</h3>"
 						dat += "<a style='display:block;width:100px' href='?_src_=prefs;preference=bodysprite;task=input'>[chosen_limb_id]</a>"
 
+					//BLUEMOON edit start
+					if(pref_species.type == /datum/species/jelly/roundstartslime)
+						dat += APPEARANCE_CATEGORY_COLUMN
+						dat += "<h3>be a slime?</h3>"
+						dat += "<a style='display:block;width:100px' href='?_src_=prefs;preference=puddle_slime_task;task=input'>[features["puddle_slime_fea"] ? "Yes" : "No"]</a>"
+						dat += "</td>"
+					//BLUEMOON edit end
+
 					if(mutant_category)
 						dat += "</td>"
 						mutant_category = 0
@@ -1015,7 +1046,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 							var/tauric_shape = FALSE
 							if(features["cock_taur"])
 								var/datum/sprite_accessory/penis/P = GLOB.cock_shapes_list[features["cock_shape"]]
-								if(P.taur_icon && parent.can_have_part("taur"))
+								if(P?.taur_icon && parent.can_have_part("taur"))
 									var/datum/sprite_accessory/taur/T = GLOB.taur_list[features["taur"]]
 									if(T.taur_mode & P.accepted_taurs)
 										tauric_shape = TRUE
@@ -1156,7 +1187,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 							dat += "<b>Toys and Egg Stuffing:</b><a style='display:block;width:50px' href='?_src_=prefs;preference=belly_stuffing'>[features["belly_stuffing"] == TRUE ? "Yes" : "No"]</a>"
 							dat += "<b>Belly Always Accessible:</b><a style='display:block;width:100px' href='?_src_=prefs;preference=belly_accessible'>[features["belly_accessible"] ? "Yes" : "No"]</a>"
 						dat += "</td>"
-						if(all_quirks.Find("Dullahan"))
+						if(all_quirks.Find("Дуллахан"))
 							dat += APPEARANCE_CATEGORY_COLUMN
 							dat += "<h3>Neckfire</h3>"
 							dat += "<a style='display:block;width:50px' href='?_src_=prefs;preference=has_neckfire;task=input'>[features["neckfire"] ? "Yes" : "No"]</a>"
@@ -1299,10 +1330,16 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					dat += "<a style='display:block;width:100px' href='?_src_=prefs;preference=speech_verb;task=input'>[custom_speech_verb]</a><BR>"
 					dat += "<b>Custom Tongue:</b><BR>"
 					dat += "<a style='display:block;width:100px' href='?_src_=prefs;preference=tongue;task=input'>[custom_tongue]</a><BR>"
+					// BLUEMOON ADD выбор смеха
+					dat += "<b>Laugh:</b><BR>"
+					dat += "<a style='display:block;width:100px' href='?_src_=prefs;preference=laugh;task=input'>[custom_laugh]</a>"
+					if(custom_laugh != "Default")
+						dat += "<a href='?_src_=prefs;preference=laughpreview;task=input''>Preview Laugh</a><BR>"
+					// BLUEMOON ADD END
 					//SANDSTORM EDIT - additional language + runechat color
-					dat += "<b>Additional Language</b><br>"
-					dat += "<a href='?_src_=prefs;preference=language;task=menu'>[english_list(language, "None")]</a></center><br>"
-					dat += "<b>Custom runechat color:</b> <a href='?_src_=prefs;preference=enable_personal_chat_color'>[enable_personal_chat_color ? "Enabled" : "Disabled"]</a><br> [enable_personal_chat_color ? "<span style='border: 1px solid #161616; background-color: [personal_chat_color];'><font color='[color_hex2num(personal_chat_color) < 200 ? "FFFFFF" : "000000"]'>[personal_chat_color]</font></span> <a href='?_src_=prefs;preference=personal_chat_color;task=input'>Change</a>" : ""]<br>"
+					dat += "<BR><b>Additional Language</b><br>"
+					dat += "<a href='?_src_=prefs;preference=language;task=menu'>[english_list(language, "None")]</a></center><BR>"
+					dat += "<BR><b>Custom runechat color:</b> <a href='?_src_=prefs;preference=enable_personal_chat_color'>[enable_personal_chat_color ? "Enabled" : "Disabled"]</a><br> [enable_personal_chat_color ? "<span style='border: 1px solid #161616; background-color: [personal_chat_color];'><font color='[color_hex2num(personal_chat_color) < 200 ? "FFFFFF" : "000000"]'>[personal_chat_color]</font></span> <a href='?_src_=prefs;preference=personal_chat_color;task=input'>Change</a>" : ""]<br>"
 					dat += "</td>"
 					//END OF SANDSTORM EDIT
 					dat += "<td width='340px' height='300px' valign='top'>"
@@ -1561,11 +1598,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					if(user.client)
 						if(unlock_content)
 							dat += "<b>BYOND Membership Publicity:</b> <a href='?_src_=prefs;preference=publicity'>[(toggles & MEMBER_PUBLIC) ? "Public" : "Hidden"]</a><br>"
-						if(unlock_content || check_rights_for(user.client, R_ADMIN))
+						if(unlock_content || is_admin(user.client))
 							dat += "<b>OOC Color:</b> <span style='border: 1px solid #161616; background-color: [ooccolor ? ooccolor : GLOB.normal_ooc_colour];'><font color='[color_hex2num(ooccolor ? ooccolor : GLOB.normal_ooc_colour) < 200 ? "FFFFFF" : "000000"]'>[ooccolor ? ooccolor : GLOB.normal_ooc_colour]</font></span> <a href='?_src_=prefs;preference=ooccolor;task=input'>Change</a><br>"
 							dat += "<b>Antag OOC Color:</b> <span style='border: 1px solid #161616; background-color: [aooccolor ? aooccolor : GLOB.normal_aooc_colour];'><font color='[color_hex2num(aooccolor ? aooccolor : GLOB.normal_aooc_colour) < 200 ? "FFFFFF" : "000000"]'>[aooccolor ? aooccolor : GLOB.normal_aooc_colour]</font></span> <a href='?_src_=prefs;preference=aooccolor;task=input'>Change</a><br>"
 
-					if(user.client.holder)
+					if(is_admin(user.client))
 						dat += "<h2>Admin Settings</h2>"
 						dat += "<b>Adminhelp Sounds:</b> <a href='?_src_=prefs;preference=hear_adminhelps'>[(toggles & SOUND_ADMINHELP)?"Enabled":"Disabled"]</a><br>"
 						dat += "<b>Announce Login:</b> <a href='?_src_=prefs;preference=announce_login'>[(toggles & ANNOUNCE_LOGIN)?"Enabled":"Disabled"]</a><br>"
@@ -2092,6 +2129,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 		// BLUEMOON ADD START - настройки для отдельных квирков
 		dat += "Настройки для отдельных квирков. Если нужный квирк не будет выставлен, то они работать не будут.<br>"
 		dat += "<a href='?_src_=prefs;preference=traits_setup;task=change_shriek_option'>([BLUEMOON_TRAIT_NAME_SHRIEK]) Тип Крика: [shriek_type]</a>"
+		dat += "<a href='?_src_=prefs;preference=traits_setup;task=lewd_summon_nickname'>([TRAIT_LEWD_SUMMON]) Прозвище для призываемого[summon_nickname ? ": ": ""][summon_nickname]</a>"
 		dat += "<hr>"
 		// BLUEMOON ADD END
 		dat += "<div align='center'>Left-click to add or remove quirks. You need negative quirks to have positive ones.<br>\
@@ -2158,8 +2196,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	for(var/modification in modified_limbs)
 		if(modified_limbs[modification][1] == LOADOUT_LIMB_PROSTHETIC)
 			bal += 1 //max 1 point regardless of how many prosthetics
+	bal -= mob_size_name_to_quirk_cost(body_weight) //BLUEMOON ADD вес влияет на доступные квирки
 	if(bal < 0)
+		to_chat(user, "<span class='danger'>Something goes wrong and quirk balance goes to [bal], quirks and character weight reseted.</span>") //BLUEMOON ADD
 		all_quirks = list()
+		body_weight = NAME_WEIGHT_NORMAL //BLUEMOON ADD сброс всего сбрасывает и вес
 		return FALSE
 	return bal
 
@@ -2288,6 +2329,18 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 					if(new_shriek_type)
 						shriek_type = new_shriek_type
 						SetQuirks(user)
+			if("lewd_summon_nickname")
+				var/client/C = usr.client
+				if(C)
+					var/new_summon_nickname = input(user, "Задайте прозвище во время призыва вашего персонажа:", "Character Preference")  as text|null
+					if(new_summon_nickname)
+						new_summon_nickname = reject_bad_name(new_summon_nickname, allow_numbers = TRUE)
+						if(new_summon_nickname)
+							summon_nickname = new_summon_nickname
+							SetQuirks(user)
+						else
+							to_chat(user, "<font color='red'>Invalid name. Your name should be at least 2 and at most [MAX_NAME_LEN] characters long. It may only contain the characters A-Z, a-z, А-Я, а-я, -, ' and .</font>")
+
 	// BLUEMOON ADD END
 		return TRUE
 
@@ -2435,7 +2488,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						features["silicon_flavor_text"] = strip_html_simple(msg, MAX_FLAVOR_LEN, TRUE) //Skyrat edit, uses strip_html_simple()
 
 				if("custom_species_lore")
-					var/msg = input(usr, "Задайте особую предысторию расы своего персонажа!", "Предыстория Расы Bашего Персонажа", features["silicon_flavor_text"]) as message|null //Skyrat edit, removed stripped_multiline_input()
+					var/msg = input(usr, "Задайте особую предысторию расы своего персонажа!", "Предыстория Расы Bашего Персонажа", features["custom_species_lore"]) as message|null //Skyrat edit, removed stripped_multiline_input()
 					if(!isnull(msg))
 						features["custom_species_lore"] = strip_html_simple(msg, MAX_FLAVOR_LEN, TRUE)
 				// BLUEMOON ADD START - пользовательский эмоут смерти
@@ -2886,6 +2939,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 				if("mismatched_markings")
 					show_mismatched_markings = !show_mismatched_markings
+
+				if("puddle_slime_task")
+					features["puddle_slime_fea"] = !features["puddle_slime_fea"]
 
 				if("has_neckfire")
 					features["neckfire"] = !features["neckfire"]
@@ -3686,6 +3742,46 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 				if("toggle_fuzzy")
 					fuzzy = !fuzzy
 
+				//BLUEMOON ADD выбор веса персонажа, замена квирков на вес
+				if("body_weight")
+					if(all_quirks.Find("Пожиратель"))
+						tgui_alert(user, "Квирк Пожиратель несовместим с любым весом кроме стандартного", "Ugh, you cant", list("Ok", "Understood"))
+					else
+						var/new_body_weight = tgui_input_list(user, "Выберите вес персонажа!", "Character Preference", GLOB.mob_sizes)
+						if(new_body_weight)
+							if(tgui_alert(user, "[GLOB.mob_sizes[new_body_weight]]", "Confirm your choice", list("Good", "Nevermind")) == "Good")
+								var/quirk_balance_check = GetQuirkBalance() - mob_size_name_to_quirk_cost(new_body_weight) + mob_size_name_to_quirk_cost(body_weight)
+								if(quirk_balance_check >= 0)
+									body_weight = new_body_weight
+								else
+									tgui_alert(user, "для взятия данного веса нужно ещё [abs(quirk_balance_check)] очков квирков", "Ugh, you cant", list("Ok", "Understood"))
+
+				// Нормализируемый размер (размер при нормализации)
+				if("normalized_size")
+					var/max_size = 	min(CONFIG_GET(number/body_size_max), 1.2)	// Магическая цифра (предел MOB_SIZE_HUMAN по proc/adjust_mobsize)
+					var/min_size =	max(CONFIG_GET(number/body_size_min), 0.81)	// Магическая цифра (предел MOB_SIZE_HUMAN по proc/adjust_mobsize)
+					var/new_normialzed_size = input(user, "Choose your desired normalized size: ([min_size * 100]-[max_size * 100]%)\nUsed with normalizer stuff", "Character Preference", features["normalized_size"]*100) as num|null
+					if(new_normialzed_size)
+						features["normalized_size"] = clamp(new_normialzed_size * 0.01, min_size, max_size)
+
+				// Выбор смеха
+				if("laugh")
+					var/select_laugh = tgui_input_list(user, "Choose your desired laugh", "Character Preference", GLOB.mob_laughs)
+					if(select_laugh)
+						custom_laugh = select_laugh
+
+				if("laughpreview")
+					if(SSticker.current_state == GAME_STATE_STARTUP) //Timers don't tick at all during game startup, so let's just give an error message
+						to_chat(user, "<span class='warning'>Laugh sound previews can't play during initialization!</span>")
+						return
+					if(!COOLDOWN_FINISHED(src, laugh_preview))
+						return
+					if(!user || custom_laugh == "Default")
+						return
+					COOLDOWN_START(src, laugh_preview, (3 SECONDS))
+					user.playsound_local(user, pick(get_laugh_sound(custom_laugh, FALSE)), 50)
+				//BLUEMOON ADD END
+
 				if("tongue")
 					var/selected_custom_tongue = tgui_input_list(user, "Choose your desired tongue (none means your species tongue)", "Character Preference", GLOB.roundstart_tongues)
 					if(selected_custom_tongue)
@@ -4002,6 +4098,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 						if("No")
 							erppref = "Yes"
 				if("noncon_pref")
+					var/nonconpref_old = nonconpref
 					switch(nonconpref)
 						if("Yes")
 							nonconpref = "Ask"
@@ -4009,6 +4106,11 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 							nonconpref = "No"
 						if("No")
 							nonconpref = "Yes"
+					if(isliving(user?.mind?.current))
+						var/mob/living/C = user.mind.current
+						message_admins("[user.ckey]/[C.real_name] [ADMIN_FLW(C)][C.stat == DEAD ? " (DEAD)" : ""] меняет Non-Con c [nonconpref_old] на [nonconpref].")
+						log_admin("[user.ckey]/[C.real_name][C.stat == DEAD ? " (DEAD)" : ""] меняет Non-Con c [nonconpref_old] на [nonconpref].")
+						C.balloon_alert_to_viewers("Меняет Non-Con c [nonconpref_old] на [nonconpref].")
 				if("vore_pref")
 					switch(vorepref)
 						if("Yes")
@@ -4701,6 +4803,9 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 			else if(firstspace == name_length)
 				real_name += "[pick(GLOB.last_names)]"
 
+	character.mob_weight = mob_size_name_to_num(body_weight) //BLUEMOON ADD записываем вес персонажа как цифру
+	character.laugh_override = custom_laugh != "Default" ? custom_laugh : null //BLUEMOON ADD записываем вес персонажа как цифру
+
 	//reset size if applicable
 	if(character.dna.features["body_size"])
 		var/initial_old_size = character.dna.features["body_size"]
@@ -4716,6 +4821,7 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 
 	character.fuzzy = fuzzy
 
+	character.update_weight(character.mob_weight)
 	character.left_eye_color = left_eye_color
 	character.right_eye_color = right_eye_color
 	var/obj/item/organ/eyes/organ_eyes = character.getorgan(/obj/item/organ/eyes)
@@ -4767,12 +4873,21 @@ GLOBAL_LIST_EMPTY(preferences_datums)
 	character.dna.custom_species_lore = features["custom_species_lore"]
 	character.dna.flavor_text = features["flavor_text"]
 	character.dna.naked_flavor_text = features["naked_flavor_text"]
+	character.dna.headshot_links.Cut()
 	if (features["headshot_link"])
 		character.dna.headshot_links.Add(features["headshot_link"])
 	if (features["headshot_link1"])
 		character.dna.headshot_links.Add(features["headshot_link1"])
 	if (features["headshot_link2"])
 		character.dna.headshot_links.Add(features["headshot_link2"])
+	// BLUEMOON ADD START
+	if (features["headshot_naked_link"])
+		character.dna.headshot_naked_links.Add(features["headshot_naked_link"])
+	if (features["headshot_naked_link1"])
+		character.dna.headshot_naked_links.Add(features["headshot_naked_link1"])
+	if (features["headshot_naked_link2"])
+		character.dna.headshot_naked_links.Add(features["headshot_naked_link2"])
+	// BLUEMOON ADD END
 	character.dna.ooc_notes = features["ooc_notes"]
 	if(custom_blood_color)
 		character.dna.species.exotic_blood_color = blood_color //а раньше эта строчка была немного выше и всё ломалось, думайте, когда делаете врезки

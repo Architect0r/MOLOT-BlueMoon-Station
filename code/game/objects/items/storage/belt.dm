@@ -103,6 +103,17 @@
 	new /obj/item/multitool(src)
 	new /obj/item/inducer/syndicate(src)
 
+/obj/item/storage/belt/utility/inteq //Ghost InteQ Engineer
+
+/obj/item/storage/belt/utility/inteq/PopulateContents()
+	new /obj/item/screwdriver/nuke/inteq(src)
+	new /obj/item/wrench/combat/inteq(src)
+	new /obj/item/weldingtool/largetank(src)
+	new /obj/item/crowbar/brown(src)
+	new /obj/item/wirecutters/brown(src)
+	new /obj/item/multitool(src)
+	new /obj/item/inducer/inteq(src)
+
 /obj/item/storage/belt/utility/chief/full/PopulateContents()
 	new /obj/item/screwdriver/power(src)
 	new /obj/item/crowbar/power(src)
@@ -670,6 +681,7 @@
 	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_items = 25
+	STR.max_combined_w_class = 25
 	STR.display_numerical_stacking = TRUE
 	STR.can_hold = typecacheof(list(
 		/obj/item/ammo_casing
@@ -686,6 +698,7 @@
 	. = ..()
 	var/datum/component/storage/STR = GetComponent(/datum/component/storage)
 	STR.max_items = 32
+	STR.max_combined_w_class = 32
 	STR.display_numerical_stacking = TRUE
 	STR.can_hold = typecacheof(list(
 		/obj/item/ammo_casing
@@ -903,10 +916,10 @@
 
 /obj/item/storage/belt/sabre/civil
 	name = "Civil Sabre Sheath"
-	fitting_swords = list(/obj/item/melee/sabre, /obj/item/melee/sabre/civil, /obj/item/melee/baton/stunsword)
-	starting_sword = /obj/item/melee/sabre/civil
+	fitting_swords = list(/obj/item/melee/rapier, /obj/item/melee/rapier/civil, /obj/item/melee/baton/stunsword)
+	starting_sword = /obj/item/melee/rapier/civil
 
-/obj/item/melee/sabre/civil
+/obj/item/melee/rapier/civil
 	name = "Off-duty Officer's Sabre"
 	desc = "Изящное оружие."
 	force = 8

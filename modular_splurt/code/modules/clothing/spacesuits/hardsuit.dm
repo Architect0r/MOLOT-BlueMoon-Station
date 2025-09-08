@@ -42,7 +42,7 @@
 	flags_inv = HIDEGLOVES|HIDESHOES|HIDEJUMPSUIT|HIDETAUR
 	allowed = list(/obj/item/flashlight, /obj/item/tank/internals, /obj/item/gun/energy/wormhole_projector,
 	/obj/item/hand_tele, /obj/item/aicard)
-	armor = list("melee" = 30, "bullet" = 10, "laser" = 10, "energy" = 5, "bomb" = 80, "bio" = 100, "rad" = 100, "fire" = 60, "acid" = 60, "wound" = 30)
+	armor = list("melee" = 35, "bullet" = 25, "laser" = 25, "energy" = 5, "bomb" = 100, "bio" = 100, "rad" = 100, "fire" = 80, "acid" = 100, "wound" = 30) // это костюм защиты от агресивной среды - без защиты от агресивной среды.
 	mutantrace_variation = STYLE_DIGITIGRADE|STYLE_SNEK_TAURIC //bluemoon add
 	helmettype = /obj/item/clothing/head/helmet/space/hardsuit/rd/hev
 	var/firstpickup = TRUE
@@ -50,6 +50,10 @@
 
 /obj/item/clothing/suit/space/hardsuit/rd/hev/no_sound
 	pickupsound = FALSE
+
+/obj/item/clothing/suit/space/hardsuit/rd/hev/Initialize(mapload)
+	. = ..()
+	allowed = GLOB.security_hardsuit_allowed
 
 /obj/item/clothing/suit/space/hardsuit/rd/hev/equipped(mob/user, slot)
 	. = ..()
@@ -198,6 +202,9 @@
 	strip_delay = 130
 	max_heat_protection_temperature = FIRE_IMMUNITY_MAX_TEMP_PROTECT
 
+/obj/item/clothing/head/helmet/space/hardsuit/teslapahelmet/update_icon_state()
+	return
+
 /obj/item/clothing/suit/space/hardsuit/advancedpa
 	name = "Advanced Power Armor"
 	desc = "An advanced power armor. You're sure this is near to impossible to penetrate in close quarters."
@@ -232,6 +239,9 @@
 	armor = list("melee" = 95, "bullet" = 90, "laser" = 70, "energy" = 80, "bomb" = 70, "bio" = 100, "rad" = 40, "fire" = 100, "acid" = 100, "wound" = 50)
 	strip_delay = 300
 	max_heat_protection_temperature = FIRE_IMMUNITY_MAX_TEMP_PROTECT
+
+/obj/item/clothing/head/helmet/space/hardsuit/advancedpahelmet/update_icon_state()
+	return
 
 /obj/item/clothing/head/helmet/space/hardsuit/corpus
 	name = "Corpus Ranger Helmet"

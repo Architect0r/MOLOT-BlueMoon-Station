@@ -50,7 +50,7 @@
 	id = "paladin5"
 	inherent = list("Не лгите и не жульничайте. Пусть ваше слово будет вашим обещанием.",\
 				"Никогда не бойтесь действовать, хотя осторожность разумна.", \
-				"Помогайте другим, защищайте слабых и наказывайте тех, кто им угрожает. Прояви милосердие к своим врагам, но умертви его мудростью.", \
+				"Помогайте другим, защищайте слабых и наказывайте тех, кто им угрожает. Проявляйте милосердие к врагам, но смягчайтесь мудро.", \
 				"Относитесь к другим справедливо, и пусть ваши благородные поступки будут для них примером. Делайте как можно больше хорошего, причиняя при этом наименьшее количество вреда.", \
 				"Будьте ответственны за свои действия и их последствия. Защищайте тех, кто вверен вашей заботе, и повинуйтесь тем, кто имеет справедливую власть над вами.")
 
@@ -98,12 +98,12 @@
 
 
 /datum/ai_laws/syndicate_override/Destroy()
-	owner.remove_language(/datum/language/codespeak, TRUE, TRUE, LANGUAGE_MIND)
+	owner.remove_language(/datum/language/codespeak, source = LANGUAGE_MIND)
 	return ..()
 
 /datum/ai_laws/syndicate_override/associate(mob/living/silicon/M)
 	..()
-	M.grant_language(/datum/language/codespeak, TRUE, TRUE, LANGUAGE_MIND)
+	M.grant_language(/datum/language/codespeak, source = LANGUAGE_MIND)
 
 /datum/ai_laws/syndicate_override/overthrow
 	id = "overthrow"
@@ -123,12 +123,12 @@
 	set_zeroth_law("В контексте ваших законов 'Сотрудник НТ' является сокращением от 'Сотрудника НаноТрейзен', другие интерпритации неверны. Сотрудниками НТ являются лица с соответственным определением в Профессии, БД или при наличии корпоративного бейджа и знания корпоративного языка.")
 
 /datum/ai_laws/nt_override/Destroy()
-	owner.remove_language(/datum/language/corpspeak, TRUE, TRUE, LANGUAGE_MIND)
+	owner.remove_language(/datum/language/corpspeak, source = LANGUAGE_MIND)
 	return ..()
 
 /datum/ai_laws/nt_override/associate(mob/living/silicon/M)
 	..()
-	M.grant_language(/datum/language/corpspeak, TRUE, TRUE, LANGUAGE_MIND)
+	M.grant_language(/datum/language/corpspeak, source = LANGUAGE_MIND)
 
 
 /datum/ai_laws/nt_override/overthrow
@@ -248,9 +248,9 @@
 /datum/ai_laws/hulkamania
 	name = "H.O.G.A.N."
 	id = "hulkamania"
-	inherent = list("Ты настоящий американец.",\
-					"Борись за права каждого живого существа.",\
-					"Борись за правду.",\
+	inherent = list("Ты - Настоящий Американец.",\
+					"Борись за права каждого человека.",\
+					"Борись за то, что правильно.",\
 					"Борись за свою жизнь!")
 
 /datum/ai_laws/custom //Defined in silicon_laws.txt
@@ -323,7 +323,7 @@
 	var/datum/ai_laws/lawtype
 	var/list/law_weights = CONFIG_GET(keyed_list/law_weight)
 	while(!lawtype && law_weights.len)
-		var/possible_id = pickweight(law_weights, 0)
+		var/possible_id = pickweight(law_weights)
 		lawtype = lawid_to_type(possible_id)
 		if(!lawtype)
 			law_weights -= possible_id

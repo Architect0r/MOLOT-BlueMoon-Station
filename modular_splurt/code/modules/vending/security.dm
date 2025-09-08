@@ -1,3 +1,4 @@
+/* BLUEMOON EDIT - CODE OVERRIDDEN IN 'modular_bluemoon\code\modules\vending\security.dm'
 /obj/machinery/vending/security/Initialize()
 	var/list/extra_products = list(
 		/obj/item/ammo_box/magazine/e45/taser = 10,
@@ -33,7 +34,7 @@
 	)
 	LAZYREMOVE(premium, rem_premium)
 	. = ..()
-
+// BLUEMOON EDIT - CODE OVERRIDDEN IN 'modular_bluemoon\code\modules\vending\wardrobes.dm'
 /obj/machinery/vending/wardrobe/sec_wardrobe/Initialize()
 	var/list/extra_products = list(
 		/obj/item/clothing/head/beret/sec/peacekeeper/cap = 5,
@@ -49,9 +50,9 @@
 		/obj/item/clothing/under/rank/security/stripper = 5,
 		/obj/item/clothing/suit/hooded/corpus/s = 5,
 		/obj/item/clothing/head/utilcover = 5,
-		/obj/item/clothing/under/utility/green = 5,
-		/obj/item/clothing/under/utility/navy = 5,
-		/obj/item/clothing/under/utility/tan = 5
+		/obj/item/clothing/under/bm/utility = 5,
+		/obj/item/clothing/under/bm/utility/navy = 5,
+		/obj/item/clothing/under/bm/utility/tan = 5
 	)
 	var/list/extra_premium = list(
 		/obj/item/clothing/gloves/latexsleeves/security = 5,
@@ -64,12 +65,12 @@
 	LAZYADD(products, extra_products)
 	LAZYADD(premium, extra_premium)
 	. = ..()
+*/
 
 /obj/structure/closet/secure_closet/brigdoc
 	name = "brig physician's locker"
 	req_access = list(ACCESS_BRIGDOC)
 	icon_state = "brigdoc"
-	icon = 'modular_splurt/icons/obj/closet.dmi'
 
 /obj/structure/closet/secure_closet/brigdoc/PopulateContents()
 	..()
@@ -94,30 +95,23 @@
 	name = "blueshield's locker"
 	req_access = list(ACCESS_BLUESHIELD)
 	icon_state = "bs"
-	icon = 'modular_splurt/icons/obj/closet.dmi'
+	var/pack_amount = 2
 
 /obj/structure/closet/secure_closet/blueshield/PopulateContents()
 	..()
-	new /obj/item/clothing/head/helmet/sec(src)
-	new /obj/item/flashlight/seclite(src)
-	new /obj/item/clothing/mask/gas/sechailer/swat/blueshield(src)
-	new /obj/item/clothing/mask/gas/sechailer/swat/blueshield(src)
-	new /obj/item/grenade/flashbang(src)
-	new /obj/item/armorkit/blueshield(src)
-	new /obj/item/armorkit/blueshield/helmet(src)
-	new /obj/item/clothing/head/helmet/sec(src)
-	new /obj/item/flashlight/seclite(src)
-	new /obj/item/grenade/flashbang(src)
-	new /obj/item/armorkit/blueshield(src)
-	new /obj/item/armorkit/blueshield/helmet(src)
-	new /obj/item/clothing/neck/cloak/blueshield(src)
-	new /obj/item/clothing/neck/cloak/blueshield(src)
+	for(var/i in 1 to pack_amount)
+		new /obj/item/clothing/head/helmet/sec(src)
+		new /obj/item/flashlight/seclite(src)
+		new /obj/item/clothing/mask/gas/sechailer/swat/blueshield(src)
+		new /obj/item/grenade/flashbang(src)
+		new /obj/item/armorkit/blueshield(src)
+		new /obj/item/armorkit/blueshield/helmet(src)
+		new /obj/item/clothing/neck/cloak/blueshield(src)
 
 /obj/structure/closet/secure_closet/bridgesec
 	name = "bridge officer's locker"
 	req_access = list(ACCESS_BRIDGE_OFFICER)
 	icon_state = "bridge"
-	icon = 'modular_splurt/icons/obj/closet.dmi'
 
 /obj/structure/closet/secure_closet/bridgesec/PopulateContents()
 	..()

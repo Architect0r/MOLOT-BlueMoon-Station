@@ -4,15 +4,15 @@
 	anthro_mob_worn_overlay = 'modular_bluemoon/fluffs/icons/mob/clothing/under_digi.dmi'
 
 /obj/item/clothing/under/donator/bm/gorka
-	name = "OMON Turtleneck"
-	desc = "Special Police Detachment uniform. Consists of an UBAC shirt combined with olive camouflage pattern pants. You can see some flags on uniform's shoulders, looks eerily familiar. Probably one of many human states."
+	name = "combat uniform"
+	desc = "A camouflage pattern designed for use in... well, everywhere, really, considering it's origin."
 	icon_state = "omon"
 	item_state = "omon"
 	can_adjust = TRUE
 	unique_reskin = list(
-		"Default" = list("icon_state" = "omon"),
-		"Woodland" = list("icon_state" = "omonwd"),
-		"E2" = list("icon_state" = "omone")
+		"Olive" = list("icon_state" = "omon"),
+		"SAARE" = list("icon_state" = "omonwd"),
+		"Digital" = list("icon_state" = "omone")
 	)
 
 /obj/item/clothing/under/donator/bm/modern_suit
@@ -32,8 +32,8 @@
 	can_adjust = FALSE
 
 /obj/item/clothing/under/donator/bm/multicam
-	name = "Multicam"
-	desc = "A camouflage pattern designed for use in a wide range of environments and conditions which was specifically developed and is produced by SolFed company Crye Precision"
+	name = "multicam combat uniform"
+	desc = "A camouflage pattern designed for use in a wide range of environments and conditions which was specifically developed and is produced by SCG-originated company Crye Precision."
 	icon_state = "multicam"
 	item_state = "multicam"
 	can_adjust = TRUE
@@ -103,10 +103,11 @@
 	can_adjust = FALSE
 
 /obj/item/clothing/under/donator/bm/Frieren_skirt
-    name = "Frieren skirt"
-    desc = "Изысканный эльфийский наряд, что выполнен из нежной ткани и украшен золотыми нитями."
-    icon_state = "Elf_skirt"
-    item_state = "Elf_skirt"
+	name = "Frieren skirt"
+	desc = "Изысканный эльфийский наряд, что выполнен из нежной ткани и украшен золотыми нитями."
+	icon_state = "Elf_skirt"
+	item_state = "Elf_skirt"
+	fitted = FEMALE_UNIFORM_TOP
 
 /obj/item/clothing/under/donator/bm/Prosecutor_suit
     name = "Prosecutor_suit"
@@ -171,3 +172,168 @@
 	icon_state = "laskaskirt"
 	item_state = "laskaskirt"
 	can_adjust = TRUE
+	fitted = FEMALE_UNIFORM_TOP
+
+/obj/item/clothing/underwear/briefs/kladmen_panties
+	name = "Panties"
+	icon_state = "kladmen_panties"
+	item_state = "kladmen_panties"
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/underwear.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/underwear.dmi'
+	anthro_mob_worn_overlay = 'modular_bluemoon/fluffs/icons/mob/clothing/underwear.dmi'
+
+/obj/item/clothing/underwear/shirt/bra/kladmen_bra
+	name = "Bra - A bra"
+	icon_state = "kladmen_bra"
+	item_state = "kladmen_bra"
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/underwear.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/underwear.dmi'
+	anthro_mob_worn_overlay = 'modular_bluemoon/fluffs/icons/mob/clothing/underwear.dmi'
+
+/obj/item/clothing/underwear/shirt/toggle/savannah_sleepwear
+	name = "sleepwear"
+	desc = "A sleepshirt. Fancy?"
+	icon_state = "savannah_sleepwear"
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/underwear.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/underwear.dmi'
+	togglename = "buttons"
+	body_parts_covered = CHEST | ARMS
+
+/obj/item/clothing/under/donator/bm/urban_misteran
+	name = "urban camouflage uniform"
+	desc = "an urban painted military suit, developed the Bibis&Co. Usually associated with CEHU and LonoMith PMC's"
+	icon_state = "urban_misteran"
+	item_state = "urban_misteran"
+	can_adjust = FALSE
+
+/obj/item/clothing/under/donator/bm/archangel_turtleneck
+    name = "Archangel Group turtleneck"
+    desc = "Archangel group turtleneck for special missions. Black and Stylish."
+    mutantrace_variation = STYLE_DIGITIGRADE | STYLE_NO_ANTHRO_ICON
+    icon_state = "arch_group_turtleneck"
+    item_state = "arch_group_turtleneck"
+
+/obj/item/clothing/under/donator/bm/tavern_skirt
+	name = "Tavern skirt"
+	desc = "The dress from the tavern for elves is made of lightweight material that softly fits the figure. This pale green dress highlights the grace and elegance of the Elven people."
+	mutantrace_variation = STYLE_DIGITIGRADE | STYLE_NO_ANTHRO_ICON
+	icon_state = "tavern_skirt"
+	fitted = FEMALE_UNIFORM_TOP
+
+/obj/item/clothing/under/donator/bm/ElegantRedDress
+	name = "Элегантное красное платье"
+	desc = "Элегантное кроваво красное платье для вечеринок, принадлежащее одной адской гончей."
+	mutantrace_variation = STYLE_DIGITIGRADE | STYLE_NO_ANTHRO_ICON
+	icon_state = "ElegantRedDress"
+
+/obj/item/clothing/under/donator/bm/lotos_skirt
+	name = "Lotos skirt"
+	desc = "Black kitten`s black dress"
+	mutantrace_variation = STYLE_DIGITIGRADE | STYLE_NO_ANTHRO_ICON
+	armor = list(MELEE = 0, BULLET = 0, LASER = 0,ENERGY = 0, BOMB = 0, BIO = 0, RAD = 0, FIRE = 50, ACID = 50, WOUND = 0)
+	always_reskinnable = TRUE
+	icon_state = "Lotos"
+	unique_reskin = list(
+		"Casual" = list("icon_state" = "Lotos"),
+		"Lit" = list("icon_state" = "Lotos-Rykav"),
+		"Strip" = list("icon_state" = "Lotos-Alt"),
+	)
+	fitted = FEMALE_UNIFORM_TOP
+
+/obj/item/clothing/under/syndicate/tacticool/hahun_uniform
+	name = "Irellian combat uniform"
+	desc = "Black turtleneck with camouflaged combat pants"
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/under.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/under.dmi'
+	anthro_mob_worn_overlay = 'modular_bluemoon/fluffs/icons/mob/clothing/under_digi.dmi'
+	lefthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_left.dmi'
+	righthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_right.dmi'
+	icon_state = "hahununiform"
+	item_state = "hahununiform"
+	can_adjust = TRUE
+
+/obj/item/clothing/under/donator/bm/srt_suit
+	name = "SRT combat uniform"
+	desc = "The Special reaction team forces’ uniforms characterized by a subdued and minimalist design, prioritizing functionality over flashy aesthetics. This approach allows the wearer to blend seamlessly into their surroundings and maintain a low profile during covert operations. SRTs uniform reflects the meticulous attention to detail and unwavering commitment that define this formidable force."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/under.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/under.dmi'
+	anthro_mob_worn_overlay = 'modular_bluemoon/fluffs/icons/mob/clothing/under_digi.dmi'
+	icon_state = "srt_suit"
+	item_state = "srt_suit"
+	can_adjust = FALSE
+
+/obj/item/clothing/under/donator/bm/MI13_uniform
+	name = "MI13 combat uniform"
+	desc = "Black turtleneck with camouflaged combat pants, maded for MI13 agents in the field."
+	icon_state = "MI13_uniform"
+	can_adjust = FALSE
+	mutantrace_variation = NONE
+
+/obj/item/clothing/under/donator/bm/inlaid_data_dress
+	name = "Inlaid Data Dress"
+	desc = "Съемный модуль для синтетика. Корпус изготовлен из легкого но прочного металла. \
+			Два резервуара для хладагента на уровне груди покрытые титаном. \
+			На обратной стороне изображен стеклянный цилиндр с синим космическим кристаллом внутри. \
+			В юбку встроен радар внешнего обзора. Иногда происходит пространственное смещение... стоп ЧТО?!"
+	icon_state = "InlaidDataDress"
+	actions_types = list(/datum/action/item_action/degree_distortion_effect)
+	var/atom/movable/distortion_effect/filter_on_user
+
+/obj/item/clothing/under/donator/bm/inlaid_data_dress/New()
+	. = ..()
+	filter_on_user = new(src)
+	LAZYADD(vis_contents, filter_on_user)
+
+/obj/item/clothing/under/donator/bm/inlaid_data_dress/equipped(mob/user, slot)
+	. = ..()
+	LAZYADD(user.vis_contents, filter_on_user)
+
+/obj/item/clothing/under/donator/bm/inlaid_data_dress/dropped(mob/user)
+	LAZYREMOVE(user.vis_contents, filter_on_user)
+	. = ..()
+
+/atom/movable/distortion_effect
+	icon = 'modular_bluemoon/fluffs/icons/effects/32x32.dmi'
+	icon_state = "distortion_a"
+	pixel_x = 0
+	pixel_y = 0
+	alpha = 120
+	plane = GRAVITY_PULSE_PLANE
+	appearance_flags = PIXEL_SCALE
+	mouse_opacity = MOUSE_OPACITY_TRANSPARENT
+	vis_flags = VIS_INHERIT_LAYER
+
+/datum/action/item_action/degree_distortion_effect
+	name = "Adjust the degree of distortion"
+
+/datum/action/item_action/degree_distortion_effect/Trigger()
+
+	if(!..())
+		return FALSE
+
+	var/obj/item/clothing/under/donator/bm/inlaid_data_dress/T = target
+
+	if(!T || !istype(T))
+		return FALSE
+
+	if(!T.filter_on_user)
+		return FALSE
+
+	var/alpha = input("Укажите степень искажения от 0 до 255") as num|null
+	if(!alpha)
+		alpha = 120
+
+	T.filter_on_user.alpha = alpha
+
+/obj/item/clothing/under/donator/bm/saareuni
+	name = "SAARE BDU G3"
+	desc = "Standardized GEN3 BATTLE DRESS UNIFORM issued to each operator for all types of tasks performed on the job. Has characteristic SAARE forearm insignia."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/under.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/under.dmi'
+	anthro_mob_worn_overlay = 'modular_bluemoon/fluffs/icons/mob/clothing/under_digi.dmi'
+	lefthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_left.dmi'
+	righthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_right.dmi'
+	icon_state = "saare"
+	item_state = "saare"
+	can_adjust = TRUE
+

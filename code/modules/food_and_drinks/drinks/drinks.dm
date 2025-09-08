@@ -10,7 +10,7 @@
 	righthand_file = 'icons/mob/inhands/misc/food_righthand.dmi'
 	reagent_flags = OPENCONTAINER
 	reagent_value = DEFAULT_REAGENTS_VALUE
-	var/gulp_size = 5
+	var/gulp_size = 5 //Максимум выпиваемый из-за количества реагентов
 	possible_transfer_amounts = list(5,10,15,20,25,30,50)
 	volume = 50
 	resistance_flags = NONE
@@ -33,6 +33,9 @@
 		return
 
 	var/gulp_amount = gulp_size
+	if(user == M && ishuman(M))
+		var/mob/living/carbon/human/H = M
+		gulp_amount = H.self_gulp_size
 	if(M == user)
 		if(user.zone_selected == BODY_ZONE_PRECISE_MOUTH && !beingChugged)
 			beingChugged = TRUE
@@ -109,12 +112,12 @@
 		var/trans = target.reagents.trans_to(src, amount_per_transfer_from_this, log = TRUE)
 		to_chat(user, "<span class='notice'>You fill <b>[src]</b> with [trans] units of the contents of <b>[target]</b>.</span>")
 
-/obj/item/reagent_containers/food/drinks/attackby(obj/item/I, mob/user, params)
-	var/hotness = I.get_temperature()
-	if(hotness && reagents)
-		reagents.expose_temperature(hotness)
-		to_chat(user, "<span class='notice'>You heat [name] with [I]!</span>")
-	..()
+// /obj/item/reagent_containers/food/drinks/attackby(obj/item/I, mob/user, params)
+// 	var/hotness = I.get_temperature()
+// 	if(hotness && reagents)
+// 		reagents.expose_temperature(hotness)
+// 		to_chat(user, "<span class='notice'>You heat [name] with [I]!</span>")
+// 	..()
 
 /obj/item/reagent_containers/food/drinks/throw_impact(atom/hit_atom, datum/thrownthing/throwingdatum)
 	. = ..()
@@ -221,6 +224,7 @@
 		if(prob(33))
 			new/obj/item/shard(drop_location())
 		obj_integrity = 1
+		qdel(src)
 	..()
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -491,7 +495,8 @@
 	icon_state = "shaker"
 	custom_materials = list(/datum/material/iron=1500)
 	amount_per_transfer_from_this = 10
-	volume = 100
+	possible_transfer_amounts = list(5,10,15,20,25,30,40,50,60,120) // BLUEMOON CHANGE подгоняем под большую банку
+	volume = 120 // BLUEMOON CHANGE подгоняем под большую банку
 	isGlass = FALSE
 
 /obj/item/reagent_containers/food/drinks/flask

@@ -362,15 +362,15 @@
 /obj/item/clothing/head/helmet/juggernaut
 	name = "Zeal Team Helmet"
 	desc = "I... am... the... JUGGERNAUT!!!"
-	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/hats.dmi'
-	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/hats.dmi'
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/head.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/head.dmi'
 	icon_state = "juggernauthelm"
 	item_state = "juggernauthelm"
 	armor = list(MELEE = 95, BULLET = 80, LASER = 50, ENERGY = 60, BOMB = 80, BIO = 100, RAD = 50, FIRE = 95, ACID = 95)
 	strip_delay = 120
 	resistance_flags = FIRE_PROOF | ACID_PROOF
-	heat_protection = HEAD
 	clothing_flags = STOPSPRESSUREDAMAGE | THICKMATERIAL
+	heat_protection = HEAD
 	max_heat_protection_temperature = FIRE_IMMUNITY_MAX_TEMP_PROTECT
 	flash_protect = TRUE
 	obj_flags = IMMUTABLE_SLOW
@@ -389,10 +389,10 @@
 	armor = list(MELEE = 95, BULLET = 80, LASER = 50, ENERGY = 60, BOMB = 80, BIO = 100, RAD = 50, FIRE = 95, ACID = 95)
 	resistance_flags = FIRE_PROOF | ACID_PROOF
 	cold_protection = CHEST|GROIN|LEGS|ARMS|FEET
-	heat_protection = CHEST|GROIN|LEGS|ARMS|FEET
 	clothing_flags = STOPSPRESSUREDAMAGE | THICKMATERIAL
 	min_cold_protection_temperature = FIRE_SUIT_MIN_TEMP_PROTECT
-	max_heat_protection_temperature = COAT_MAX_TEMP_PROTECT
+	heat_protection = CHEST|GROIN|LEGS|FEET|ARMS|HANDS
+	max_heat_protection_temperature = FIRE_IMMUNITY_MAX_TEMP_PROTECT
 	strip_delay = 120
 	slowdown = 0.5
 	obj_flags = IMMUTABLE_SLOW
@@ -1474,3 +1474,11 @@
 	icon_state = "hawaiivice"
 	item_state = "hawaiivice"
 	togglename = "buttons"
+
+/obj/item/clothing/suit/syndie_jacket
+	name = "Cybertechnical Jacket"
+	desc = "A cybernetic jacket for civilians. Convenience, luxury, technology, brutality!"
+	icon_state = "syndie_jacket"
+	item_state = "syndie_jacket"
+	body_parts_covered = CHEST
+	mutantrace_variation = STYLE_DIGITIGRADE|STYLE_NO_ANTHRO_ICON

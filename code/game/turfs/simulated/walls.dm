@@ -197,7 +197,7 @@
 
 	//the istype cascade has been spread among various procs for easy overriding
 	var/srctype = type
-	if(try_clean(W, user, T) || try_wallmount(W, user, T) || try_decon(W, user, T) || (type == srctype && try_destroy(W, user, T)))
+	if(try_clean(W, user, T) || try_wallmount(W, user, T, params) || try_decon(W, user, T) || (type == srctype && try_destroy(W, user, T)))
 		return
 
 	return ..()
@@ -220,12 +220,12 @@
 
 	return FALSE
 
-/turf/closed/wall/proc/try_wallmount(obj/item/W, mob/user, turf/T)
+/turf/closed/wall/proc/try_wallmount(obj/item/W, mob/user, turf/T, params)
 	//check for wall mounted frames
 	if(istype(W, /obj/item/wallframe))
 		var/obj/item/wallframe/F = W
 		if(F.try_build(src, user))
-			F.attach(src, user)
+			F.attach(src, user, params)
 		return TRUE
 	//Poster stuff
 	else if(istype(W, /obj/item/poster))
@@ -270,10 +270,11 @@
 	if(current_size >= STAGE_FIVE)
 		if(prob(50))
 			dismantle_wall()
-		return
-	if(current_size == STAGE_FOUR)
+			return TRUE
+	else if(current_size == STAGE_FOUR)
 		if(prob(30))
 			dismantle_wall()
+			return TRUE
 
 /turf/closed/wall/narsie_act(force, ignore_mobs, probability = 20)
 	. = ..()

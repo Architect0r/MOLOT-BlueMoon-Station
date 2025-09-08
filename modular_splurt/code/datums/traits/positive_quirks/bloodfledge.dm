@@ -137,8 +137,10 @@
 	// Remove quirk ability action datums
 	var/datum/action/cooldown/bloodfledge/bite/act_bite = locate() in quirk_mob.actions
 	var/datum/action/cooldown/bloodfledge/revive/act_revive = locate() in quirk_mob.actions
-	act_bite.Remove(quirk_mob)
-	act_revive.Remove(quirk_mob)
+	if(act_bite)
+		act_bite.Remove(quirk_mob)
+	if(act_revive)
+		act_revive.Remove(quirk_mob)
 
 	// Remove quirk language
 	quirk_mob.remove_language(/datum/language/vampiric, TRUE, TRUE, LANGUAGE_BLOODSUCKER)
@@ -648,6 +650,10 @@
 		if(!HAS_TRAIT(bite_target, TRAIT_MASO))
 			// Force bite_target to play the scream emote
 			bite_target.emote("scream")
+		//BLUEMOON ADD START
+		else
+			bite_target.emote("moan")
+		//BLUEMOON ADD END
 
 		// Log the biting action failure
 		log_combat(action_owner,bite_target,"bloodfledge bitten (interrupted)")

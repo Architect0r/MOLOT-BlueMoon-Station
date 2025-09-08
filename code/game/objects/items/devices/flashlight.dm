@@ -403,8 +403,8 @@
 	var/emp_cur_charges = 4
 	var/charge_tick = 0
 
-/obj/item/flashlight/emp/New()
-	..()
+/obj/item/flashlight/emp/Initialize(mapload)
+	. = ..()
 	START_PROCESSING(SSobj, src)
 
 /obj/item/flashlight/emp/Destroy()
@@ -575,3 +575,13 @@
 	flags_1 = CONDUCT_1
 	item_flags = DROPDEL
 	actions_types = list()
+
+//BLUEMOON ADD: flashdark for donators.
+/obj/item/flashlight/flashdark/quirk
+	name = "command-issued flashdark"
+	desc = "A strange device manufactured with mysterious elements that somehow emits darkness. This one is issued by central-command or some other high-ranking forces."
+	icon_state = "flashdark"
+	item_state = "flashdark"
+	brightness_on = 2.5
+	flashlight_power = -3
+	resistance_flags = LAVA_PROOF | FIRE_PROOF | ACID_PROOF

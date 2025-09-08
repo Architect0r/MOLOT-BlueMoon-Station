@@ -594,6 +594,8 @@
 				if(user.can_see_reagents()) //Show each individual reagent
 					for(var/datum/reagent/R in reagents.reagent_list)
 						. += "[R.volume] units of [R.name]"
+					. += span_engradio("Temperature: [round(reagents.chem_temp, 1)] K ([round(reagents.chem_temp-T0C, 1)] &deg;C)")
+					. += span_radio("pH: [round(reagents.pH, 0.01)]")
 				else //Otherwise, just show the total volume
 					var/total_volume = 0
 					for(var/datum/reagent/R in reagents.reagent_list)
@@ -763,7 +765,8 @@
 /atom/proc/hitby(atom/movable/hitting_atom, skipcatch, hitpush, blocked, datum/thrownthing/throwingdatum)
 	SEND_SIGNAL(src, COMSIG_ATOM_HITBY, hitting_atom, skipcatch, hitpush, blocked, throwingdatum)
 	if(density && !has_gravity(hitting_atom)) //thrown stuff bounces off dense stuff in no grav, unless the thrown stuff ends up inside what it hit(embedding, bola, etc...).
-		addtimer(CALLBACK(src, PROC_REF(hitby_react), hitting_atom), 2)
+		addtimer(CALLBACK(src, PROC_REF(hitby_react), hitting_atom), 0.2 SECONDS)
+	return FALSE
 
 /**
  * We have have actually hit the passed in atom
@@ -1738,3 +1741,7 @@
 /// Sets the wire datum of an atom
 /atom/proc/set_wires(datum/wires/new_wires)
 	wires = new_wires
+
+///Return the air if we can analyze it
+/atom/proc/return_analyzable_air()
+	return null

@@ -8,7 +8,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	w_class = WEIGHT_CLASS_SMALL
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | UNACIDABLE | ACID_PROOF
 	//SPLURT EDIT START
-	var/list/static/hotel_maps = list("Hotel Room", "Apartment-1","Apartment-2", "Apartment-3", "Apartment-4", "Apartment-Syndi", "Apartment-Bar", "Apartment-dojo", "Apartment-Sauna", "Apartment-Beach", "Apartment-Forest", "Apartment-Jungle", "Apartment-Winter", "Apartment-Prison","Apartment-GYM","Apartment-Capsule")
+	var/list/static/hotel_maps = list("Hotel Room", "Apartment-1","Apartment-2", "Apartment-3", "Apartment-4", "Apartment-Syndi", "Apartment-Bar", "Apartment-dojo", "Apartment-Sauna", "Apartment-Beach", "Apartment-Forest", "Apartment-Jungle", "Apartment-Winter", "Apartment-Prison","Apartment-GYM","Apartment-Capsule","Apartment-Train")
 	var/datum/map_template/hilbertshotel/apartment/hilberts_hotel_rooms_apartment_one
 	var/datum/map_template/hilbertshotel/apartment/one/hilberts_hotel_rooms_apartment_two
 	var/datum/map_template/hilbertshotel/apartment/two/hilberts_hotel_rooms_apartment_three
@@ -24,6 +24,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	var/datum/map_template/hilbertshotel/apartment/prison/hilberts_hotel_rooms_apartment_prison
 	var/datum/map_template/hilbertshotel/apartment/sport/hilberts_hotel_rooms_apartment_sport
 	var/datum/map_template/hilbertshotel/apartment/capsule/hilberts_hotel_rooms_apartment_capsule
+	var/datum/map_template/hilbertshotel/apartment/train/hilberts_hotel_rooms_apartment_train
 	//SPLURT EDIT END
 	var/datum/map_template/hilbertshotel/hotelRoomTemp
 	var/datum/map_template/hilbertshotel/empty/hotelRoomTempEmpty
@@ -31,6 +32,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	var/list/activeRooms = list()
 	var/list/storedRooms = list()
 	var/list/checked_in_ckeys = list()
+	var/list/lockedRooms = list()
 	var/storageTurf
 	//Lore Stuff
 	var/ruinSpawned = FALSE
@@ -61,6 +63,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	hilberts_hotel_rooms_apartment_prison = new()
 	hilberts_hotel_rooms_apartment_sport = new()
 	hilberts_hotel_rooms_apartment_capsule = new()
+	hilberts_hotel_rooms_apartment_train = new()
 
 	var/area/currentArea = get_area(src)
 	if(currentArea.type == /area/ruin/space/has_grav/hilbertresearchfacility)
@@ -91,6 +94,11 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 		return
 
 	chosenRoomNumber = input(user, "What number room will you be checking into?", "Room Number") as null|num
+	if(!mob_dorms[user] || !mob_dorms[user].Find(chosenRoomNumber)) //BLUEMOON ADD владелец комнаты может зайти в комнату даже если она закрыта и активна
+		if(activeRooms.len && activeRooms["[chosenRoomNumber]"])	//лесенка ради удобства восприятия, точно-точно говорю
+			if(lockedRooms.len && lockedRooms["[chosenRoomNumber]"])
+				to_chat(user, span_warning("You cant enter in locked room, contact with room owner."))
+				return												//BLUEMOON ADD END
 	if(max_rooms > 0 && mob_dorms[user]?.len >= max_rooms && !activeRooms["[chosenRoomNumber]"] && !storedRooms["[chosenRoomNumber]"])
 		to_chat(user, span_warning("Your free trial of Hilbert's Hotel has ended! Please select one of the rooms you've already visited."))
 		chosenRoomNumber = input(user, "Select one of your previous rooms", "Room number") as null|anything in mob_dorms[user]
@@ -171,12 +179,10 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	if(activeRooms["[roomNumber]"])
 		var/datum/turf_reservation/roomReservation = activeRooms["[roomNumber]"]
 		var/area/hilbertshotel/currentArea = get_area(locate(roomReservation.bottom_left_coords[1], roomReservation.bottom_left_coords[2], roomReservation.bottom_left_coords[3]))
-
-		// Determine additional Y offset for teleportation
-		var/additionalY = currentArea.roomType == "Apartment-Sauna" ? 1 : 0
+		var/datum/map_template/hilbertshotel/mapTemplate = getMapTemplate(currentArea.roomType)
 
 		do_sparks(3, FALSE, get_turf(user))
-		user.forceMove(locate(roomReservation.bottom_left_coords[1] + hotelRoomTemp.landingZoneRelativeX, roomReservation.bottom_left_coords[2] + hotelRoomTemp.landingZoneRelativeY + additionalY, roomReservation.bottom_left_coords[3]))
+		user.forceMove(locate(roomReservation.bottom_left_coords[1] + mapTemplate.landingZoneRelativeX, roomReservation.bottom_left_coords[2] + mapTemplate.landingZoneRelativeY, roomReservation.bottom_left_coords[3]))
 		return TRUE
 	else
 		return FALSE
@@ -187,7 +193,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 		// Find the storage object for the stored room
 		var/obj/item/abstracthotelstorage/storageObj
 		for(var/obj/item/abstracthotelstorage/S in storageTurf)
-			if(S.roomNumber == roomNumber)
+			if(S.roomNumber == roomNumber && S.parentSphere == src)
 				storageObj = S
 				break
 
@@ -231,12 +237,10 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 		activeRooms["[roomNumber]"] = roomReservation
 
 		//To send the user one tile above default when teleported
-		var/additionalY = currentArea.roomType == "Apartment-Sauna" ? 1 : 0
-
 		// SPLURT EDIT END
 		linkTurfs(roomReservation, roomNumber)
 		do_sparks(3, FALSE, get_turf(user))
-		user.forceMove(locate(roomReservation.bottom_left_coords[1] + hotelRoomTemp.landingZoneRelativeX, roomReservation.bottom_left_coords[2] + hotelRoomTemp.landingZoneRelativeY + additionalY, roomReservation.bottom_left_coords[3]))
+		user.forceMove(locate(roomReservation.bottom_left_coords[1] + mapTemplate.landingZoneRelativeX, roomReservation.bottom_left_coords[2] + mapTemplate.landingZoneRelativeY, roomReservation.bottom_left_coords[3]))
 		return TRUE
 	else
 		return FALSE
@@ -259,6 +263,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 		if("Apartment-Prison") return hilberts_hotel_rooms_apartment_prison
 		if("Apartment-GYM") return hilberts_hotel_rooms_apartment_sport
 		if("Apartment-Capsule") return hilberts_hotel_rooms_apartment_capsule
+		if("Apartment-Train") return hilberts_hotel_rooms_apartment_train
 		if("Mystery Room") return hotelRoomTempLore
 	return hotelRoomTemp // Default to Hotel Room if no match is found
 
@@ -290,6 +295,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 			if("Apartment-Prison") mapTemplate = hilberts_hotel_rooms_apartment_prison
 			if("Apartment-GYM") mapTemplate = hilberts_hotel_rooms_apartment_sport
 			if("Apartment-Capsule") mapTemplate = hilberts_hotel_rooms_apartment_capsule
+			if("Apartment-Train") mapTemplate = hilberts_hotel_rooms_apartment_train
 	if(!mapTemplate)
 		mapTemplate = hotelRoomTemp //Default Hotel Room
 
@@ -300,12 +306,9 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	var/area/hilbertshotel/currentArea = get_area(locate(roomReservation.bottom_left_coords[1], roomReservation.bottom_left_coords[2], roomReservation.bottom_left_coords[3]))
 	currentArea.roomType = chosen_room // Sets the room type here
 
-	//To send the user one tile above default when teleported
-	var/additionalY = chosen_room == "Apartment-Sauna" ? 1 : 0
-
 	linkTurfs(roomReservation, roomNumber)
 	do_sparks(3, FALSE, get_turf(user))
-	user.forceMove(locate(roomReservation.bottom_left_coords[1] + mapTemplate.landingZoneRelativeX, roomReservation.bottom_left_coords[2] + mapTemplate.landingZoneRelativeY + additionalY, roomReservation.bottom_left_coords[3]))
+	user.forceMove(locate(roomReservation.bottom_left_coords[1] + mapTemplate.landingZoneRelativeX, roomReservation.bottom_left_coords[2] + mapTemplate.landingZoneRelativeY, roomReservation.bottom_left_coords[3]))
 //SPLURT EDIT END
 
 /obj/item/hilbertshotel/proc/linkTurfs(var/datum/turf_reservation/currentReservation, var/currentRoomnumber, var/chosen_room)
@@ -317,7 +320,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	currentArea.reservation = currentReservation
 	for(var/turf/closed/indestructible/hoteldoor/door in currentArea)
 		door.parentSphere = src
-		door.desc = "The door to this hotel room. The placard reads 'Room [currentRoomnumber]'. Strange, this door doesnt even seem openable. The doorknob, however, seems to buzz with unusual energy...<br /><span class='info'>Alt-Click to look through the peephole.</span>"
+		door.roomnumber = currentRoomnumber
 	for(var/turf/open/space/bluespace/BSturf in currentArea)
 		BSturf.parentSphere = src
 
@@ -373,7 +376,7 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	var/area/hilbertshotel/currentArea = get_area(locate(currentReservation.bottom_left_coords[1], currentReservation.bottom_left_coords[2], currentReservation.bottom_left_coords[3]))
 	for(var/turf/closed/indestructible/hoteldoor/door in currentArea)
 		door.parentSphere = src
-		door.desc = "The door to this hotel room. Strange, this door doesnt even seem openable. The doorknob, however, seems to buzz with unusual energy...<br /><span class='info'>Alt-Click to look through the peephole.</span>"
+		door.roomnumber = currentRoomnumber
 
 //Template Stuff
 /datum/map_template/hilbertshotel
@@ -432,6 +435,8 @@ GLOBAL_VAR_INIT(hhmysteryRoomNumber, 1337)
 	icon_state = "hoteldoor"
 	explosion_block = INFINITY
 	var/obj/item/hilbertshotel/parentSphere
+	var/roomnumber
+	desc = "The door to this hotel room. Strange, this door doesnt even seem openable. The doorknob, however, seems to buzz with unusual energy..."
 
 /turf/closed/indestructible/hoteldoor/proc/promptExit(mob/living/user)
 	if(!isliving(user))

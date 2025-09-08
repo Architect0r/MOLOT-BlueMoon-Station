@@ -89,6 +89,9 @@
 		var/obj/item/surgical_drapes/advanced/A = tool
 		advanced_surgeries |= A.get_advanced_surgeries()
 
+	if(HAS_TRAIT(user.mind, TRAIT_KNOW_MED_SURGERY_T2))
+		advanced_surgeries |= KNOW_MED_SURGERY_OPERATIONS
+
 	if(replaced_by in advanced_surgeries)
 		return FALSE
 	if(type in advanced_surgeries)
@@ -144,7 +147,7 @@
 		propability += 0.1
 
 	// BLUEMOON ADDITION AHEAD - сверх-большие персонажи ломают собой столы. Поблажка, дабы с ними всё ещё можно было проводить нормально операции
-	if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY_SUPER))
+	if(target.mob_weight > MOB_WEIGHT_HEAVY)
 		propability = 0.8
 
 	// Шансы на операции в зависимости от состояния пациента

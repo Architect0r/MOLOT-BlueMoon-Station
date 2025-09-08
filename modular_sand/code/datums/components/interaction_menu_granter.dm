@@ -15,14 +15,32 @@
 		return
 	menu.open_menu(usr, src)
 
-#define INTERACTION_NORMAL 0
-#define INTERACTION_LEWD 1
-#define INTERACTION_EXTREME 2
 #define INTERACTION_UNHOLY 3 //SPLURT Edit
 
 /// The menu itself, only var is target which is the mob you are interacting with
 /datum/component/interaction_menu_granter
 	var/mob/living/target
+	var/mob/living/auto_interaction_target
+	var/datum/interaction/currently_active_interaction
+	var/next_interaction_time
+	var/auto_interaction_pace = 1 SECONDS
+
+/datum/component/interaction_menu_granter/process(delta_time)
+	if(!currently_active_interaction)
+		auto_interaction_target = null
+		currently_active_interaction = null
+		return PROCESS_KILL
+	if(QDELETED(auto_interaction_target))
+		auto_interaction_target = null
+		currently_active_interaction = null
+		return PROCESS_KILL
+	if(world.time <= next_interaction_time)
+		return
+	next_interaction_time = world.time + auto_interaction_pace
+	if(!currently_active_interaction.do_action(parent, auto_interaction_target, apply_cooldown = FALSE))
+		auto_interaction_target = null
+		currently_active_interaction = null
+		return PROCESS_KILL
 
 /datum/component/interaction_menu_granter/Initialize(...)
 	if(!ismob(parent))
@@ -30,21 +48,24 @@
 	var/mob/parent_mob = parent
 	if(!parent_mob.client)
 		return COMPONENT_INCOMPATIBLE
-	. = ..()
+	return ..()
 
 /datum/component/interaction_menu_granter/RegisterWithParent()
 	. = ..()
 	RegisterSignal(parent, COMSIG_MOB_CTRLSHIFTCLICKON, PROC_REF(open_menu))
 
 /datum/component/interaction_menu_granter/Destroy(force, ...)
-	target = null
-	. = ..()
+	STOP_PROCESSING(SSinteractions, src)
+	if(target)
+		UnregisterSignal(target, COMSIG_PARENT_QDELETING)
+		target = null
+	auto_interaction_target = null
+	currently_active_interaction = null
+	return ..()
 
 /datum/component/interaction_menu_granter/UnregisterFromParent()
 	UnregisterSignal(parent, COMSIG_MOB_CTRLSHIFTCLICKON)
-	if(target)
-		UnregisterSignal(target, COMSIG_PARENT_QDELETING)
-	. = ..()
+	return ..()
 
 /// The one interacting is clicker, the interacted is clicked.
 /datum/component/interaction_menu_granter/proc/open_menu(mob/living/clicker, mob/living/clicked)
@@ -98,11 +119,12 @@
 	//Getting player
 	var/mob/living/self = parent
 	//Getting info
-	.["isTargetSelf"] = target == self
-	.["interactingWith"] = target != self ? "Взаимодействовать с \the [target]..." : "Взаимодействовать с собой..."
+	.["isTargetSelf"] = target == self // Why all of these?
+	.["user"] = self // Because people may have the same name
+	.["target"] = target // target == self can distinguish
 	.["selfAttributes"] = self.list_interaction_attributes(self)
 	.["lust"] = self.get_lust()
-	.["maxLust"] = self.get_lust_tolerance() * 3
+	.["maxLust"] = self.get_climax_threshold() // BLUEMOON EDIT
 
 	.["max_distance"] = 0
 	.["user_is_blacklisted"] = SSinteractions.is_blacklisted(self)
@@ -115,6 +137,10 @@
 		required_from_user |= INTERACTION_REQUIRE_TOPLESS
 	if(self.is_bottomless())
 		required_from_user |= INTERACTION_REQUIRE_BOTTOMLESS
+	// BLUEMOON ADD
+	if(self.has_tail())
+		required_from_user |= INTERACTION_REQUIRE_TAIL
+	// BLUEMOON ADD
 	.["required_from_user"] = required_from_user
 
 	var/required_from_user_exposed = NONE
@@ -257,6 +283,10 @@
 			required_from_target |= INTERACTION_REQUIRE_TOPLESS
 		if(target.is_bottomless())
 			required_from_target |= INTERACTION_REQUIRE_BOTTOMLESS
+		// BLUEMOON ADD
+		if(target.has_tail())
+			required_from_target |= INTERACTION_REQUIRE_TAIL
+		// BLUEMOON ADD
 		.["required_from_target"] = required_from_target
 
 		var/required_from_target_exposed = NONE
@@ -359,7 +389,7 @@
 			.["theyAllowUnholy"] = !!pref_to_num(target.client.prefs.unholypref) //SPLURT EDIT
 		if(HAS_TRAIT(user, TRAIT_ESTROUS_DETECT))
 			.["theirLust"] = target.get_lust()
-			.["theirMaxLust"] = target.get_lust_tolerance() * 3
+			.["theirMaxLust"] = target.get_climax_threshold() // BLUEMOON EDIT
 		//SPLURT EDIT
 		.["theyHaveBondage"] = FALSE
 		if(iscarbon(target))
@@ -367,6 +397,10 @@
 			if(istype(C.handcuffed, /obj/item/restraints/bondage_rope) || istype(C.legcuffed, /obj/item/restraints/bondage_rope))
 				.["theyHaveBondage"] = TRUE
 		//SPLURT EDIT END
+	.["auto_interaction_pace"] = auto_interaction_pace
+	.["is_auto_target_self"] = auto_interaction_target == self
+	.["auto_interaction_target"] = auto_interaction_target
+	.["currently_active_interaction"] = currently_active_interaction?.type
 
 	//Get their genitals
 	var/list/genitals = list()
@@ -505,6 +539,7 @@
 		interaction["additionalDetails"] = I.additional_details
 		sent_interactions += list(interaction)
 	.["interactions"] = sent_interactions
+	.["interaction_speeds"] = GLOB.interaction_speeds
 
 /proc/num_to_pref(num)
 	switch(num)
@@ -522,21 +557,41 @@
 	switch(action)
 		if("interact")
 			var/datum/interaction/o = SSinteractions.interactions[params["interaction"]]
-			if(o)
-				o.do_action(parent_mob, target)
+			if(!o)
+				return FALSE
+			if(o == currently_active_interaction)
+				to_chat(parent_mob, span_notice("Включена автоматическая интеракция."))
 				return TRUE
-			return FALSE
+			o.do_action(parent_mob, target)
+			return TRUE
+		if("interaction_pace")
+			var/speed = params["speed"]
+			if(!(speed in GLOB.interaction_speeds))
+				return FALSE
+			src.auto_interaction_pace = speed
+			return TRUE
+		if("toggle_auto_interaction")
+			var/datum/interaction/o = SSinteractions.interactions[params["interaction"]]
+			if(!o || (currently_active_interaction == o) && (auto_interaction_target == target))
+				auto_interaction_target = null
+				currently_active_interaction = null
+				STOP_PROCESSING(SSinteractions, src)
+			else
+				auto_interaction_target = target
+				currently_active_interaction = o
+				START_PROCESSING(SSinteractions, src)
+			return TRUE
 		if("favorite")
 			var/datum/interaction/interaction = SSinteractions.interactions[params["interaction"]]
-			if(interaction)
-				var/datum/preferences/prefs = parent_mob.client.prefs
-				if(interaction.type in prefs.favorite_interactions)
-					LAZYREMOVE(prefs.favorite_interactions, interaction.type)
-				else
-					LAZYADD(prefs.favorite_interactions, interaction.type)
-				prefs.save_preferences()
-				return TRUE
-			return FALSE
+			if(!interaction)
+				return FALSE
+			var/datum/preferences/prefs = parent_mob.client.prefs
+			if(interaction.type in prefs.favorite_interactions)
+				LAZYREMOVE(prefs.favorite_interactions, interaction.type)
+			else
+				LAZYADD(prefs.favorite_interactions, interaction.type)
+			prefs.save_preferences()
+			return TRUE
 		if("genital")
 			var/mob/living/carbon/self = parent_mob
 			if("visibility" in params)
@@ -560,7 +615,7 @@
 					to_chat(self, span_userlove("[genital.aroused_state ? genital.arousal_verb : genital.unarousal_verb]."))
 					. = TRUE
 				else
-					to_chat(self, span_userlove("You can't make that genital [genital.aroused_state ? "unaroused" : "aroused"]!"))
+					to_chat(self, span_userlove("Ты не можешь [genital.aroused_state ? "сбросить возбуждение" : "возбудиться"]!"))
 					. = FALSE
 				genital.update_appearance()
 				if(ishuman(self))
@@ -589,10 +644,11 @@
 						prefs.erppref = value
 				if("noncon_pref")
 					if(prefs.nonconpref == value)
-						message_admins("[parent_mob.real_name] меняет параметр Нон-Кон на [value].")
-						log_admin("[parent_mob.real_name] меняет параметр Нон-Кон на [value].")
 						return FALSE
 					else
+						message_admins("[parent_mob.ckey]/[parent_mob.real_name] [ADMIN_FLW(parent_mob)][parent_mob.stat == DEAD ? " (DEAD)" : ""] меняет Non-Con c [prefs.nonconpref] на [value].")
+						log_admin("[parent_mob.ckey]/[parent_mob.real_name][parent_mob.stat == DEAD ? " (DEAD)" : ""] меняет Non-Con c [prefs.nonconpref] на [value].")
+						parent_mob.balloon_alert_to_viewers("Меняет Non-Con c [prefs.nonconpref] на [value].")
 						prefs.nonconpref = value
 				if("vore_pref")
 					if(prefs.vorepref == value)
@@ -705,8 +761,23 @@
 					return FALSE
 			prefs.save_preferences()
 			return TRUE
+		if("genitals_menu")
+			switch(params["who"])
+				if("user")
+					if(iscarbon(parent_mob))
+						var/mob/living/carbon/C = parent_mob
+						C.genital_menu()
+						return TRUE
+					else
+						to_chat(parent_mob, span_warning("Unavailable for this mob."))
+						return FALSE
+				if("target")
+					if(iscarbon(target))
+						var/mob/living/carbon/C = target
+						C.genital_menu()
+						return TRUE
+					else
+						to_chat(parent_mob, span_warning("Unavailable for this mob."))
+						return FALSE
 
-#undef INTERACTION_NORMAL
-#undef INTERACTION_LEWD
-#undef INTERACTION_EXTREME
 #undef INTERACTION_UNHOLY //SPLURT Edit

@@ -195,10 +195,13 @@
 	var/rank = null			//actual job
 	var/access_txt // mapping aid
 	var/bank_support = ID_FREE_BANK_ACCOUNT
+	var/withdraw_allowed = TRUE // BLUEMOON ADD
 	var/datum/bank_account/registered_account
 	var/obj/machinery/paystand/my_store
 	var/uses_overlays = TRUE
 	var/icon/cached_flat_icon
+	var/card_sticker = FALSE //BLUEMOON ADD часть карт можно навешивать на другие карты
+	var/list/previous_icon_data[3] //BLUEMOON ADD лист для наклеек на карты, порядок icon, icon_state, assignment
 
 /obj/item/card/id/Initialize(mapload)
 	. = ..()
@@ -238,6 +241,23 @@
 		add_fingerprint(user)
 
 /obj/item/card/id/attackby(obj/item/W, mob/user, params)
+	//BLUEMOON ADD стикеры на карту
+	if(istype(W, /obj/item/card/id) && !src.card_sticker && !contents.len)
+		var/obj/item/card/id/ID = W
+		if(ID.card_sticker)
+			to_chat(user, "<span class='notice'>You start to wrap the card...</span>")
+			if(!do_after(user, 15, target = user))
+				return
+			ID.forceMove(src)
+			previous_icon_data[1] = icon
+			previous_icon_data[2] = icon_state
+			previous_icon_data[3] = assignment
+			icon = ID.icon
+			icon_state = ID.icon_state
+			assignment = ID.assignment
+			return
+		//BLUEMOON ADD END
+
 	if(!bank_support)
 		return ..()
 	if(istype(W, /obj/item/holochip))
@@ -337,12 +357,38 @@
 
 /obj/item/card/id/AltClick(mob/living/user)
 	. = ..()
+	//BLUEMOON ADD стикеры на карту
+	if(src.contents)
+		for(var/obj/item/card/id/ID in contents)
+			if(ID.card_sticker)
+				var/response = alert(user, "What you want to do?","[src.name]", "remove sticker", "[prob(1)? "do some tax evasion" : "withdraw money"]")
+				if(response == "remove sticker")
+					to_chat(user, "<span class='notice'>You start to unwrap the card...</span>")
+					if(!do_after(user, 15, target = user))
+						return
+					user.put_in_hands(ID)
+					icon = previous_icon_data[1]
+					icon_state = previous_icon_data[2]
+					assignment = previous_icon_data[3]
+					return
+	//BLUEMOON ADD END
+
 	if(!bank_support || !alt_click_can_use_id(user))
 		return
 
 	if(!registered_account && bank_support == ID_FREE_BANK_ACCOUNT)
 		set_new_account(user)
 		return
+
+	// BLUEMOON ADD START
+	if(!withdraw_allowed)
+		var/message = span_warning("ERROR: This card is not allowed withdraw credits.")
+		if(registered_account)
+			registered_account.bank_card_talk(message)
+		else
+			to_chat(user, message)
+		return
+	// BLUEMOON ADD END
 
 	if (world.time < registered_account.withdrawDelay)
 		registered_account.bank_card_talk("<span class='warning'>ERROR: UNABLE TO LOGIN DUE TO SCHEDULED MAINTENANCE. MAINTENANCE IS SCHEDULED TO COMPLETE IN [(registered_account.withdrawDelay - world.time)/10] SECONDS.</span>", TRUE)
@@ -385,6 +431,10 @@
 			. += "<span class='boldnotice'>If you lose this ID card, you can reclaim your account by Alt-Clicking a blank ID card while holding it and entering your account ID number.</span>"
 	else
 		. += "<span class='info'>There is no registered account linked to this card. Alt-Click to add one.</span>"
+	//BLUEMOON ADD
+	if(card_sticker)
+		. += "<span class='info'>Can be used like a card sticker on another card.</span>"
+	//BLUEMOON ADD END
 
 /obj/item/card/id/GetAccess()
 	return access
@@ -552,6 +602,11 @@
 /obj/item/card/id/syndicate/anyone
 	anyone = TRUE
 	assignment = "Lavaland Syndicate Agent"
+
+/obj/item/card/id/syndicate/anyone/shaft
+	anyone = TRUE
+	assignment = "Lavaland Syndicate Security Agent"
+	access = list(ACCESS_MAINT_TUNNELS, ACCESS_SYNDICATE, ACCESS_SYNDICATE_LEADER)
 
 /obj/item/card/id/syndicate/anyone/comms
 	anyone = TRUE
@@ -826,6 +881,7 @@
 	name = "departmental card (FUCK)"
 	desc = "Provides access to the departmental budget."
 	icon_state = "budgetcard"
+	withdraw_allowed = FALSE // BLUEMOON ADD
 	var/department_ID = ACCOUNT_CIV
 	var/department_name = ACCOUNT_CIV_NAME
 

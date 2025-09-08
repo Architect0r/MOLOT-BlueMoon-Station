@@ -84,7 +84,7 @@
 	create_initial_profile()
 	if(give_objectives)
 		forge_objectives()
-	owner.current.grant_all_languages(FALSE, FALSE, TRUE)	//Grants omnitongue. We are able to transform our body after all.
+	owner.current.get_language_holder().omnitongue = TRUE
 	remove_clownmut()
 	. = ..()
 
@@ -285,6 +285,12 @@
 		if(verbose)
 			to_chat(user, "<span class='warning'>[target] is not compatible with our biology.</span>")
 		return
+	// BLUEMOON ADD START || ЕРП генки не могут копировать внешность без nonconpref
+	if(src.type == /datum/antagonist/changeling/xenobio && GLOB.master_mode == ROUNDTYPE_EXTENDED && target?.client?.prefs.nonconpref == "No")
+		if(verbose)
+			to_chat(user, "<span class='warning'>DNA of [target] resists absorption.</span>")
+		return
+	// BLUEMOON ADD END
 	return TRUE
 
 

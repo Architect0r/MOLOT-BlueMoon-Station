@@ -155,7 +155,7 @@
 			return TRUE
 
 	// BLUEMOON ADDITION AHEAD - нельзя поменяться местами со сверхтяжёлым персонажем
-	if(HAS_TRAIT(M, TRAIT_BLUEMOON_HEAVY_SUPER))
+	if(M.mob_weight > MOB_WEIGHT_HEAVY)
 		return TRUE
 	// BLUEMOON ADDITION END
 
@@ -314,8 +314,14 @@
 /mob/living/carbon/human/has_tail()
 	if(!dna || !dna.species)
 		return ..()
-	var/list/L = dna.species.mutant_bodyparts		// caches list because i refuse to type it out and because performance
-	return (L["mam_tail"] && (L["mam_tail"] != "None")) || (L["tail_human"] && (L["tail_human"] != "None")) || (L["tail_lizard"] && (L["tail_lizard"] != "None"))
+	// BLUEMOON CHANGE учитываем хвосты наг и features вместа species
+	var/list/F = dna.features // Фичурсы в которых хранятся настоящие хвосты персонажа
+	var/list/M = dna.species.mutant_bodyparts // Мутант_бодипарты в которых хранится какой хвост из фичурсов мы используем
+	for(var/tail in list("mam_tail", "tail_human", "tail_lizard", "taur", "xenotail"))
+		if(M[tail] && F[tail] && (F[tail] != "None")) // простите, я специально
+			return TRUE
+	return	FALSE
+	// BLUEMOON CHANGE END
 
 /mob/living/start_pulling(atom/movable/AM, state, force = pull_force, supress_message = FALSE)
 	if(!AM || !src)
@@ -360,8 +366,8 @@
 				M.show_message("<span class='warning'>[src] has entwined [ru_ego()] tail with yours, pulling you along!</span>", MSG_VISUAL, "<span class='warning'>You feel <b>something</b> coiling around your tail, pulling you along!</span>")
 
 			else // BLUEMOON CHANGES
-				visible_message("<span class='warning'>[src] has grabbed [M][(zone_selected == "l_arm" || zone_selected == "r_arm")? " by [M.ru_ego()] hands":" passively"]! [HAS_TRAIT(AM, TRAIT_BLUEMOON_HEAVY) || HAS_TRAIT(AM, TRAIT_BLUEMOON_HEAVY_SUPER) ? "Looks heavy." : ""]</span>",
-					"<span class='warning'>You have grabbed [M][(zone_selected == "l_arm" || zone_selected == "r_arm")? " by [M.ru_ego()] hands":" passively"]! [HAS_TRAIT(AM, TRAIT_BLUEMOON_HEAVY) || HAS_TRAIT(AM, TRAIT_BLUEMOON_HEAVY_SUPER) ? "It is hard to pull heavy weight!" : ""]</span>", target = M,
+				visible_message("<span class='warning'>[src] has grabbed [M][(zone_selected == "l_arm" || zone_selected == "r_arm")? " by [M.ru_ego()] hands":" passively"]! [M.mob_weight > MOB_WEIGHT_NORMAL ? "Looks heavy." : ""]</span>",
+					"<span class='warning'>You have grabbed [M][(zone_selected == "l_arm" || zone_selected == "r_arm")? " by [M.ru_ego()] hands":" passively"]! [M.mob_weight > MOB_WEIGHT_NORMAL ? "It is hard to pull heavy weight!" : ""]</span>", target = M,
 					target_message = "<span class='warning'>[src] has grabbed you[(zone_selected == "l_arm" || zone_selected == "r_arm")? " by your hands":" passively"]!</span>")
 		if(!iscarbon(src))
 			M.LAssailant = null
@@ -1051,9 +1057,11 @@
 
 /mob/living/singularity_pull(S, current_size)
 	..()
-	if(current_size >= STAGE_SIX)
+	if(move_resist == INFINITY)
+		return
+	if(current_size >= STAGE_FIVE) //your puny magboots/wings/whatever will not save you against five level singularity
 		throw_at(S, 14, 3, src, TRUE)
-	else
+	else if(!src.mob_negates_gravity())
 		step_towards(src,S)
 
 /mob/living/proc/do_jitter_animation(jitteriness)
@@ -1168,7 +1176,7 @@
 		return TRUE
 	return FALSE
 
-/mob/living/throw_at(atom/target, range, speed, mob/thrower, spin=1, diagonals_first = 0, datum/callback/callback, force)
+/mob/living/throw_at(atom/target, range, speed, mob/thrower, spin=1, diagonals_first = 0, datum/callback/callback, force, quickstart = TRUE)
 	stop_pulling()
 	. = ..()
 
@@ -1368,6 +1376,9 @@
 			return TRUE
 		if(NAMEOF(src, size_multiplier))
 			update_size(var_value)
+			return TRUE
+		if(NAMEOF(src, mob_weight)) //BLUEMOON ADD
+			update_weight(var_value) //BLUEMOON ADD END
 			return TRUE
 	. = ..()
 	switch(var_name)

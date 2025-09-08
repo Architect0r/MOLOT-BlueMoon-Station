@@ -19,6 +19,11 @@
 	if(!istype(new_owner) || !(istype(add_or_merge) && add_or_merge.total_volume > 0))
 		qdel(src)
 		return
+	//BLUEMOON ADD START
+	if(new_owner.reagents.get_reagent(/datum/reagent/medicine/spermatex))
+		qdel(src)
+		return
+	//BLUEMOON ADD END
 	if(isnull(contents))
 		contents = new(300, NO_REACT)
 	if(istype(hole, /obj/item/organ/genital/anus))
@@ -124,7 +129,7 @@
 /atom/movable/screen/alert/status_effect/dripping_cum
 	name = "Dripping Cum"
 	desc = "Your last affairs left you dripping someone's seed."
-	icon = 'modular_sand/icons/mob/screen_alert.dmi'
+	icon = 'modular_sand/icons/hud/screen_alert.dmi'
 	icon_state = "dripping_cum"
 
 /atom/movable/screen/alert/status_effect/dripping_cum/MouseEntered(location,control,params)

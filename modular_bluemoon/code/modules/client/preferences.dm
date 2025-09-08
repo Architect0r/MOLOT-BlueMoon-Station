@@ -1,3 +1,8 @@
+/datum/preferences
+	var/body_weight = NAME_WEIGHT_NORMAL
+	var/normalized_size = RESIZE_NORMAL
+	var/custom_laugh = "Default"
+
 #define ACTION_HEADSHOT_LINK_NOOP 0
 #define ACTION_HEADSHOT_LINK_REMOVE -1
 
@@ -12,6 +17,12 @@
 			set_headshot_link(user, "headshot_link1")
 		if ("headshot2")
 			set_headshot_link(user, "headshot_link2")
+		if ("headshot_naked")
+			set_headshot_link(user, "headshot_naked_link")
+		if ("headshot_naked1")
+			set_headshot_link(user, "headshot_naked_link1")
+		if ("headshot_naked2")
+			set_headshot_link(user, "headshot_naked_link2")
 
 	return ..()
 
@@ -65,3 +76,25 @@
 
 #undef ACTION_HEADSHOT_LINK_NOOP
 #undef ACTION_HEADSHOT_LINK_REMOVE
+
+/datum/preferences/proc/mob_size_name_to_num(body_weight_name)
+	switch(body_weight_name)
+		if(NAME_WEIGHT_LIGHT)
+			return MOB_WEIGHT_LIGHT
+		if(NAME_WEIGHT_NORMAL)
+			return MOB_WEIGHT_NORMAL
+		if(NAME_WEIGHT_HEAVY)
+			return MOB_WEIGHT_HEAVY
+		if(NAME_WEIGHT_HEAVY_SUPER)
+			return MOB_WEIGHT_HEAVY_SUPER
+		else
+			return MOB_WEIGHT_NORMAL
+
+/datum/preferences/proc/mob_size_name_to_quirk_cost(body_weight_name)
+	switch(body_weight_name)
+		if(NAME_WEIGHT_HEAVY)
+			return 1
+		if(NAME_WEIGHT_HEAVY_SUPER)
+			return 2
+		else
+			return 0

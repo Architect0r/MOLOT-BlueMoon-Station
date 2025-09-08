@@ -699,7 +699,7 @@
 /*
 	Misc Airlocks
 */
-
+/*	BLUEMOON OVERRIDE - ModernTG Wide Airlocks.
 /obj/machinery/door/airlock/glass_large
 	name = "large glass airlock"
 	icon = 'icons/obj/doors/airlocks/glass_large/glass_large.dmi'
@@ -710,7 +710,7 @@
 	bound_width = 64 // 2x1
 
 /obj/machinery/door/airlock/glass_large/narsie_act()
-	return
+	return	*/
 
 //////////////////////////////////
 /*
@@ -718,6 +718,7 @@
 */
 /obj/machinery/door/airlock/material
 	name = "Airlock"
+	icon = 'modular_bluemoon/SmiLeY/aesthetics/airlock/icons/airlocks/station/silver.dmi' // it need to be white for proper material color
 	material_flags = MATERIAL_COLOR | MATERIAL_ADD_PREFIX | MATERIAL_AFFECT_STATISTICS
 	assemblytype = /obj/structure/door_assembly/door_assembly_material
 

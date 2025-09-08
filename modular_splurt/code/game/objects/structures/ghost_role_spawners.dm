@@ -49,10 +49,11 @@
 	random = TRUE
 	can_load_appearance = TRUE
 	loadout_enabled = FALSE
+	category = "offstation"
 
 /obj/effect/mob_spawn/human/ash_walkers_slave/special_post_appearance(mob/living/new_spawn)
 	. = ..()
-	new_spawn.grant_language(/datum/language/draconic, TRUE, TRUE, LANGUAGE_MIND)
+	new_spawn.grant_language(/datum/language/draconic, source = LANGUAGE_MIND)
 	if(!HAS_TRAIT(new_spawn, TRAIT_ROBOTIC_ORGANISM))
 		var/obj/item/organ/lungs/ashwalker/lungs = new /obj/item/organ/lungs/ashwalker()
 		lungs.Insert(new_spawn, drop_if_replaced = FALSE)
@@ -81,6 +82,7 @@
 	Only you know how you got to this planetoid, whether this place in which you woke up was one of your shelters, or you just stumbled upon it."
 	can_load_appearance = TRUE
 	antagonist_type = /datum/antagonist/ghost_role/hermit
+	category = "offstation"
 
 /obj/effect/mob_spawn/human/wandering_hermit/Destroy()
 	var/obj/structure/fluff/empty_sleeper/S = new(drop_location())
@@ -90,8 +92,7 @@
 /obj/effect/mob_spawn/human/wandering_hermit/special(mob/living/carbon/human/new_spawn)
 	. = ..()
 	ADD_TRAIT(new_spawn,TRAIT_EXEMPT_HEALTH_EVENTS,GHOSTROLE_TRAIT)
-	new_spawn.language_holder.understood_languages += /datum/language/draconic
-	new_spawn.language_holder.spoken_languages += /datum/language/draconic
+	new_spawn.grant_language(/datum/language/draconic)
 
 //Splurt-Specific Space Hotel Staff
 /obj/effect/mob_spawn/human/hotel_staff/splurt
@@ -124,13 +125,14 @@
 	ears = /obj/item/radio/headset/headset_srv/hotel
 	backpack_contents = list(/obj/item/storage/box/survival/engineer=1,\
 						/obj/item/storage/ifak=1)
+	make_bank_account = TRUE
 
 /obj/effect/mob_spawn/human/hotel_staff/splurt/security
 	name = "Hotel Security Sleeper"
 	mob_name = "hotel security member"
 	job_description = "Hotel Security"
 	short_desc = "Вы - охранник космического отеля."
-	flavour_text = "Вы были назначены в этот отель, чтобы защищать интересы компании Nanotrasen, недавно выкупившей его. Ведите себя вежливо, не размахивайте оружием и бронёй, не грубите посетителям - в первую очередь, вы не должны мешать наслаждаться пребыванием и отпугивать адекватных клиентов."
+	flavour_text = "Вы были назначены в этот отель, чтобы защищать интересы компании Nanotrasen, недавно выкупившей его. Ведите себя вежливо, не размахивайте оружием и бронёй, не грубите посетителям."
 	important_info = "Персоналу отеля запрещается покидать его (кроме неординарных случаев или установки телепада). Не ведите себя как СБ со станции - вы обычный гражданский и не обучены для борьбы с террористами, предателями, аномалиями и другими неординарными сущностями."
 	id_job = "Hotel Security"
 	uniform = /obj/item/clothing/under/rank/security/officer/blueshirt
@@ -174,7 +176,8 @@
 	head = /obj/item/clothing/head/beret/black
 	r_pocket = /obj/item/pda
 	back = /obj/item/storage/backpack
-	r_hand = /obj/item/storage/secure/briefcase/syndie
+	make_bank_account = TRUE // BLUEMOON ADD
+	starting_money = 10000 // BLUEMOON ADD
 
 //Forgotten syndicate ship
 
@@ -183,9 +186,10 @@
 	roundstart = FALSE
 	death = FALSE
 	show_flavour = FALSE
+	loadout_enabled = TRUE
 	icon = 'icons/obj/machines/sleeper.dmi'
 	icon_state = "sleeper_s"
-	short_desc = "Вы - Оперативник Авангарда ИнтеКью на старом корабле, застрявшем во враждебном космосе."
+	short_desc = "Вы - Оперативник Авангарда InteQ на старом корабле, застрявшем во враждебном космосе."
 	flavour_text = "Ваш корабль причалил после долгого перерыва где-то во враждебном пространстве, сообщив о неисправности. Вы застряли здесь, зная, что рядом находится станция Nanotrasen. Почините корабль, найдите способ обеспечить его энергией и выполняйте приказы Капитана."
 	important_info = "Установите полную власть над локальным сектором, защитите корабль и секретные документы в рюкзаке ценой своей жизни."
 	can_load_appearance = TRUE
@@ -193,6 +197,22 @@
 	assignedrole = ROLE_GHOSTROLE_INTEQ
 	antagonist_type = /datum/antagonist/ghost_role/inteq
 	loadout_enabled = TRUE
+	category = "inteq"
+
+/obj/effect/mob_spawn/human/inteqspace/engineer
+	name = "InteQ Field Engineer"
+	short_desc = "Вы - Полевой Инженер Авангарда InteQ, очнувшийся на захваченной базе в враждебном космосе."
+	flavour_text = "Вы очнулись в техническом отсеке базы InteQ, которая теперь под контролем врага. Корабль InteQ причалил рядом после долгого перерыва. Ваша задача – починить корабль и базу, а так же обеспечить его энергией. Снабдите Авангард ресурсами и технологиями и выполняйте приказы Капитана."
+	important_info = "Установите полную власть над локальным сектором, защитите корабль и секретные документы в рюкзаке ценой своей жизни."
+	can_load_appearance = TRUE
+	outfit = /datum/outfit/inteqspace/inteq_engineer
+
+/obj/effect/mob_spawn/human/inteqspace/dyson_gate
+	name = "InteQ Dyson Sphere Crew Member"
+	short_desc = "Вы - Оперативник  InteQ на обшивке Дайсон Сферы, и на вашей части базы произошло ЧП."
+	flavour_text = "Вы являетесь частью персонала,что обслуживает аванпост на обшивке Дайсон Сферы. За вашу смену произошло много ЧП и сейчас на базе орудуют монстры, что явились снаружи. \
+					Пакт каким то образом смогли получить коды от Гейта и начали развертывать свои силы."
+	important_info = "Востановите ваш аванпост и приготовтесь отражать нападение. Не нападайте на лагерь Пакта, пока они сами не нападут."
 
 /datum/outfit/inteqspace/inteq_crew/post_equip(mob/living/carbon/human/H)
 	H.faction |= ROLE_INTEQ
@@ -202,9 +222,17 @@
 	R.freqlock = TRUE
 	R.independent = TRUE
 
+/datum/outfit/inteqspace/inteq_engineer/post_equip(mob/living/carbon/human/H)
+	H.faction |= ROLE_INTEQ
+
+	var/obj/item/radio/R = H.ears
+	R.set_frequency(FREQ_GHOST_INTEQ)
+	R.freqlock = TRUE
+	R.independent = TRUE
+
 /obj/effect/mob_spawn/human/inteqspace/special(mob/living/new_spawn)
 	. = ..()
-	new_spawn.grant_language(/datum/language/old_codes, TRUE, TRUE, LANGUAGE_MIND)
+	new_spawn.grant_language(/datum/language/old_codes, source = LANGUAGE_MIND)
 
 	var/obj/item/implant/anchor/ghost_anchor = new
 	ghost_anchor.implant(new_spawn, null, TRUE)
@@ -221,11 +249,12 @@
 	. = ..()
 	if(GLOB.master_mode == "Extended")
 		important_info = "Запрещено пытаться сбежать и сопротивляться без веских причин как серьёзная угроза жизни от сотрудников Космической Полиции и Солнечной. Побег только с разрешения администрации."
+		category = "sol"
 
 /obj/effect/mob_spawn/human/inteqspace/captain
 	name = "InteQ Ship Captain"
-	short_desc = "Вы - Лидер Авангарда ИнтеКью на старом корабле, застрявшем во враждебном космосе."
-	flavour_text = "Ваш корабль причалил после долгого перерыва где-то во враждебном пространстве, сообщив о неисправности. Вы застряли здесь, зная, что рядом находится станция Nanotrasen. Командуйте своим экипажем и исследуйте свой территорию, чтобы закрепить свое местоположение."
+	short_desc = "Вы - Лидер Авангарда InteQ на старом корабле, застрявшем во враждебном космосе."
+	flavour_text = "Ваш корабль причалил после долгого перерыва где-то во враждебном пространстве, сообщив о неисправности. Вы застряли здесь, зная, что рядом находится станция Nanotrasen. Командуйте своим экипажем и исследуйте свою территорию, чтобы закрепить свое местоположение."
 	important_info = "Установите полную власть над локальным сектором, защитите корабль и секретные документы в рюкзаке ценой своей жизни."
 	can_load_appearance = TRUE
 	outfit = /datum/outfit/inteqspace/inteq_captain
@@ -237,6 +266,12 @@
 	R.set_frequency(FREQ_GHOST_INTEQ)
 	R.freqlock = TRUE
 	R.independent = TRUE
+
+/obj/effect/mob_spawn/human/inteqspace/captain/dyson_gate
+	name = "InteQ Dyson Sphere Captain"
+	short_desc = "Вы -Глава Авангарда InteQ в отпуске, и проходите его в выделенной для вас Зоне."
+	flavour_text = "Прошло уже три дня, как вы развлекались с одной из «игрушек», что вы прихватили из карцеров на базе. Но сейчас там обьявлен полный карантин и вам туда не пройти. Вы можете продолжить свой неожиданный отпуск или подняться выше, на орбитальную часть, где находиться аванпост с остатками сил."
+	important_info = "Не пытайтесь проникнуть в подземную часть базы, где обьявлена биологическая тревога. Не напдайте на лагерь Пакта, пока они сами не нападут."
 
 /obj/effect/mob_spawn/human/inteqspace/captain/Destroy()
 	new/obj/structure/fluff/empty_sleeper/syndicate/captain(get_turf(src))
@@ -264,6 +299,28 @@
 
 	id = /obj/item/card/id/inteq/crew_id
 	backpack_contents = list(/obj/item/paper/fluff/ruins/forgottenship/password)
+	implants = list(/obj/item/implant/deathrattle/inteqcrew, /obj/item/implant/weapons_auth)
+
+/datum/outfit/inteqspace/inteq_engineer
+	name = "InteQ Field Engineer"
+
+	suit = /obj/item/clothing/suit/armor/inteq
+	uniform = /obj/item/clothing/under/inteq
+	shoes = /obj/item/clothing/shoes/combat/swat/knife
+	gloves = /obj/item/clothing/gloves/combat
+
+	head = /obj/item/clothing/head/helmet/swat/inteq
+	mask = /obj/item/clothing/mask/gas/inteq
+	glasses = /obj/item/clothing/glasses/welding
+	ears = /obj/item/radio/headset/ghost_inteq
+	belt = /obj/item/storage/belt/utility/inteq
+
+	l_pocket = /obj/item/extinguisher/mini
+	r_pocket = /obj/item/tank/internals/emergency_oxygen/double
+
+	id = /obj/item/card/id/inteq/engineer
+	backpack_contents = list(/obj/item/paper/fluff/ruins/forgottenship/password, /obj/item/restraints/handcuffs)
+	implants = list(/obj/item/implant/deathrattle/inteqcrew, /obj/item/implant/weapons_auth)
 
 /datum/outfit/inteqspace/inteq_hostage
 	name = "InteQ Hostage"
@@ -291,6 +348,7 @@
 
 	id = /obj/item/card/id/inteq/captain_id
 	backpack_contents = list(/obj/item/documents/syndicate/red, /obj/item/paper/fluff/ruins/forgottenship/password)
+	implants = list(/obj/item/implant/deathrattle/inteqcrew, /obj/item/implant/weapons_auth)
 
 // Ghost Cafe Spawner (VR Version)
 
@@ -320,6 +378,7 @@
 		SSjob.equip_loadout(null, new_spawn)
 		SSjob.post_equip_loadout(null, new_spawn)
 		SSquirks.AssignQuirks(new_spawn, new_spawn.client, TRUE, TRUE, null, FALSE, new_spawn)
+		SSlanguage.AssignLanguage(new_spawn, new_spawn.client)
 		ADD_TRAIT(new_spawn, TRAIT_SIXTHSENSE, GHOSTROLE_TRAIT)
 		ADD_TRAIT(new_spawn, TRAIT_EXEMPT_HEALTH_EVENTS, GHOSTROLE_TRAIT)
 		ADD_TRAIT(new_spawn, TRAIT_NO_MIDROUND_ANTAG, GHOSTROLE_TRAIT) //The mob can't be made into a random antag, they are still eligible for ghost roles popups.
@@ -340,5 +399,5 @@
 
 /datum/outfit/ghostcafeVR/post_equip(mob/living/carbon/human/H, visualsOnly = FALSE, client/preference_source)
 	H.internal = H.get_item_for_held_index(1)
-	H.update_internals_hud_icon(1)
+	H.update_action_buttons_icon(1)
 

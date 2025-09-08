@@ -3,7 +3,7 @@
 /mob/living/verb/set_activity()
 	set name = "Деятельность"
 	set desc = "Описывает то, что вы сейчас делаете."
-	set category = "IC"
+	set category = "Say"
 
 	if(activity)
 		reset_activity()
@@ -41,6 +41,10 @@
 	. = ..()
 	if(activity)
 		reset_activity()
+	// BLUEMOON EDIT START - изменение памяти после смерти
+	if(mind)
+		mind.death_handle_memory()
+	// BLUEMOON EDIT END
 
 /mob/living/get_tooltip_data()
 	if(activity)

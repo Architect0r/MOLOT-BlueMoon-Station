@@ -20,6 +20,7 @@ GLOBAL_LIST_INIT(bsatmos_pipe_recipes, list(
 		new /datum/pipe_info/pipe("4-Way Manifold",		/obj/machinery/atmospherics/pipe/manifold4w),
 		new /datum/pipe_info/pipe("Layer Manifold",		/obj/machinery/atmospherics/pipe/layer_manifold),
 		new /datum/pipe_info/pipe("Bluespace Pipe",		/obj/machinery/atmospherics/pipe/bluespace),
+		new /datum/pipe_info/pipe("Multi-Deck Adapter", /obj/machinery/atmospherics/pipe/simple/multiz),
 	),
 	"Devices" = list(
 		new /datum/pipe_info/pipe("Connector",			/obj/machinery/atmospherics/components/unary/portables_connector),
@@ -51,10 +52,10 @@ GLOBAL_LIST_INIT(bsatmos_pipe_recipes, list(
 /obj/item/pipe_dispenser/bluespace
 	name = "Bluespace Rapid Piping Device (BSRPD)"
 	desc = "A device used to rapidly pipe things at a distance."
-	icon = 'modular_sand/icons/obj/tools.dmi'
+	icon = /*'modular_sand/icons/obj/tools.dmi'*/ 'modular_bluemoon/phenyamomota/icon/obj/tools.dmi'
 	icon_state = "bsrpd"
-	lefthand_file = 'modular_sand/icons/mob/inhands/equipment/tools_lefthand.dmi'
-	righthand_file = 'modular_sand/icons/mob/inhands/equipment/tools_righthand.dmi'
+	lefthand_file = /*'modular_sand/icons/mob/inhands/equipment/tools_righthand.dmi'*/ 'modular_bluemoon/icons/mob/inhands/equipment/tools_lefthand.dmi'
+	righthand_file = /*'modular_sand/icons/mob/inhands/equipment/tools_righthand.dmi'*/ 'modular_bluemoon/icons/mob/inhands/equipment/tools_righthand.dmi'
 	custom_materials = list(/datum/material/iron=75000, /datum/material/glass=37500, /datum/material/bluespace=1000)
 	has_bluespace_pipe = TRUE
 
@@ -65,7 +66,7 @@ GLOBAL_LIST_INIT(bsatmos_pipe_recipes, list(
 	playsound(src, 'sound/items/pshoom.ogg', 30, TRUE)
 	pre_attack(target, user)
 
-// End skyrat edit 
+// End skyrat edit
 #undef ATMOS_CATEGORY
 #undef DISPOSALS_CATEGORY
 #undef TRANSIT_CATEGORY

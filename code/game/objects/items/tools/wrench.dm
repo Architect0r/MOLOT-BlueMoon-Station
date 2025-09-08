@@ -45,7 +45,8 @@
 	attack_verb_continuous = list("devastates", "brutalizes", "commits a war crime against", "obliterates", "humiliates")
 	attack_verb_simple = list("devastate", "brutalize", "commit a war crime against", "obliterate", "humiliate")
 	tool_behaviour = null
-	toolspeed = null
+	toolspeed = 0.9 // BLUEMOOD ADD
+	force = 8 // BLUEMOOD ADD
 
 /obj/item/wrench/combat/Initialize(mapload)
 	. = ..()
@@ -180,3 +181,41 @@
 	icon_state = "wrench"
 	usesound = 'sound/effects/empulse.ogg'
 	toolspeed = 0.2
+// BLUEMOON ADD START black skin
+	unique_reskin = list(
+		"Carbonized" = list(
+			RESKIN_ICON_STATE_FILE = 'modular_bluemoon/icons/obj/advancedtools_black.dmi',
+			RESKIN_ICON_STATE = "wrench_black",
+		),
+		"Titanium" = list(
+			RESKIN_ICON_STATE = "wrench",
+		)
+	)
+// BLUEMOON ADD END
+
+//BLUEMOON ADD START - переношу с ТГ Т2 инструменты для учёных
+/obj/item/wrench/science
+	name = "Hand Dril"
+	desc = " This one sports a nifty science paintjob, but is otherwise normal."
+	icon_state = "drill_sci_wrench"
+	lefthand_file = 'modular_sand/icons/mob/inhands/equipment/tools_lefthand.dmi'
+	righthand_file = 'modular_sand/icons/mob/inhands/equipment/tools_righthand.dmi'
+	usesound = 'sound/items/drill_use.ogg'
+	custom_materials = list(/datum/material/iron=150,/datum/material/silver=50,/datum/material/titanium=25)
+ //done for balance reasons, making them high value for research, but harder to get
+	force = 8 //might or might not be too high, subject to change
+	w_class = WEIGHT_CLASS_SMALL
+	throwforce = 8
+	attack_verb = list("drilled", "screwed", "jabbed")
+	toolspeed = 0.25
+
+/obj/item/wrench/science/attack_self(mob/user)
+	playsound(get_turf(user),'sound/items/change_drill.ogg',50,1)
+	var/obj/item/screwdriver/science/s_drill = new /obj/item/screwdriver/science(drop_location())
+	to_chat(user, "<span class='notice'>You attach the screw driver bit to [src].</span>")
+	qdel(src)
+	user.put_in_active_hand(s_drill)
+
+/obj/item/wrench/science/suicide_act(mob/user)
+	user.visible_message("<span class='suicide'>[user] is pressing [src] against [user.ru_ego()] head! It looks like [user.p_theyre()] trying to commit suicide!</span>")
+	return (BRUTELOSS)

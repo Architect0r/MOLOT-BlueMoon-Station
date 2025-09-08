@@ -1,3 +1,5 @@
+#define CATWALK_BELOW_OBJECTS list(/obj/structure/disposalpipe, /obj/structure/cable, /obj/machinery/atmospherics) // BLUEMOON ADD - catwalks_fix
+
 /**
  * ## catwalk flooring
  *
@@ -6,9 +8,9 @@
  * unless you want to!
  */
 /turf/open/floor/catwalk_floor
-	icon = 'icons/turf/floors/catwalk_plating.dmi'
-	icon_state = "catwalk_below"
-	floor_tile = /obj/item/stack/tile/catwalk
+	icon = 'modular_bluemoon/icons/turf/floors/catwalk_plating.dmi' // BLUEMOON EDIT - catwalks_fix
+	icon_state = "maint_below"
+	floor_tile = /obj/item/stack/tile/catwalk_tile
 	name = "catwalk floor"
 	desc = "Flooring that shows its contents underneath. Engineers love it!"
 	baseturfs = /turf/open/floor/plating
@@ -18,29 +20,53 @@
 	heavyfootstep = FOOTSTEP_CATWALK
 	intact = FALSE
 	var/covered = TRUE
+	var/catwalk_type = "maint"
+	plane = FLOOR_PLANE // BLUEMOON ADD - catwalks_fix - исправляем, что вокруг кэтволков есть AO
+
+	// BLUEMOON ADD START - catwalks_fix
+/turf/open/floor/catwalk_floor/Destroy()
+	for(var/atom/A in contents)
+		if(is_type_in_list(A, CATWALK_BELOW_OBJECTS))
+			A.layer = initial(A.layer)
+			A.plane = initial(A.plane)
+	. = ..()
+	// BLUEMOON ADD END
 
 /turf/open/floor/catwalk_floor/Initialize(mapload)
 	. = ..()
-	layer = CATWALK_LAYER
+	layer = CATWALK_LAYER - 0.02 // BLUEMOON EDIT - catwalks_fix
 	update_icon(UPDATE_OVERLAYS)
 
 /turf/open/floor/catwalk_floor/update_overlays()
 	. = ..()
-	var/static/image/catwalk_overlay
-	if(isnull(catwalk_overlay))
+	if(covered)
+		var/image/catwalk_overlay
 		catwalk_overlay = new()
 		catwalk_overlay.icon = icon
-		catwalk_overlay.icon_state = "catwalk_above"
-		catwalk_overlay.plane = GAME_PLANE
+		catwalk_overlay.icon_state = "[catwalk_type]_above"
+		catwalk_overlay.plane = FLOOR_PLANE // BLUEMOON EDIT - catwalks_fix
 		catwalk_overlay.layer = CATWALK_LAYER
 		catwalk_overlay = catwalk_overlay.appearance
-	if(covered)
+
 		. += catwalk_overlay
+
+	// BLUEMOON ADD START - catwalks_fix
+		for(var/atom/A in contents)
+			if(is_type_in_list(A, CATWALK_BELOW_OBJECTS))
+				A.layer = CATWALK_LAYER - 0.01
+				A.plane = -8
+	else
+		for(var/atom/A in contents)
+			if(is_type_in_list(A, CATWALK_BELOW_OBJECTS))
+				A.layer = initial(A.layer)
+				A.plane = initial(A.plane)
+	// BLUEMOON ADD END
 
 /turf/open/floor/catwalk_floor/screwdriver_act(mob/living/user, obj/item/tool)
 	. = ..()
 	covered = !covered
 	user.balloon_alert(user, "[!covered ? "cover removed" : "cover added"]")
+	tool.play_tool_sound(src)
 	update_icon(UPDATE_OVERLAYS)
 
 /turf/open/floor/catwalk_floor/crowbar_act(mob/user, obj/item/I)
@@ -48,3 +74,36 @@
 		user.balloon_alert(user, "remove cover first!")
 		return FALSE
 	return pry_tile(I, user)
+
+//Reskins! More fitting with most of our tiles, and appear as a radial on the base type
+/turf/open/floor/catwalk_floor/iron
+	name = "iron plated catwalk floor"
+	icon_state = "iron_below"
+	floor_tile = /obj/item/stack/tile/catwalk_tile/iron
+	catwalk_type = "iron"
+
+/turf/open/floor/catwalk_floor/iron_white
+	name = "white plated catwalk floor"
+	icon_state = "whiteiron_below"
+	floor_tile = /obj/item/stack/tile/catwalk_tile/iron_white
+	catwalk_type = "whiteiron"
+
+/turf/open/floor/catwalk_floor/iron_dark
+	name = "dark plated catwalk floor"
+	icon_state = "darkiron_below"
+	floor_tile = /obj/item/stack/tile/catwalk_tile/iron_dark
+	catwalk_type = "darkiron"
+
+/turf/open/floor/catwalk_floor/titanium
+	name = "titanium plated catwalk floor"
+	icon_state = "titanium_below"
+	floor_tile = /obj/item/stack/tile/catwalk_tile/titanium
+	catwalk_type = "titanium"
+
+/turf/open/floor/catwalk_floor/iron_smooth //the original green type
+	name = "smooth plated catwalk floor"
+	icon_state = "smoothiron_below"
+	floor_tile = /obj/item/stack/tile/catwalk_tile/iron_smooth
+	catwalk_type = "smoothiron"
+
+#undef CATWALK_BELOW_OBJECTS // BLUEMOON ADD - catwalks_fix

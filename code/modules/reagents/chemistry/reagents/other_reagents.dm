@@ -52,7 +52,7 @@
 			C.adjust_integration_blood(round(reac_volume, 0.1))
 			// we don't care about bloodtype here, we're just refilling the mob
 
-	if(reac_volume >= 10 && istype(L) && method != INJECT)
+	if(reac_volume >= 10 && istype(L) && (method != INJECT && method != INGEST))
 		L.add_blood_DNA(list(data["blood_DNA"] = data["blood_type"]))
 
 /datum/reagent/blood/on_mob_life(mob/living/carbon/C)	//Because lethals are preferred over stamina. damnifino.
@@ -446,8 +446,8 @@
 	if(!data)
 		data = list("misc" = 1)
 	data["misc"]++
-	if(HAS_TRAIT(M, TRAIT_HALLOWED) || M.mind?.isholy)
-		return
+	if(!iscultist(M, FALSE, TRUE) && !is_servant_of_ratvar(M) && (HAS_TRAIT(M, TRAIT_HALLOWED) || M.mind?.isholy))
+		return ..()
 	if(iscultist(M, FALSE, TRUE))
 		for(var/datum/action/innate/cult/blood_magic/BM in M.actions)
 			if(!BM.holy_dispel)
@@ -2527,7 +2527,7 @@
 	if(iscatperson(M)) //"drugs" for felinids
 		M.set_drugginess(30)
 		if(prob(20))
-			to_chat(M, "<span class = 'notice'>[pick("Headpats feel nice.", "The feeling of a hairball...", "Backrubs would be nice.", "Whats behind those doors?", "Wanna huuugs~", "Pat me pleeease~", "That corner looks suspicious...", "Rub my belly pleeease~")]</span>")
+			to_chat(M, span_notice(pick("Headpats feel nice.", "The feeling of a hairball...", "Backrubs would be nice.", "Whats behind those doors?", "Wanna huuugs~", "Pat me pleeease~", "That corner looks suspicious...", "Rub my belly pleeease~")))
 		if(prob(20))
 			M.nextsoundemote = world.time - 10 //"too early BZHZHZH"
 			M.emote(pick("nya","mewo","meow","purr","anyo","uwu","stare","spin"))
@@ -2536,18 +2536,17 @@
 		if(prob(5))
 			M.emote("spin")
 			M.lay_down()
-			to_chat(M, "<span class = 'notice'>[pick("Wanna reeest~","Waaaw~","Wanna plaaay!~","Play with meee~")]</span>")
+			to_chat(M, span_notice(pick("Wanna reeest~","Waaaw~","Wanna plaaay!~","Play with meee~")))
 	else
 		if(prob(20))
 			M.emote("nya")
 		if(prob(20))
-			to_chat(M, "<span class = 'notice'>[pick("Headpats feel nice.", "The feeling of a hairball...", "Backrubs would be nice.", "Whats behind those doors?")]</span>")
+			to_chat(M, span_notice(pick("Headpats feel nice.", "The feeling of a hairball...", "Backrubs would be nice.", "Whats behind those doors?")))
 	if(ishuman(M))
 		var/mob/living/carbon/human/H = M
-		var/list/adjusted = H.adjust_arousal(2,"catnip", aphro = TRUE)
-		for(var/g in adjusted)
-			var/obj/item/organ/genital/G = g
-			to_chat(M, "<span class='userlove'>You feel like playing with your [G.name]!</span>")
+		var/list/adjusted = H.adjust_arousal(2,"catnip", aphro = TRUE, silent = TRUE)
+		for(var/obj/item/organ/genital/G in adjusted)
+			to_chat(M, span_userlove("You feel like playing with your [G.name]!"))
 	..()
 
 /datum/reagent/preservahyde
@@ -2684,11 +2683,16 @@
 	update_icon()
 
 /obj/effect/decal/cleanable/semen/replace_decal(obj/effect/decal/cleanable/semen/S)
-	if(reagents.total_volume > 0)
+	// BLUEMOON EDIT START: Invalid Space Turfs
+	if(reagents && reagents.total_volume > 0)
 		reagents.trans_to(S.reagents, reagents.total_volume)
 	if(blood_DNA)
-		S.blood_DNA |= blood_DNA
-		S.update_icon()
+		if (!islist(S.blood_DNA))
+			S.blood_DNA = list()
+		if (islist(blood_DNA))
+			S.blood_DNA |= blood_DNA
+	S.update_icon()
+	// BLUEMOON EDIT END: Invalid Space Turfs
 	return ..()
 
 /obj/effect/decal/cleanable/semen/update_icon()

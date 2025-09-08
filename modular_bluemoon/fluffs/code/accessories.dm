@@ -86,6 +86,84 @@
 
 ////////////////////////
 
+/obj/item/clothing/neck/hateredsoul_dogtag
+	name = "Combat Dogtag"
+	desc = "Связка боевых жетонов с резиновым ободком по их краям. Выполнены из прочного и износостойкого сплава, с маленьким весом, от чего стали практически незаметными для самого носителя. На правом жетоне выбиты основные данные его владельца, в виде полного имени, группы крови и принадлежности к подразделению. На левом жетоне выбита дополнительная информация и очертания владельца."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	icon_state = "hateredsoul_dogtag_1"
+	item_state = "hateredsoul_dogtag_1"
+	pocket_storage_component_path = /datum/component/storage/concrete/pockets/small/collar
+	var/poly_states = 1
+	var/poly_colors = list("#00BBBB")
+	var/tagname = null
+	unique_reskin = list(
+		"Combat dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_1",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_1"
+		),
+		"Combat Dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_2",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_2"
+		)
+	)
+
+/obj/item/clothing/neck/hateredsoul_dogtag/ComponentInitialize()
+	. = ..()
+	if(!poly_states)
+		return
+	AddElement(/datum/element/polychromic, poly_states)
+
+/obj/item/clothing/neck/hateredsoul_dogtag/attack_self(mob/user)
+	tagname = stripped_input(user, "Would you like to change the name on the tag?", "Name your new tag", tagname, MAX_NAME_LEN)
+	name = tagname ? "[initial(name)] - [tagname]" : initial(name)
+
+/obj/item/clothing/neck/hateredsoul_dogtag/nt
+	name = "NT Combat Dogtag"
+	desc = "Связка боевых жетонов с резиновым ободком по их краям. Выполнены из прочного и износостойкого сплава, с маленьким весом, от чего стали практически незаметными для самого носителя. На правом жетоне выбиты основные данные его владельца, в виде полного имени, группы крови и принадлежности к подразделению. На левом жетоне изображён логотип корпорации NanoTrasen."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	icon_state = "hateredsoul_dogtag_nt_1"
+	item_state = "hateredsoul_dogtag_nt_1"
+	unique_reskin = list(
+		"NT Combat Dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_nt_1",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_nt_1"
+		),
+		"NT Combat dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_nt_2",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_nt_2"
+		),
+		"NT combat dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_nt_3",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_nt_3"
+		)
+	)
+
+/obj/item/clothing/neck/hateredsoul_dogtag/syndie
+	name = "Syndie Combat Dogtag"
+	desc = "Связка боевых жетонов с резиновым ободком по их краям. Выполнены из прочного и износостойкого сплава, с маленьким весом, от чего стали практически незаметными для самого носителя. На правом жетоне выбиты основные данные его владельца, в виде полного имени, группы крови и принадлежности к подразделению. На левом жетоне изображена трёхглавая змея Синдиката."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	icon_state = "hateredsoul_dogtag_syndie_1"
+	item_state = "hateredsoul_dogtag_syndie_1"
+	unique_reskin = list(
+		"Syndie Combat Dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_syndie_1",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_syndie_1"
+		),
+		"Syndie Combat dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_syndie_2",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_syndie_2"
+		),
+		"Syndie combat dogtag" = list(
+			RESKIN_ICON_STATE = "hateredsoul_dogtag_syndie_3",
+			RESKIN_ITEM_STATE = "hateredsoul_dogtag_syndie_3"
+		)
+	)
+
+////////////////////////
+
 /obj/item/clothing/neck/tie/dogtag
 	name = "Dog tag"
 	desc = "The first tag indicates personal number - AG-003288 and affiliation with the AC mercenaries.  The second tag contains the first and last name - Althea Gantia, along with the blood type."
@@ -93,6 +171,36 @@
 	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
 	icon_state = "dogtag"
 	item_state = "dogtag"
+
+////////////////////////
+
+/obj/item/clothing/neck/tie/pendantcape
+	name = "Corvus Pendant"
+	desc = "Ravens in black with eyes so keen, steal pendants bright with silver sheen."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/neck.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/neck.dmi'
+	icon_state = "cp" //Сделано специально, человек попросил защиту от хамелионки.
+	item_state = "cp"
+	unique_reskin = list(
+		"Corvus Pendant" = list(
+			RESKIN_ICON_STATE = "pendant",
+			RESKIN_ITEM_STATE = "pendant"
+		),
+		"Corvus Cape" = list(
+			RESKIN_ICON_STATE = "cape",
+			RESKIN_ITEM_STATE = "cape"
+		)
+	)
+
+////////////////////////
+
+/obj/item/clothing/neck/tie/f_haori
+	name = "Flaming Haori"
+	desc = "A white haori with a flaming pattern on the end. It seems to radiate heat and energy."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	icon_state = "f_haori"
+	item_state = "f_haori"
 
 ////////////////////////
 
@@ -115,6 +223,7 @@
 	item_state = "dread_neck"
 	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
 	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	alternate_worn_layer = ABOVE_HEAD_LAYER
 
 ////////////////////////
 
@@ -166,7 +275,7 @@
 	name = "Scabbard for a officer's cleaver"
 	desc = "The special scabbard is well suited for the officer's cleaver issued to high-ranking Adler officers and their officials. You could call it superfluous, it is made of the skin of some rare creature and perhaps even intelligent, the scabbard itself is attached to the belt in the belt area at the back for the convenience of sharply removing the blade and striking, which is taught to officers when they learn how to use this specialized cleaver. For ordinary people, they are inconvenient and difficult to use."
 	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/belts.dmi'
-	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/belts.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/belt.dmi'
 	icon_state = "scabbard"
 	item_state = "scabbard"
 	w_class = WEIGHT_CLASS_BULKY
@@ -197,3 +306,93 @@
 	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
 	icon_state = "shoulder_coat"
 	item_state = "shoulder_coat"
+
+/obj/item/clothing/underwear/socks/savannah_piercing
+	name = "piercings and bracers"
+	desc = "A gold piercings and bracers."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	icon_state = "pier"
+	slot_flags = ITEM_SLOT_SOCKS
+	body_parts_covered = 0
+
+////////////////////////
+
+/obj/item/clothing/neck/tie/hahun_cape
+	name = "Praxil Mk.6"
+	desc = "A cape that awarded to trusted agents of Syndicate, pleasant to the touch and look very stylish, doesn't even restrict movement"
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	lefthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/accessories_left.dmi'
+	righthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/accessories_right.dmi'
+	icon_state = "hahun_cape"
+	item_state = "hahun_cape"
+
+/obj/item/clothing/gloves/color/latex/nitrile/hahun_eidolon
+	name = "Eidolon's gloves"
+	desc = "Medical gloves with Eidolon Corporation markings, have a built-in computer with information, that tied with medical scan and huds. Have distinctive red-green coloring."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/gloves.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/gloves.dmi'
+	lefthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_left.dmi'
+	righthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_right.dmi'
+	icon_state = "hahun_gloves"
+	item_state = "hahun_gloves"
+
+/obj/item/modkit/hahun_eidolon_nitrile
+	name = "Eidolon medical gloves Kit"
+	desc = "A modkit for making a nitrile gloves into a Eidolon's gloves."
+	product = /obj/item/clothing/gloves/color/latex/nitrile/hahun_eidolon
+	fromitem = list(/obj/item/clothing/gloves/color/latex/nitrile)
+
+/obj/item/clothing/gloves/color/yellow/hahun_eidolon
+	name = "Eidolon engineering gloves"
+	desc = "Engineering gloves with Eidolon Corporation markings, have a built-in computer with information, \
+			that tied with wire scan and meson huds. Have distinctive red-black coloring"
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/gloves.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/gloves.dmi'
+	lefthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_left.dmi'
+	righthand_file = 'modular_bluemoon/fluffs/icons/mob/inhands/clothing_right.dmi'
+	icon_state = "hahun_gloves"
+	item_state = "hahun_gloves"
+
+/obj/item/modkit/hahun_eidolon_isulated
+	name = "Eidolon engineering gloves Kit"
+	desc = "A modkit for making a Insulated Gloves into a Eidolon engineering gloves."
+	product = /obj/item/clothing/gloves/color/yellow/hahun_eidolon
+	fromitem = list(/obj/item/clothing/gloves/color/yellow)
+
+/obj/item/storage/box/hahun_eidolon/PopulateContents()
+	new /obj/item/modkit/hahun_eidolon_nitrile(src)
+	new /obj/item/modkit/hahun_eidolon_isulated(src)
+
+////////////////////////
+
+/obj/item/storage/belt/military/srt_chesrig
+	name = "SRT Bluerock chest-rig"
+	desc = "A custom-made chest rig for wearing on top of body armor in CQC operations. Sturdy and versatile, it features both MOLLE and ALICE attachment systems. Seems like it already has old-fashioned holster attached to it."
+	icon = 'modular_bluemoon/fluffs/icons/obj/clothing/accessories.dmi'
+	mob_overlay_icon = 'modular_bluemoon/fluffs/icons/mob/clothing/accessories.dmi'
+	icon_state = "srt_chestrig"
+	item_state = "srt_chestrig"
+
+//////////////////////// БАНЕРЫ
+
+/obj/item/banner/irellia
+	name = "Banner of the Irellia"
+	icon = 'modular_bluemoon/fluffs/icons/obj/accessories.dmi'
+	icon_state = "banner-irellia"
+	desc = "Banner of the Irellia"
+
+/obj/item/banner/rohai
+	name = "Banner of the Rohai empire"
+	icon = 'modular_bluemoon/fluffs/icons/obj/accessories.dmi'
+	icon_state = "banner-rohai"
+	desc = "Banner of the Rohai empire"
+
+/obj/item/banner/norn
+	name = "Banner of kingdom Norn"
+	icon = 'modular_bluemoon/fluffs/icons/obj/accessories.dmi'
+	icon_state = "banner-norn"
+	desc = "Banner of kingdom Norn"
+
+//////////////////////// БАНЕРЫ

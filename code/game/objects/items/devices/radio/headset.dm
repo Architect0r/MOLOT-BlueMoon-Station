@@ -98,6 +98,12 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 		return ..(freq, level)
 	return FALSE
 
+/obj/item/radio/headset/MouseDrop(mob/over, src_location, over_location)
+	var/mob/headset_user = usr
+	if((headset_user == over) && headset_user.canUseTopic(src, BE_CLOSE, FALSE, NO_TK))
+		return attack_self(headset_user)
+	return ..()
+
 /obj/item/radio/headset/syndicate //disguised to look like a normal headset for stealth ops
 
 /obj/item/radio/headset/syndicate/alt //undisguised bowman with flash protection
@@ -173,7 +179,7 @@ GLOBAL_LIST_INIT(channel_tokens, list(
 /obj/item/radio/headset/headset_law
 	name = "law radio headset"
 	desc = "This is used by your local budget lawyer."
-	icon = 'modular_bluemoon/Fink/icons/clothing/radio.dmi'
+	icon = 'modular_bluemoon/icons/obj/radio.dmi'
 	icon_state = "law_headset"
 	keyslot = new /obj/item/encryptionkey/headset_law
 

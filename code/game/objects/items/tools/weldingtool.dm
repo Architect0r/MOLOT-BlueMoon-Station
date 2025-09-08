@@ -332,13 +332,15 @@
 	name = "industrial welding tool"
 	desc = "A slightly larger welder with a larger tank."
 	icon_state = "indwelder"
+	item_state = "upindwelder"
 	max_fuel = 40
 	custom_materials = list(/datum/material/glass=60)
+	toolspeed = 0.95 // BLUEMOOD ADD
 
 /obj/item/weldingtool/largetank/cyborg
 	name = "integrated welding tool"
 	desc = "An advanced welder designed to be used in robotic systems."
-	icon = 'icons/obj/items_cyborg.dmi'
+	icon = /*'icons/obj/items_cyborg.dmi'*/ 'modular_bluemoon/icons/obj/items_cyborg.dmi'
 	icon_state = "indwelder_cyborg"
 	toolspeed = 0.5
 
@@ -349,6 +351,7 @@
 	name = "emergency welding tool"
 	desc = "A miniature welder used during emergencies."
 	icon_state = "miniwelder"
+	item_state = "miniwelder"
 	max_fuel = 10
 	w_class = WEIGHT_CLASS_TINY
 	custom_materials = list(/datum/material/iron=30, /datum/material/glass=10)
@@ -364,6 +367,7 @@
 	item_state = "upindwelder"
 	max_fuel = 80
 	custom_materials = list(/datum/material/iron=70, /datum/material/glass=120)
+	toolspeed = 0.85 // BLUEMOOD ADD
 
 /obj/item/weldingtool/bronze
 	name = "bronze plated welding tool"
@@ -411,6 +415,7 @@
 	desc = "An alien welding tool. Whatever fuel it uses, it never runs out."
 	icon = 'icons/obj/abductor.dmi'
 	icon_state = "welder"
+	item_state = "alienwelder"
 	self_fueling = TRUE
 	can_off_process = TRUE
 	refueling_interval = 1
@@ -423,11 +428,22 @@
 	desc = "A modern welding tool combined with an alien welding tool, it almost never runs out of fuel and works nearly as fast."
 	icon = 'icons/obj/advancedtools.dmi'
 	icon_state = "welder"
+	item_state = "alienwelder"
 	self_fueling = TRUE
 	can_off_process = TRUE
 	refueling_interval = 2
 	toolspeed = 0.2
 	light_intensity = 0
 	change_icons = 0
+// BLUEMOON ADD START black skin
+	unique_reskin = list(
+		"Carbonized" = list(
+			RESKIN_ICON_STATE_FILE = 'modular_bluemoon/icons/obj/advancedtools_black.dmi',
+		),
+		"Titanium" = list(
+			RESKIN_ICON_STATE = "welder",
+		)
+	)
+// BLUEMOON ADD END
 
 #undef WELDER_FUEL_BURN_INTERVAL

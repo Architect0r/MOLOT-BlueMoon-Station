@@ -20,6 +20,7 @@
 	var/selectable = 1	// Set to 0 for passive equipment such as mining scanner or armor plates
 	var/harmful = FALSE //Controls if equipment can be used to attack by a pacifist.
 	var/destroy_sound = 'sound/mecha/critdestr.ogg'
+	var/mecha_subcategory_flags // BLUEMOON ADD
 
 /obj/item/mecha_parts/mecha_equipment/proc/update_chassis_page()
 	if(chassis)
@@ -86,7 +87,7 @@
 	if(chassis.equipment_disabled)
 		to_chat(chassis.occupants, "<span=warn>Error -- Equipment control unit is unresponsive.</span>")
 		return FALSE
-	if(TIMER_COOLDOWN_RUNNING(chassis, COOLDOWN_MECHA_EQUIPMENT))
+	if(TIMER_COOLDOWN_CHECK(chassis, COOLDOWN_MECHA_EQUIPMENT))
 		return FALSE
 	return TRUE
 

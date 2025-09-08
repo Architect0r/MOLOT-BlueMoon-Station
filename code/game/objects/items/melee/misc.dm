@@ -115,6 +115,7 @@
 	force = 18
 	throwforce = 15
 	w_class = WEIGHT_CLASS_BULKY
+	block_chance = 50
 	armour_penetration = 75
 	sharpness = WOUND_SLASH
 	attack_verb = list("slashed", "cut")
@@ -122,14 +123,14 @@
 	custom_materials = list(/datum/material/iron = 1000)
 	total_mass = 3.4
 	item_flags = NEEDS_PERMIT | ITEM_CAN_PARRY
-	block_parry_data = /datum/block_parry_data/shield
+	block_parry_data = /datum/block_parry_data/captain_saber
 
 /datum/block_parry_data/captain_saber
 	can_block_directions = BLOCK_DIR_NORTH | BLOCK_DIR_NORTHEAST | BLOCK_DIR_NORTHWEST | BLOCK_DIR_WEST | BLOCK_DIR_EAST
 	block_damage_absorption = 5
 	block_damage_multiplier = 0.15
 	block_damage_multiplier_override = list(
-		ATTACK_TYPE_MELEE = 0.25
+		TEXT_ATTACK_TYPE_MELEE = 0.25
 	)
 	block_start_delay = 0		// instantaneous block
 	block_stamina_cost_per_second = 2.5
@@ -167,6 +168,14 @@
 	if(parry_efficiency >= 90)		// perfect parry
 		block_return[BLOCK_RETURN_REDIRECT_METHOD] = REDIRECT_METHOD_DEFLECT
 		. |= BLOCK_SHOULD_REDIRECT
+
+/obj/item/melee/sabre/run_block(mob/living/owner, atom/object, damage, attack_text, attack_type, armour_penetration, mob/attacker, def_zone, final_block_chance, list/block_return)
+	if(!is_energy_reflectable_projectile(object) && (attack_type & ATTACK_TYPE_PROJECTILE))
+		block_return[BLOCK_RETURN_REDIRECT_METHOD] = REDIRECT_METHOD_RETURN_TO_SENDER			//no you
+		owner.visible_message("<span class='danger'>Ranged attacks just make [owner] angrier!</span>")
+		playsound(src, pick('sound/weapons/bulletflyby.ogg', 'sound/weapons/bulletflyby2.ogg', 'sound/weapons/bulletflyby3.ogg'), 75, 1)
+		return BLOCK_SHOULD_REDIRECT | BLOCK_SUCCESS | BLOCK_REDIRECTED
+	return ..()
 
 /obj/item/melee/sabre/Initialize(mapload)
 	. = ..()
@@ -454,7 +463,7 @@
 			var/countered = block_return[BLOCK_RETURN_MITIGATION_PERCENT] > block_percent_to_counter
 			// BLUEMOON ADD START - больших и тяжёлых существ проблематично нормально оглушить
 			var/final_stun_damage = stam_dmg
-			if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY_SUPER))
+			if(target.mob_weight > MOB_WEIGHT_HEAVY)
 				if(!full_effect_on_superheavy_characters)
 					var/target_size_mod = 1
 					if(get_size(target) > 1)

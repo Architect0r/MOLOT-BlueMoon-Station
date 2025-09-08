@@ -8,10 +8,6 @@
 /mob/living/carbon/human/Initialize(mapload)
 	add_verb(src, /mob/living/proc/mob_sleep)
 	add_verb(src, /mob/living/proc/lay_down)
-	add_verb(src, /mob/living/carbon/human/verb/underwear_toggle)
-	add_verb(src, /mob/living/verb/subtle)
-	add_verb(src, /mob/living/verb/subtler)
-	add_verb(src, /mob/living/verb/surrender) // Sandstorm change
 	//initialize limbs first
 	create_bodyparts()
 
@@ -33,6 +29,7 @@
 
 	RegisterSignal(src, COMSIG_COMPONENT_CLEAN_ACT, TYPE_PROC_REF(/atom, clean_blood))
 	GLOB.human_list += src
+	set_jump_component()
 
 /mob/living/carbon/human/proc/setup_human_dna()
 	//initialize dna. for spawned humans; overwritten by other code
@@ -459,8 +456,46 @@
 					threatcount += 2
 
 	//Check for dresscode violations
-	if(istype(head, /obj/item/clothing/head/wizard) || istype(head, /obj/item/clothing/head/helmet/space/hardsuit/wizard) || istype(head, /obj/item/clothing/head/helmet/space/hardsuit/shielded/wizard) || istype(head, /obj/item/clothing/head/helmet/space/hardsuit/syndi) || istype(head, /obj/item/clothing/head/helmet/space/hardsuit/shielded/syndi))
+	// BLUEMOON EDIT START
+	var/static/list/equip_checks = list(
+		/obj/item/clothing/head/helmet/space/hardsuit/wizard,
+		/obj/item/clothing/head/helmet/space/hardsuit/shielded/wizard,
+		/obj/item/clothing/head/helmet/space/hardsuit/syndi,
+		/obj/item/clothing/head/helmet/space/hardsuit/shielded/syndi,
+		/obj/item/clothing/head/helmet/swat/inteq,
+		/obj/item/clothing/suit/armor/inteq,
+		/obj/item/storage/belt/military/inteq,
+		/obj/item/clothing/glasses/hud/security/sunglasses/inteq,
+		/obj/item/clothing/mask/gas/inteq,
+		/obj/item/storage/backpack/security/inteq,
+		/obj/item/clothing/under/inteq
+	)
+
+	var/static/list/special_equip_checks = list(/obj/item/clothing/head/wizard = "check_magic_flag")
+
+	// main check
+	var/illegal_equipment = FALSE
+	var/list/equipped_items = get_equipped_items(FALSE)
+	var/list/obscured_slots = check_obscured_slots()
+	for(var/obj/item/I in equipped_items)
+		if(I.current_equipped_slot in obscured_slots)
+			continue
+		for(var/T in equip_checks)
+			if(istype(I, T))
+				illegal_equipment = TRUE
+				break
+		for(var/T in special_equip_checks)
+			if(istype(I, T))
+				var/proc_to_call = special_equip_checks[T]
+				if(!proc_to_call || call(I, proc_to_call)())
+					illegal_equipment = TRUE
+					break
+		if(illegal_equipment)
+			break
+
+	if(illegal_equipment)
 		threatcount += 4 //fuk u antags <3			//no you
+	// BLUEMOON EDIT END
 
 	//mindshield implants imply trustworthyness
 	if(HAS_TRAIT(src, TRAIT_MINDSHIELD))
@@ -678,11 +713,11 @@
 					if(hal_screwyhud == SCREWYHUD_HEALTHY)
 						icon_num = 0
 					if(icon_num)
-						hud_used.healthdoll.add_overlay(mutable_appearance('icons/mob/screen_gen.dmi', "[BP.body_zone][icon_num]"))
+						hud_used.healthdoll.add_overlay(mutable_appearance(ui_style_modular(hud_used.ui_style, "health"), "[BP.body_zone][icon_num]"))
 				for(var/t in get_missing_limbs()) //Missing limbs
-					hud_used.healthdoll.add_overlay(mutable_appearance('icons/mob/screen_gen.dmi', "[t]6"))
+					hud_used.healthdoll.add_overlay(mutable_appearance(ui_style_modular(hud_used.ui_style, "health"), "[t]6"))
 				for(var/t in get_disabled_limbs()) //Disabled limbs
-					hud_used.healthdoll.add_overlay(mutable_appearance('icons/mob/screen_gen.dmi', "[t]7"))
+					hud_used.healthdoll.add_overlay(mutable_appearance(ui_style_modular(hud_used.ui_style, "health"), "[t]7"))
 			else
 				hud_used.healthdoll.icon_state = "healthdoll_DEAD"
 
@@ -876,26 +911,34 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 	return !incapacitated(ignore_restraints = TRUE) && (istype(target) && target.stat == CONSCIOUS && CHECK_MOBILITY(src, MOBILITY_STAND))
 
 /mob/living/carbon/human/proc/can_be_firemanned(mob/living/carbon/target)
-	return (ishuman(target) && (!CHECK_MOBILITY(target, MOBILITY_STAND) || HAS_TRAIT(target, TRAIT_BLUEMOON_LIGHT))) || ispAI(target)
+	return (ishuman(target) && (!CHECK_MOBILITY(target, MOBILITY_STAND) || target.mob_weight < MOB_WEIGHT_NORMAL)) || ispAI(target)
 
 /mob/living/carbon/human/proc/fireman_carry(mob/living/carbon/target)
 	var/carrydelay = 40 //if you have latex you are faster at grabbing
 	var/skills_space = "" //cobby told me to do this
+	var/gloves_used = FALSE
 	if(HAS_TRAIT(src, TRAIT_QUICKER_CARRY))
+		if(HAS_TRAIT_FROM(src, TRAIT_QUICKER_CARRY, GLOVE_TRAIT))
+			gloves_used = TRUE
 		carrydelay = 20
 		skills_space = "профессионально "
-	else if(HAS_TRAIT(src, TRAIT_QUICK_CARRY) || HAS_TRAIT(target, TRAIT_BLUEMOON_LIGHT))
-		carrydelay = 30
+	// BLUEMOON ADDITION AHEAD making mind-based condition for job-specific qualification
+	else if(HAS_TRAIT(src.mind, TRAIT_QUICK_CARRY))
+		carrydelay = 20
+		skills_space = "оперативно "
+	// BLUEMOON ADDITION END
+	else if(HAS_TRAIT(src, TRAIT_QUICK_CARRY) || target.mob_weight < MOB_WEIGHT_NORMAL)
+		carrydelay = 27.5 // BLUEMOON EDIT making this a little bit useful
 		skills_space = "быстро "
 	// BLUEMOON ADDITION AHEAD - тяжёлых и сверхтяжёлых персонажей нельзя нести на плече
-	if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY) || HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY_SUPER))
+	if(target.mob_weight > MOB_WEIGHT_NORMAL)
 		to_chat(src, span_warning("You tried to lift [target], but they are too heavy!"))
 		return
 	// BLUEMOON ADDITION END
 	if(can_be_firemanned(target) && !incapacitated(FALSE, TRUE))
 		visible_message("<span class='notice'>[src] [skills_space]поднимает [target] на свои плечи.</span>",
 		//Joe Medic starts quickly/expertly lifting Grey Tider onto their back..
-		"<span class='notice'>[carrydelay < 35 ? "Используя перчатки с наночипами, вы" : "Вы"] [skills_space]поднимаете [target] на свои плечи[carrydelay == 40 ? ", всё благодаря наночипов в ваших перчатках..." : "..."]</span>")
+		"<span class='notice'>[gloves_used ? "Используя перчатки с наночипами, вы" : "Вы"] [skills_space]поднимаете [target] на свои плечи.</span>")
 		//(Using your gloves' nanochips, you/You) ( /quickly/expertly) start to lift Grey Tider onto your back(, while assisted by the nanochips in your gloves../...)
 		if(do_after(src, carrydelay, target, extra_checks = CALLBACK(src, PROC_REF(can_be_firemanned), target)))
 			//Second check to make sure they're still valid to be carried
@@ -915,10 +958,11 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 
 		// BLUEMOON ADDITION START - тяжёлые персонажи дольше забираются на спину
 		var/climb_on_time = 1.5 SECONDS
-		if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY_SUPER))
-			climb_on_time = 4 SECONDS // Время, чтобы задуматься над смыслом жизни
-		else if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY))
-			climb_on_time = 2.5 SECONDS
+		switch(target.mob_weight)
+			if(MOB_WEIGHT_HEAVY_SUPER)
+				climb_on_time = 4 SECONDS
+			if(MOB_WEIGHT_HEAVY)
+				climb_on_time = 2.5 SECONDS
 		// BLUEMOON ADDITION END
 
 		if(do_after(target, climb_on_time, src, IGNORE_INCAPACITATED, extra_checks = CALLBACK(src, PROC_REF(can_piggyback), target)))
@@ -927,13 +971,13 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 					target.visible_message("<span class='warning'>[target] can't hang onto [src]!</span>")
 					return
 				// BLUEMOON ADDITION START
-				if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY) || HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY_SUPER))
+				if(target.mob_weight > MOB_WEIGHT_NORMAL)
 					target.visible_message(span_warning("[target] слишком много весит для [src]!"))
 					var/obj/item/bodypart/affecting = get_bodypart(BODY_ZONE_CHEST)
 					var/wound_bon = 100
 					var/damage = 40
 
-					if(HAS_TRAIT(target, TRAIT_BLUEMOON_HEAVY_SUPER))
+					if(target.mob_weight > MOB_WEIGHT_HEAVY)
 						wound_bon += 300
 						damage += 120
 						to_chat(src, span_danger("Умные мысли преследуют вас, но вы всегда быстрее!"))
@@ -1255,3 +1299,18 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 
 /mob/living/carbon/human/species/arachnid
 	race = /datum/species/arachnid
+
+/mob/living/carbon/human/singularity_pull(S, current_size)
+	..()
+	if(current_size >= STAGE_THREE)
+		for(var/obj/item/hand in held_items)
+			if(prob(current_size * 5) && hand.w_class >= ((11-current_size)/2)  && dropItemToGround(hand))
+				step_towards(hand, src)
+				to_chat(src, span_warning("\The [S] pulls \the [hand] from your grip!"))
+
+///Sets up the jump component for the mob. Proc args can be altered so different mobs have different 'default' jump settings
+/mob/living/proc/set_jump_component(duration = 0.5 SECONDS, cooldown = 1 SECONDS, cost = 64, height = 16, sound = null, flags = JUMP_SHADOW, flags_pass = PASSTABLE)
+	if(HAS_TRAIT(src, TRAIT_FREERUNNING))
+		AddComponent(/datum/component/jump, _jump_duration = duration, _jump_cooldown = cooldown, _stamina_cost = 32, _jump_height = height, _jump_sound = sound, _jump_flags = flags, _jumper_allow_pass_flags = flags_pass)
+	else
+		AddComponent(/datum/component/jump, _jump_duration = duration, _jump_cooldown = cooldown, _stamina_cost = cost, _jump_height = height, _jump_sound = sound, _jump_flags = flags, _jumper_allow_pass_flags = flags_pass)

@@ -23,7 +23,7 @@
 		"AC Recruit",
 		"Russian Officer"
 		)
-	custom_spawn_text = "<font color='black' size='2'><b> Your job is to keep the peace. Conflict de-escalation through diplomacy is your top priority. Only use your baton as a last resort.</b></font><font color='red' size='4'><b>You are NOT a Security Officer.</b></font>"
+	custom_spawn_text = "вы не офицер. Ваша задача — мирное урегулирование конфликтов и их деэскалация. Используйте табельное оружие только в крайних случаях."
 
 	outfit = /datum/outfit/job/peacekeeper
 	plasma_outfit = /datum/outfit/plasmaman/peacekeeper
@@ -36,7 +36,7 @@
 	mind_traits = list(TRAIT_LAW_ENFORCEMENT_METABOLISM)
 
 	display_order = JOB_DISPALY_ORDER_SECPEACE
-	blacklisted_quirks = list(/datum/quirk/mute, /datum/quirk/brainproblems, /datum/quirk/nonviolent, /datum/quirk/blindness, /datum/quirk/monophobia, /datum/quirk/bluemoon_criminal)
+	blacklisted_quirks = list(/datum/quirk/mute, /datum/quirk/brainproblems, /datum/quirk/nonviolent, /datum/quirk/blindness, /datum/quirk/monophobia)
 	threat = 2
 
 /datum/outfit/job/peacekeeper
@@ -294,7 +294,6 @@ Peacekeeper Hypospray // BlueMoon 16.08 2023 - передано Вардену. 
 	name = "peacekeeper's locker"
 	req_access = list(ACCESS_PEACEKEEPER)
 	icon_state = "bs"
-	icon = 'modular_splurt/icons/obj/closet.dmi'
 
 /obj/structure/closet/secure_closet/peacekeeper/PopulateContents()
 	..()

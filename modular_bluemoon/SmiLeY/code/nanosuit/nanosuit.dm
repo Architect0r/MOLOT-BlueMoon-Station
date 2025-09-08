@@ -1002,14 +1002,18 @@
 			return
 	. = ..()
 
-/mob/living/simple_animal/attack_hand(mob/living/carbon/human/M)
+/mob/living/simple_animal/attack_hand(mob/user)
 	. = ..()
-	if(M && ishuman(M) && istype(M.wear_suit, /obj/item/clothing/suit/space/hardsuit/nano))
+	if(!ishuman(user))
+		return .
+	
+	var/mob/living/carbon/human/M = user
+	if(istype(M.wear_suit, /obj/item/clothing/suit/space/hardsuit/nano))
 		var/obj/item/clothing/suit/space/hardsuit/nano/NS = M.wear_suit
 		NS.kill_cloak()
 
 /obj/item/clothing/suit/space/hardsuit/nano/proc/kill_cloak()
-	SIGNAL_HANDLER
+	SIGNAL_HANDLER_DOES_SLEEP
 	if(mode == NANO_CLOAK)
 		var/obj/item/W = Wearer.get_active_held_item()
 		if(istype(W, /obj/item/gun))

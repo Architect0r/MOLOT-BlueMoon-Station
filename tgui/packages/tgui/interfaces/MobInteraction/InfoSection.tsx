@@ -3,7 +3,7 @@ import { BlockQuote, Button, Icon, ProgressBar, Section, Slider, Stack, Tooltip 
 
 type HeaderInfo = {
   isTargetSelf: boolean;
-  interactingWith: string;
+  target: string;
   lust: number;
   maxLust: number;
   selfAttributes: string[];
@@ -22,7 +22,7 @@ export const InfoSection = (props, context) => {
   const { act, data } = useBackend<HeaderInfo>(context);
   const {
     isTargetSelf,
-    interactingWith,
+    target,
     lust,
     maxLust,
     selfAttributes,
@@ -37,7 +37,7 @@ export const InfoSection = (props, context) => {
     moaning_multiplier,
   } = data;
   return (
-    <Section title={interactingWith} fill>
+    <Section title={`Interacting with ${isTargetSelf ? "yourself" : target}...`} fill>
       <Stack vertical fill>
         <Stack.Item grow basis={0}>
           <Section fill overflow="auto">
@@ -75,6 +75,34 @@ export const InfoSection = (props, context) => {
             {(!isTargetSelf && (theirLust !== null) ? (
               <Stack.Item grow>
                 <ProgressBar value={theirLust} maxValue={theirMaxLust} color="purple"><Icon name="heart" /></ProgressBar>
+              </Stack.Item>
+            ) : (null))}
+          </Stack>
+        </Stack.Item>
+        <Stack.Item>
+          <Stack fill>
+            <Stack.Item grow basis={0}>
+              <Button
+                fluid
+                mb={-0.7}
+                content="Your genitals menu"
+                color = "pink"
+                onClick={() => act('genitals_menu', {
+                  who: 'user',
+                })}
+              />
+            </Stack.Item>
+            {(!isTargetSelf ? (
+              <Stack.Item grow basis={0}>
+                <Button
+                  fluid
+                  mb={-0.7}
+                  content="Partner's genitals menu"
+                  color = "pink"
+                  onClick={() => act('genitals_menu', {
+                    who: 'target',
+                  })}
+                />
               </Stack.Item>
             ) : (null))}
           </Stack>

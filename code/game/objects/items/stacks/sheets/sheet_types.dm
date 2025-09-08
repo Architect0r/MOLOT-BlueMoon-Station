@@ -28,10 +28,22 @@ GLOBAL_LIST_INIT(metal_recipes, list ( \
 	new/datum/stack_recipe_list("beds", list( \
 		new/datum/stack_recipe("bed", /obj/structure/bed, 2, one_per_turf = TRUE, on_floor = TRUE), \
 		new/datum/stack_recipe("double bed", /obj/structure/bed/double, 4, one_per_turf = TRUE, on_floor = TRUE), \
+		// BLUEMOON ADD START
+		new/datum/stack_recipe("bdsm bed", /obj/structure/bed/bdsm_bed, 4, one_per_turf = TRUE, on_floor = TRUE), \
+		// BLUEMOON ADD END
 		new/datum/stack_recipe("pod bed", /obj/structure/bed/pod, 2, one_per_turf = TRUE, on_floor = TRUE), \
 		new/datum/stack_recipe("double pod bed", /obj/structure/bed/double/pod, 4, one_per_turf = TRUE, on_floor = TRUE), \
 	)), \
 		//SPLURT CHANGE END
+	//BLUEMOON ADD гигансткие кровати для гигантских персон
+	new/datum/stack_recipe_list("giant beds", list( \
+		new/datum/stack_recipe("giant bed (corner)", /obj/structure/bed/giant, 4, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("giant bed (side)", /obj/structure/bed/giant/side, 4, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("giant bed (pillow corner)", /obj/structure/bed/giant/pillow, 4, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("giant bed (pillow side)", /obj/structure/bed/giant/pillow/side, 4, one_per_turf = TRUE, on_floor = TRUE), \
+		new/datum/stack_recipe("giant bed (middle)", /obj/structure/bed/giant/middle, 4, one_per_turf = TRUE, on_floor = TRUE), \
+	)), \
+	//BLUEMOON END
 	//CIT CHANGE - adds sofas to metal recipe list
 	new/datum/stack_recipe_list("sofas", list( \
 		new /datum/stack_recipe("sofa (middle)", /obj/structure/chair/sofa, one_per_turf = TRUE, on_floor = TRUE), \
@@ -62,6 +74,9 @@ GLOBAL_LIST_INIT(metal_recipes, list ( \
 		)), \
 	null, \
 	new/datum/stack_recipe("rack parts", /obj/item/rack_parts, 3), \
+	// BLUEMOON ADD - Добавляет в меню крафта создание полки для ящиков
+	new/datum/stack_recipe("crate shelf parts", /obj/item/rack_parts/shelf, 10), \
+	// BLUEMOON ADD END (ну не хочет оно не такими кривыми комментами работать, увы)
 	new/datum/stack_recipe("shelf parts", /obj/item/shelf_parts, 5), \
 	new/datum/stack_recipe("closet", /obj/structure/closet, 2, time = 15, one_per_turf = TRUE, on_floor = TRUE), \
 	null, \
@@ -139,6 +154,8 @@ GLOBAL_LIST_INIT(metal_recipes, list ( \
 	new/datum/stack_recipe("tiny fan", /obj/structure/fans/tiny, 2, time = 4, one_per_turf = TRUE, on_floor = TRUE), \
 	new/datum/stack_recipe("Metal Barricade", /obj/structure/deployable_barricade/metal, 2, time = 1 SECONDS, one_per_turf = TRUE, on_floor = TRUE), \
 	new/datum/stack_recipe("desk bell", /obj/structure/desk_bell, 2, time = 50, one_per_turf = TRUE, on_floor = TRUE), \
+	new/datum/stack_recipe("light switch frame", /obj/item/wallframe/light_switch, 1), \
+	new/datum/stack_recipe("washing machine", /obj/machinery/washing_machine, 5, time = 2.5 SECONDS, one_per_turf = TRUE, on_floor = TRUE), \
 ))
 
 /obj/item/stack/sheet/metal
@@ -304,7 +321,8 @@ GLOBAL_LIST_INIT(wood_recipes, list ( \
 	new/datum/stack_recipe("urn", /obj/item/reagent_containers/glass/mortar/urn, 3), \
 	new/datum/stack_recipe("honey frame", /obj/item/honey_frame, 5, time = 10),\
 	new/datum/stack_recipe("notice board frame", /obj/item/wallframe/noticeboard, 5, time = 10),\
-	new/datum/stack_recipe("wooden block", /obj/item/stamp_block, 10, time = 10)
+	new/datum/stack_recipe("wooden block", /obj/item/stamp_block, 10, time = 10),\
+	new/datum/stack_recipe("wooden cup", /obj/item/reagent_containers/food/drinks/drinkingglass/wooden, 1, time = 50)
 	))
 
 /obj/item/stack/sheet/mineral/wood

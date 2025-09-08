@@ -77,7 +77,8 @@
 									'sound/ambience/ambimystery.ogg', 'sound/ambience/ambimaint1.ogg')
 
 #define ENGINEERING list('sound/ambience/ambisin1.ogg','sound/ambience/ambisin2.ogg','sound/ambience/ambisin3.ogg','sound/ambience/ambisin4.ogg',\
-										'sound/ambience/ambiatmos.ogg', 'sound/ambience/ambiatmos2.ogg', 'sound/ambience/ambitech.ogg', 'sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg', 'sound/ambience/ambiviro.ogg')
+										'sound/ambience/ambiatmos.ogg', 'sound/ambience/ambiatmos2.ogg', 'sound/ambience/ambitech.ogg',\
+										'sound/ambience/ambitech2.ogg', 'sound/ambience/ambitech3.ogg', 'sound/ambience/ambiviro.ogg', 'sound/ambience/ambistalker.ogg')
 
 #define MINING list('sound/ambience/ambimine.ogg', 'sound/ambience/ambicave.ogg', 'sound/ambience/ambiruin.ogg',\
 											'sound/ambience/ambiruin2.ogg',  'sound/ambience/ambiruin3.ogg',  'sound/ambience/ambiruin4.ogg',\
@@ -274,5 +275,8 @@ GLOBAL_LIST_INIT(deathgasp_sounds, list(
 	"Ксеноморф" =			'sound/voice/hiss6.ogg',
 	"Свинья" =				'modular_bluemoon/SmiLeY/code/mob/pig/death.ogg',
 	"Офицер ГО" =			'modular_bluemoon/SmiLeY/sounds/combine_death.ogg',
-	"Свинья" =				'modular_bluemoon/sound/voice/death_gasps/pig.ogg'
+	"Свинья" =				'modular_bluemoon/sound/voice/death_gasps/pig.ogg',
+	"Свинья 2" =				'modular_bluemoon/sound/voice/death_gasps/pig2.ogg'
 	))
+
+

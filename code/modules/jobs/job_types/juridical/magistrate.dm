@@ -15,7 +15,7 @@
 	exp_requirements = 180
 	exp_type = EXP_TYPE_COMMAND
 	req_admin_notify = 1
-	custom_spawn_text = "<font color='red'>Представитель NanoTrasen - должностное лицо, назначаемое напрямую Центральным Командованием, исполняющий одновременно функции как советника, так и верховного судьи. Представитель контролирует соблюдение рабочих стандартов и космического закона во всех отделах на станции, консультирует и взаимодействует с главами отделов, а также следит за работой юристов (агентов внутренних дел), отдавая им напрямую приказы и исполняя их прошения. Авторизация увольнений глав, обеспечение связи с ЦК и организация судов аналогично входят в перечень его работ. Представитель ни в коем случае не должен выполнять работу СБ.</font>"
+	custom_spawn_text = "представитель NanoTrasen - должностное лицо, назначенное напрямую Центральным Командованием. Представитель контролирует соблюдение рабочих стандартов и космического закона во всех отделах на станции, консультирует и взаимодействует с главами отделов, а также следит за работой юристов (агентов внутренних дел), отдавая им напрямую приказы и исполняя их прошения. Авторизация увольнений глав, обеспечение связи с ЦК и организация судов аналогично входят в перечень его работ. Представитель ни в коем случае не должен выполнять работу СБ."
 	alt_titles = list(
 		"Syndicate Representative",
 		"Judge",
@@ -39,7 +39,7 @@
 
 	mind_traits = list(TRAIT_LAW_ENFORCEMENT_METABOLISM)
 
-	blacklisted_quirks = list(/datum/quirk/mute, /datum/quirk/brainproblems, /datum/quirk/blindness, /datum/quirk/monophobia, /datum/quirk/bluemoon_criminal)
+	blacklisted_quirks = list(/datum/quirk/mute, /datum/quirk/brainproblems, /datum/quirk/blindness, /datum/quirk/monophobia)
 
 	display_order = JOB_DISPLAY_ORDER_NTR
 	departments = DEPARTMENT_BITFLAG_LAW

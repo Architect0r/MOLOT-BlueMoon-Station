@@ -337,7 +337,7 @@
 			H.damageoverlaytemp = 9001
 			H.update_damage_hud()
 			return
-	var/n_name = tgui_input_text(usr, "Enter a paper label", "Paper Labelling", max_length = MAX_NAME_LEN)
+	var/n_name = tgui_input_text(usr, "Enter a paper label", "Paper Labelling", max_length = MAX_NAME_LEN, encode = TRUE)
 	if(isnull(n_name) || n_name == "")
 		return
 	if(((loc == usr || istype(loc, /obj/item/clipboard)) && usr.stat == CONSCIOUS))
@@ -430,6 +430,9 @@
 		user.dropItemToGround(src)
 	user.visible_message(ignition_message)
 	add_fingerprint(user)
+	var/turf/T = get_turf(src)
+	message_admins("Paper ignited by [ADMIN_LOOKUPFLW(user)] in [ADMIN_VERBOSEJMP(T)]")
+	log_admin("Paper ignited by [key_name(user)] in [AREACOORD(T)]")
 	fire_act(attacking_item.get_temperature())
 	return TRUE
 

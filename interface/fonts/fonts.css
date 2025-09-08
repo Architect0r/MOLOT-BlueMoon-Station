@@ -1,0 +1,37 @@
+@font-face {
+	font-family: "Grand9K Pixel";
+	src: url("Grand9K_Pixel.ttf");
+}
+
+@font-face {
+	font-family: "Pixellari";
+	src: url("Pixellari.ttf");
+}
+
+@font-face {
+	font-family: "Space Mono";
+	src: url("SpaceMono.ttf");
+}
+
+@font-face {
+	font-family: "Spess Font";
+	src: url("SpessFont.ttf");
+}
+
+@font-face {
+	font-family: "Tiny Unicode";
+	src: url("TinyUnicode.ttf");
+}
+
+@font-face {
+	font-family: "VCR OSD Mono";
+	src: url("VCR_OSD_MONO.ttf");
+}
+/* Не работает. Я не знаю, что я делаю не так.
+@font-face {
+	font-family: Papyrus;
+	src: local("Papyrus.ttf") format('truetype'),
+		local("Papyrus.woff") format('woff'),
+		local("Papyrus.woff2") format('woff2');
+	 unicode-range: U+0400-04FF;
+}*/

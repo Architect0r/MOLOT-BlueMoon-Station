@@ -10,7 +10,8 @@
 		"Cuntpitain",
 		"Cap-Slut",
 		"Grey Cardinals",
-		"Condom"
+		"Condom",
+		"Catpain"
 	)
 	LAZYADD(alt_titles, extra_titles)
 	. = ..()
@@ -51,8 +52,10 @@
 		"Division Leader",
 		"Cerberus Leader",
 		"AC Special Lieutenant",
+		"Big Boss",
 		"Head of Slutcurity",
-		"Head of Studcurity"
+		"Head of Studcurity",
+		"SAARE Senior Operator"
 	)
 	if(SSevents.holidays && SSevents.holidays[HALLOWEEN])
 		LAZYADD(extra_titles, "Head of Spookcurity")
@@ -111,9 +114,9 @@
 	var/list/extra_titles = list(
 		"NT Engineering Specialist",
 		"Syndicate Constructing Master",
-		"Structural Engineer",
+		// "Structural Engineer",
 		"Astromechanic",
-		"Station Architect",
+		// "Station Architect",
 		"Hazardous Material Operator",
 		"Junior Engineer",
 		"Engi-Slut",
@@ -130,9 +133,9 @@
 		"NT Manual Laborer",
 		"Syndicate Specialist",
 		"Volunteer",
-		"Morale Officer",
+		// "Morale Officer",
 		"Stripper",
-		"Tourist",
+		// "Tourist",
 		"SolFed Tourist",
 		"NRI Tourist",
 		"USSP Tourist",
@@ -191,13 +194,13 @@
 		"NT Corp Chaplain",
 		"Syndicate Techpriest",
 		"Bishop",
-		"Priestess",
-		"Prior",
-		"Monk",
+		// "Priestess",
+		// "Prior",
+		// "Monk",
 		"Tiger Cooperative Disciple",
-		"Nun",
+		// "Nun",
 		"Keeper of Cum",
-		"Counselor",
+		// "Counselor",
 		"Techpriest",
 	)
 	LAZYADD(alt_titles, extra_titles)
@@ -213,9 +216,9 @@
 		"Chef De Partie",
 		"Boss Of This Gym",
 		"Prey Prepper",
-		"Poissonier",
+		// "Poissonier",
 		"Chef De Sexe",
-		"Baker"
+		// "Baker"
 	)
 	LAZYADD(alt_titles, extra_titles)
 	. = ..()
@@ -264,7 +267,7 @@
 /datum/job/scientist/New()
 	var/list/extra_titles = list(
 		"NT Scientist",
-		"Researcher",
+		// "Researcher",
 		"Toxins Researcher",
 		"Research Intern",
 		"Junior Scientist",
@@ -387,6 +390,7 @@
 		"Slutective",
 		"Studective",
 		"Van Dorn Agent",
+		"AC Recon Agent",
 		"Forensic Investigator",
 		"Cinder Dick",
 		"Cooperate Auditor"
@@ -402,9 +406,9 @@
 		"Syndicate Combatant",
 		"Civil Protection",
 		"Police Officer",
-		"SAARE Operative",
+		"SAARE Operator",
 		"AC Specialist",
-		"PCRC Operative",
+		"PCRC Operator",
 		"Gorlex Marauders Trainee",
 		"Tyranny Lover",
 		"Cerberus",
@@ -444,9 +448,9 @@
 		"Horny Mailer",
 		"Pleasures Deliverer",
 		"Cock Packager",
-		"Mailroom Technician",
+		// "Mailroom Technician",
 		"Disposal Technician",
-		"Logistics Technician",
+		// "Logistics Technician",
 		"Cryptocurrency Technician",
 		"Package Handler"
 	)

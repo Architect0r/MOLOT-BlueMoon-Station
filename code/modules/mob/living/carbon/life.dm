@@ -65,12 +65,7 @@
 			//SEND_SIGNAL(src, COMSIG_ADD_MOOD_EVENT, "suffocation", /datum/mood_event/suffocation)
 
 			// HYPER CHANGE
-			var/mob/living/carbon/human/B = src
-			if(HAS_TRAIT(B, TRAIT_CHOKE_SLUT))
-				B.add_lust(7)
-				if (B.get_lust() >= get_lust_tolerance()*3 && ishuman(B) && B.has_dna())
-					B.mob_climax(forced_climax=TRUE)
-			else
+			if(!HAS_TRAIT(src, TRAIT_CHOKE_SLUT))
 				SEND_SIGNAL(src, COMSIG_ADD_MOOD_EVENT, "suffocation", /datum/mood_event/suffocation)
 			// HYPER CHANGE END
 
@@ -341,12 +336,9 @@
 	if(internal)
 		if(internal.loc != src && !istype(internal.loc, /obj/structure/table/optable)) // BLUEMOON ADD - добавлено проверка на хирургический стол, чтобы можно было пользоваться баллоном из него
 			internal = null
-			update_internals_hud_icon(0)
 		else if (!internals && !getorganslot(ORGAN_SLOT_BREATHING_TUBE))
 			internal = null
-			update_internals_hud_icon(0)
 		else
-			update_internals_hud_icon(1)
 			. = internal.remove_air_volume(volume_needed)
 			if(!.)
 				return FALSE //to differentiate between no internals and active, but empty internals

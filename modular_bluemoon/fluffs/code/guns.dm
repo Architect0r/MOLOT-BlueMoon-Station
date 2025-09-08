@@ -386,6 +386,45 @@
 
 /////////////////////////////////////////////////////////////////////////////////////
 
+/obj/item/modkit/razorsong_kit
+	name = "Razorsong MK-III Kit"
+	desc = "A modkit for making an stunbaton into a Razorsong MK-III."
+	product = /obj/item/melee/baton/razorsong
+	fromitem = list(/obj/item/melee/baton, /obj/item/melee/baton/loaded)
+
+/obj/item/melee/baton/razorsong
+	name = "Razorsong MK-III"
+	desc = "A telescopic katana made of vibrating steel. The mechanism is very simple, but quite very sturdy. About 100 copies were made in production, because the limited material would not allow making many of these melee weapons. But this instance is the Razorsong MK-III, a more homemade modified version designed to work in the Security Service for non-lethal close-range combat."
+	item_state = "razorsong"
+	icon_state = "razorsong"
+	icon = 'modular_bluemoon/fluffs/icons/obj/guns.dmi'
+	lefthand_file = 'modular_bluemoon/fluffs/icons/mob/guns_left.dmi'
+	righthand_file = 'modular_bluemoon/fluffs/icons/mob/guns_right.dmi'
+
+/obj/item/melee/baton/razorsong/switch_status(new_status = FALSE, silent = FALSE)
+	if(turned_on != new_status)
+		turned_on = new_status
+		if(!silent)
+			playsound(loc, 'modular_bluemoon/fluffs/sound/weapon/razorsong.ogg', 75, 1, -1)
+		if(turned_on)
+			START_PROCESSING(SSobj, src)
+		else
+			STOP_PROCESSING(SSobj, src)
+	update_icon()
+
+/obj/item/melee/baton/razorsong/update_icon_state()
+	if(turned_on)
+		icon_state = "razorsong_active"
+		item_state = "razorsong_active"
+	else if(!cell)
+		icon_state = "razorsong_nocell"
+		item_state = "razorsong"
+	else
+		icon_state = "razorsong"
+		item_state = "razorsong"
+
+/////////////////////////////////////////////////////////////////////////////////////
+
 /obj/item/modkit/stunadler_kit
 	name = "Adler stunsword Kit"
 	desc = "A modkit for making an stunbaton into a Adler stunsword."
@@ -573,8 +612,6 @@
 	mag_type = /obj/item/ammo_box/magazine/ak12/r
 	//chosen_icon = 'icons/mob/clothing/back.dmi'
 	icon_state = "G36"
-	fire_delay = 3
-	fire_sound = 'modular_bluemoon/fluffs/sound/shoot.ogg'
 
 /obj/item/gun/ballistic/automatic/ak12/g36/update_icon_state()
 	if(magazine)
@@ -694,14 +731,17 @@
 	desc = "Стандартное оружие судей из Мега-Города Солнечной Федерации. Пистолет комплектуется несколькими типами боеприпасов, иногда набор снарядов отличается от стандартного в зависимости от миссии судьи. Оснащён биометрическим датчиком ладони — оружие может применять только судья, а при несанкционированном использовании в рукояти срабатывает взрывное устройство. Этот же пистолет на радость недругов что преступают Закон, со сломанной биометрией ради стандартизации электронных бойков."
 	icon = 'modular_bluemoon/fluffs/icons/obj/dreadmk3.dmi'
 	icon_state = "dreadmk3"
+	item_state = "dreadmk3"
 	ammo_type = list(/obj/item/ammo_casing/energy/disabler/dreadmk3, /obj/item/ammo_casing/energy/laser/hos/dreadmk3, /obj/item/ammo_casing/energy/ion/hos/dreadmk3, /obj/item/ammo_casing/energy/electrode/hos/dreadmk3)
-	ammo_x_offset = 0
-	flight_x_offset = 22
-	flight_y_offset = 5
+	ammo_x_offset = 2
+	charge_sections = 3
+	flight_x_offset = 21
+	flight_y_offset = 14
 
 /obj/item/ammo_casing/energy/disabler/dreadmk3
 
 /obj/item/ammo_casing/energy/laser/hos/dreadmk3
+	fire_sound = 'sound/weapons/lasgun.ogg'
 
 /obj/item/ammo_casing/energy/ion/hos/dreadmk3
 
@@ -713,6 +753,54 @@
 	product = /obj/item/gun/energy/e_gun/hos/dreadmk3
 	fromitem = list(/obj/item/gun/energy/e_gun/hos)
 
+////////////////////////////////////////////////////////////////////////////////////////
+/obj/item/gun/energy/e_gun/institute
+	name = "\improper Карабин Института"
+	desc = "Институтский лазер — это оружейная система, разработанная Институтом после его изоляции с началом Великой войны. Все синты служащие в качестве солдат, рабочих или охотников, а также человеческие учёные организации, получают пистолет или винтовку собственного дизайна организации, сконструированные Высшими системами и массово производимые на заводе, расположенном в их штаб-квартире. На данный момент такая модель считается устаревшей, Механизмы батареи на ядерной энергии заменены на внутренние, однако она всё еще достойно работает и по сей день."
+	icon_state = "institute"
+	ammo_type = list(/obj/item/ammo_casing/energy/disabler/institute, /obj/item/ammo_casing/energy/laser/institute)
+	ammo_x_offset = 1
+	charge_sections = 4
+
+/obj/item/ammo_casing/energy/disabler/institute
+	fire_sound = 'sound/weapons/laserinstitute.ogg'
+
+/obj/item/ammo_casing/energy/laser/institute
+	fire_sound = 'sound/weapons/laserinstitute.ogg'
+
+/obj/item/modkit/institute_kit
+	name = "Карабин Института Kit"
+	desc = "A modkit for making a Energy Gun into Карабин Института."
+	product = /obj/item/gun/energy/e_gun/institute
+	fromitem = list(/obj/item/gun/energy/e_gun)
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+/obj/item/gun/energy/laser/carbine/old
+	name = "\improper Лазер AER9"
+	desc = "В AER9 не использовались передовые довоенные технологии, что значительно повысило её надежность. Эта модель представляет собой обычный твердотельный импульсный лазер, активная среда которого (кристалл), заключена в титановый корпус, что позволяет выдерживать годы воздействия окружающей среды без потери технических характеристик. На данный момент такая модель считается устаревшей, Механизмы батареи на ядерной энергии заменены на внутренние, однако она всё еще достойно работает и по сей день."
+	ammo_type = list(/obj/item/ammo_casing/energy/laser/old)
+	icon_state = "lasernew_alt"
+	item_state = "laser_old-wielded"
+
+/obj/item/ammo_casing/energy/laser/old
+	fire_sound = 'sound/weapons/riflelaserold.ogg'
+
+/obj/item/modkit/old_laser_kit
+	name = "Лазер AER9 Kit"
+	desc = "A modkit for making a laser carbine into Лазер AER9."
+	product = /obj/item/gun/energy/laser/carbine/old
+	fromitem = list(/obj/item/gun/energy/laser/carbine/nopin, /obj/item/gun/energy/laser/carbine)
+////////////////////////////////////////////////////////////////////////////////////////
+/obj/item/storage/box/old_world_kit
+	name = "Old Wolrd Blues Kit"
+	desc = "Military box that contains a full kit of Old World Equipment."
+	icon_state = "ammobox"
+
+/obj/item/storage/box/old_world_kit/PopulateContents()
+	new /obj/item/modkit/old_laser_kit(src)
+	new /obj/item/modkit/institute_kit(src)
+	new /obj/item/modkit/t51armor_kit(src)
 ////////////////////////////////////////////////////////////////////////////////////////
 
 /obj/item/crowbar/large/heavy/hammercrowbar
@@ -770,3 +858,44 @@
 	if(istype(loc, /obj/item/storage/belt/scabbard))
 		return mutable_appearance('icons/obj/clothing/belt_overlays.dmi', "cleaver")
 	return ..()
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+/obj/item/gun/energy/e_gun/hos/Anabel
+	name = "\improper Anabel"
+	desc = "This is an expensive, modern recreation of an antique laser gun. This gun has several unique firemodes, but lacks the ability to recharge over time in exchange for inbuilt advanced firearm EMP shielding. <span class='boldnotice'>Right click in combat mode to fire a taser shot with a cooldown.</span>"
+	icon = 'modular_bluemoon/fluffs/icons/obj/guns.dmi'
+	icon_state = "Anabel"
+	cell_type = /obj/item/stock_parts/cell{charge = 1500; maxcharge = 1500}
+	ammo_type = list(/obj/item/ammo_casing/energy/disabler, /obj/item/ammo_casing/energy/laser/lightliz)
+	ammo_x_offset = 0
+
+/obj/item/ammo_casing/energy/laser/lightliz
+	projectile_type = /obj/item/projectile/beam/laser/heavylaser
+	e_cost = 300
+	select_name = "kill"
+	fire_sound = 'modular_bluemoon/fluffs/sound/weapon/Anabel_shot.ogg'
+
+/obj/item/modkit/Anabel_kit
+	name = "Anabel Kit"
+	desc = "A modkit for making a Miniature Energy Gun into Anabel."
+	product = /obj/item/gun/energy/e_gun/hos/Anabel
+	fromitem = list(/obj/item/gun/energy/e_gun/mini, /obj/item/gun/energy/e_gun/mini/expeditor)
+
+////////////////////////////////////////////////////////////////////////////////////////
+
+/obj/item/gun/ballistic/revolver/detective/rsh_future
+	name = "RSH-Future"
+	desc = " A custom-made revolver .38 caliber, engraved on the cylinder of the drum - 228321. The special body of this revolver, made of an unusual list of materials, allows you to muffle the sound of shots of this caliber, by about 25 percent. But still, there is a minus - a strong recoil, what a without a strong grip - It will be painfully."
+	icon = 'modular_bluemoon/fluffs/icons/obj/guns.dmi'
+	icon_state = "rsh_future"
+	item_state = "rsh_future"
+	lefthand_file = 'modular_bluemoon/fluffs/icons/mob/guns_left.dmi'
+	righthand_file = 'modular_bluemoon/fluffs/icons/mob/guns_right.dmi'
+	fire_sound = 'modular_bluemoon/fluffs/sound/weapon/rshfuture_shot.ogg'
+	
+/obj/item/modkit/rsh_future
+	name = "Special .38 Mars Kit"
+	desc = "A modkit for making a .38 Mars Special into a RSH-Future."
+	product = /obj/item/gun/ballistic/revolver/detective/rsh_future
+	fromitem = list (/obj/item/gun/ballistic/revolver/detective)

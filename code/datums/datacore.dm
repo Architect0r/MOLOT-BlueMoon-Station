@@ -110,6 +110,16 @@
 			log_text = replacetext(log_text, "%%AUTH%%", "<u>[auth_name]</u>")
 			log_text = replacetext(log_text, "%%GEN_AUTH%%", "<u>[auth_name] ([auth_rank])</u>")
 			R.fields["actions_logs"] += log_text
+
+// отдельная запись квирков когда они реально записаны
+/datum/datacore/proc/notes_traits_modify(mob/living/carbon/human/H)
+	var/datum/data/record/foundrecord = find_record("name", H.real_name, GLOB.data_core.medical)
+	if(foundrecord)
+		var/traits_dat = H.get_trait_string(TRUE)
+		if(!traits_dat)
+			return
+		else
+			foundrecord.fields["notes"] += "\n traits information as of shift start: [traits_dat]"
 // BLUEMOON ADD END
 
 /datum/datacore/proc/manifest()
@@ -296,20 +306,14 @@
 	var/static/list/show_directions = list(SOUTH, WEST)
 	if(H.mind && (H.mind.assigned_role != H.mind.special_role)  && (H.mind.assigned_role != "Stowaway"))
 		var/assignment
-		var/displayed_rank
 		if(H.mind.assigned_role)
 			assignment = H.mind.assigned_role
 		else if(H.job)
 			assignment = H.job
 		else
 			assignment = "Unassigned"
-			if(C && C.prefs && C.prefs.alt_titles_preferences[assignment])
-				assignment = C.prefs.alt_titles_preferences[assignment]
-
-		if(assignment && C.prefs.alt_titles_preferences[assignment])
-			displayed_rank = C.prefs.alt_titles_preferences[assignment]
-		else
-			displayed_rank = assignment
+		if(C && C.prefs && C.prefs.alt_titles_preferences[assignment])
+			assignment = C.prefs.alt_titles_preferences[assignment]
 
 		var/static/record_id_num = 1001
 		var/id = num2hex(record_id_num++,6)
@@ -332,7 +336,8 @@
 		var/datum/data/record/G = new()
 		G.fields["id"]			= id
 		G.fields["name"]		= H.real_name
-		G.fields["rank"]		= displayed_rank
+		G.fields["rank"]		= assignment
+		G.fields["real_rank"]	= GetJobName(assignment)
 		G.fields["age"]			= H.age
 		G.fields["species"]		= H.dna.species.name
 		G.fields["fingerprint"]	= md5(H.dna.uni_identity)
@@ -362,7 +367,7 @@
 		M.fields["alg_d"]		= "No allergies have been detected in this patient."
 		M.fields["cdi"]			= "None"
 		M.fields["cdi_d"]		= "No diseases have been diagnosed at the moment."
-		M.fields["notes"]		= "Trait information as of shift start: [H.get_trait_string(medical)]<br>[prefs.medical_records]"
+		M.fields["notes"]		= "[prefs.medical_records]"
 		medical += M
 
 		//Security Record
@@ -387,7 +392,8 @@
 		var/datum/data/record/L = new()
 		L.fields["id"]			= md5("[H.real_name][H.mind.assigned_role]")	//surely this should just be id, like the others?
 		L.fields["name"]		= H.real_name
-		L.fields["rank"] 		= displayed_rank
+		L.fields["rank"] 		= assignment
+		L.fields["real_rank"]	= GetJobName(assignment)
 		L.fields["age"]			= H.age
 		if(H.gender == MALE)
 			G.fields["gender"]  = "Male"

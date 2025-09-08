@@ -47,6 +47,13 @@
 
 	AddElement(/datum/element/contextual_screentip_bare_hands, rmb_text_combat_mode = barehanded_interactions)
 
+	var/static/list/hovering_item_typechecks = list(
+		/obj/item/wallframe = list(
+			SCREENTIP_CONTEXT_LMB = list(INTENT_GRAB = "Install frame on the table"),
+		),
+	)
+	AddElement(/datum/element/contextual_screentip_item_typechecks, hovering_item_typechecks)
+
 /obj/structure/table/examine(mob/user)
 	. = ..()
 	. += deconstruction_hints(user)
@@ -81,9 +88,9 @@
 				return
 			// BLUEMOON ADDITION AHEAD - сверхтяжёлых персонажей нельзя положить на стол, только если ты сам не сверхтяжёлый, киборг или халк
 			/* - не актуальный сегмент. Их может брать и перемещать большее количество персонажей с момента ввода. Остаётся на случай изменений в будущем
-			if(HAS_TRAIT(pushed_mob, TRAIT_BLUEMOON_HEAVY_SUPER))
+			if(pushed_mob.mob_weight > MOB_WEIGHT_HEAVY)
 				if(!issilicon(user))
-					if(iscarbon(user) && !HAS_TRAIT(user, TRAIT_BLUEMOON_HEAVY_SUPER))
+					if(iscarbon(user) && user.mob_weight < MOB_WEIGHT_HEAVY_SUPER)
 						var/mob/living/carbon/C = user
 						if(!C.dna.check_mutation(HULK))
 							to_chat(user, span_warning("Слишком много весит!"))
@@ -142,9 +149,9 @@
 	log_combat(user, pushed_mob, "places", null, "onto [src]")
 	// BLUEMOON ADDITION AHEAD - тяжёлые и сверхтяжёлые персонажи при толчке на стол ломают его
 	var/break_table = FALSE
-	if(HAS_TRAIT(pushed_mob, TRAIT_BLUEMOON_HEAVY_SUPER)) // сверхтяжёлые персонажи всегда ломают стол (им не важно, есть он под ними или нет
+	if(pushed_mob.mob_weight > MOB_WEIGHT_HEAVY) // сверхтяжёлые персонажи всегда ломают стол (им не важно, есть он под ними или нет
 		break_table = TRUE
-	else if(HAS_TRAIT(pushed_mob, TRAIT_BLUEMOON_HEAVY))
+	else if(pushed_mob.mob_weight > MOB_WEIGHT_NORMAL)
 		if(!istype(src, /obj/structure/table/optable)) // тяжёлых персонажей всё ещё можно класть на хирургический стол, не ломая его в процессе
 			break_table = TRUE
 	if(break_table)
@@ -166,9 +173,10 @@
 		pushed_mob.pass_flags &= ~PASSTABLE
 	if(pushed_mob.loc != loc) //Something prevented the tabling
 		return
-	pushed_mob.DefaultCombatKnockdown(40)
-	pushed_mob.visible_message("<span class='danger'>[user] пихает [pushed_mob] на [src]!</span>", \
-								"<span class='userdanger'>[user] пихает тебя на [src]!</span>")
+	pushed_mob.DefaultCombatKnockdown(120)
+	pushed_mob.apply_damage(15, BRUTE)
+	pushed_mob.visible_message("<span class='danger'>[user] кидает [pushed_mob] на [src]!</span>", \
+								"<span class='userdanger'>[user] кидает тебя на [src]!</span>")
 	playsound(pushed_mob, 'sound/weapons/thudswoosh.ogg', 90, TRUE)
 	log_combat(user, pushed_mob, "tabled", null, "onto [src]")
 	if(!ishuman(pushed_mob))
@@ -177,7 +185,7 @@
 		pushed_mob.emote("nya")
 	SEND_SIGNAL(pushed_mob, COMSIG_ADD_MOOD_EVENT, "table", /datum/mood_event/table)
 	// BLUEMOON ADDITION AHEAD - тяжёлые и сверхтяжёлые персонажи при толчке на стол ломают его
-	if(HAS_TRAIT(pushed_mob, TRAIT_BLUEMOON_HEAVY_SUPER) || HAS_TRAIT(pushed_mob, TRAIT_BLUEMOON_HEAVY))
+	if(pushed_mob.mob_weight > MOB_WEIGHT_NORMAL)
 		pushed_mob.visible_message("<span class='danger'>[src] ломается под весом [pushed_mob]!</span>", \
 								"<span class='userdanger'>Ты ломаешь [src] собственным весом!</span>")
 		deconstruct(TRUE)
@@ -190,7 +198,7 @@
 	if(HAS_TRAIT(user, TRAIT_HULK) || HAS_TRAIT(user, TRAIT_MAULER))
 		extra_wound = 20
 	banged_limb.receive_damage(30, wound_bonus = extra_wound)
-	pushed_mob.apply_damage(60, STAMINA)
+	pushed_mob.apply_damage(120, STAMINA)
 	take_damage(50)
 
 	playsound(pushed_mob, 'sound/effects/bang.ogg', 90, TRUE)
@@ -199,7 +207,7 @@
 	log_combat(user, pushed_mob, "head slammed", null, "against [src]")
 	SEND_SIGNAL(pushed_mob, COMSIG_ADD_MOOD_EVENT, "table", /datum/mood_event/table_limbsmash, banged_limb)
 	// BLUEMOON ADDITION AHEAD - тяжёлые и сверхтяжёлые персонажи при толчке на стол ломают его
-	if(HAS_TRAIT(pushed_mob, TRAIT_BLUEMOON_HEAVY_SUPER) || HAS_TRAIT(pushed_mob, TRAIT_BLUEMOON_HEAVY))
+	if(pushed_mob.mob_weight > MOB_WEIGHT_NORMAL)
 		pushed_mob.visible_message("<span class='danger'>[src] ломается под весом [pushed_mob]!</span>", \
 								"<span class='userdanger'>Ты ломаешь [src] собственным весом!</span>")
 		deconstruct(TRUE)
@@ -263,7 +271,11 @@
 				user.unbuckle_mob(carried_mob)
 				tableplace(user, carried_mob)
 		return TRUE
-
+	if(istype(I, /obj/item/wallframe) && user.a_intent == INTENT_GRAB)
+		var/obj/item/wallframe/W = I
+		if(W.try_build(src, user))
+			W.attach(src, user, params)
+		return TRUE
 	if(user.a_intent != INTENT_HARM && !(I.item_flags & ABSTRACT))
 		if(user.transferItemToLoc(I, drop_location()))
 			var/list/click_params = params2list(params)
@@ -403,7 +415,7 @@
 	. = ..()
 	if(in_range(user, src) && isliving(user))
 		var/mob/living/M = user
-		if(M.has_gravity() && !(M.movement_type & FLYING) && ((M.mob_size > MOB_SIZE_SMALL && !HAS_TRAIT(M, TRAIT_BLUEMOON_LIGHT)) || M.mob_size > MOB_SIZE_HUMAN))
+		if(M.has_gravity() && !(M.movement_type & FLYING) && ((M.mob_size > MOB_SIZE_SMALL && M.mob_weight > MOB_WEIGHT_LIGHT) || M.mob_size > MOB_SIZE_HUMAN))
 			. += span_danger("It looks like it will break if you try to climb on it.")
 		else
 			. += span_notice("It seems that it can be crossed safely.")
@@ -426,7 +438,7 @@
 		check_break(M)
 
 /obj/structure/table/glass/proc/check_break(mob/living/M)
-	if(M.has_gravity() && !(M.movement_type & FLYING) && ((M.mob_size > MOB_SIZE_SMALL && !HAS_TRAIT(M, TRAIT_BLUEMOON_LIGHT)) || M.mob_size > MOB_SIZE_HUMAN)) //BLUEMOON ADD столы ломаются при размере 0.81 или если лёгкий, то 1.21
+	if(M.has_gravity() && !(M.movement_type & FLYING) && ((M.mob_size > MOB_SIZE_SMALL && M.mob_weight > MOB_WEIGHT_LIGHT) || M.mob_size > MOB_SIZE_HUMAN)) //BLUEMOON ADD столы ломаются при размере 0.81 или если лёгкий, то 1.21
 		table_shatter(M)
 
 /obj/structure/table/glass/proc/table_shatter(mob/living/L)
@@ -743,12 +755,24 @@
 	smooth = SMOOTH_FALSE
 	can_buckle = 1
 	buckle_lying = 1
-	buckle_requires_restraints = 1
 	var/mob/living/carbon/human/patient = null
 	var/obj/machinery/computer/operating/computer = null
 // BLUEMOON ADD START
 	var/obj/item/tank/internals/tank = null // баллон внутри
 	var/obj/item/clothing/mask/mask = null // маска внутри
+
+/obj/structure/table/optable/Initialize(mapload)
+	. = ..()
+	register_context()
+
+/obj/structure/table/optable/Destroy()
+	stop_process()
+	. = ..()
+
+/obj/structure/table/optable/add_context(atom/source, list/context, obj/item/held_item, mob/living/user)
+	LAZYSET(context[SCREENTIP_CONTEXT_LMB], INTENT_ANY, "Unbuckle patient")
+	LAZYSET(context[SCREENTIP_CONTEXT_LMB], INTENT_DISARM, "Set internals")
+	return CONTEXTUAL_SCREENTIP_SET
 
 /obj/structure/table/optable/examine(mob/user)
 	. = ..()
@@ -767,10 +791,6 @@
 	if(computer)
 		. += span_info("Операционный стол подключен к компьютеру рядом через кабель на полу.")
 
-/obj/structure/table/optable/Destroy()
-	stop_process()
-	. = ..()
-
 /obj/structure/table/optable/examine_more(mob/user)
 	. = ..()
 	. += span_notice("Убирать кислородный баллон и маску можно через Alt.")
@@ -778,6 +798,8 @@
 
 /obj/structure/table/optable/attack_hand(mob/user, act_intent, attackchain_flags)
 	. = ..()
+	if(user.a_intent != INTENT_DISARM)
+		return
 	if(tank && mask)
 		if(!check_patient())
 			return
@@ -820,6 +842,15 @@
 /obj/structure/table/optable/attack_robot(mob/user)
 	if(Adjacent(user))
 		return attack_hand(user)
+
+/obj/structure/table/optable/post_buckle_mob(mob/living/M)
+	. = ..()
+	check_patient()
+
+/obj/structure/table/optable/user_unbuckle_mob(mob/living/buckled_mob, mob/user)
+	if(user.a_intent == INTENT_DISARM)
+		return
+	. = ..()
 
 /obj/structure/table/optable/process()
 	if(mask?.loc != patient || tank?.loc != src || patient?.loc != loc)
@@ -1032,25 +1063,19 @@
 		. = ..()
 
 /obj/item/rack_parts/attack_self(mob/user)
-	// MODULAR_JUICY-ADD
+	// BLUEMOON ADD
 	if(locate(construction_type) in get_turf(user))
 		balloon_alert(user, "не хватает места!")
 		return
-	// MODULAR_JUICY-ADD
+	// BLUEMOON ADD END
 	if(building)
 		return
 	building = TRUE
-	// MODULAR_JUICY-EDIT - Меняем надпись
-	// to_chat(user, "<span class='notice'>You start constructing a rack...</span>")	// ORIGINAL
-	to_chat(user, "<span class='notice'>You start assembling [src]...</span>")
-	// MODULAR_JUICY-EDIT
+	to_chat(user, "<span class='notice'>You start assembling [src]...</span>") // BLUEMOON EDIT
 	if(do_after(user, 50, target = user, progress=TRUE))
 		if(!user.temporarilyRemoveItemFromInventory(src))
 			return
-		// MODULAR_JUICY-EDIT - Вместо дефолтного пути задаем переменную. Ведь не только шкаф можно создать, но и просто полку на польную
-		// var/obj/structure/rack/R = new /obj/structure/rack(user.loc)	// ORIGINAL
-		var/obj/structure/R = new construction_type(user.loc)
-		// MODULAR_JUICY-EDIT
+		var/obj/structure/R = new construction_type(user.loc) // BLUEMOON EDIT
 		user.visible_message("<span class='notice'>[user] assembles \a [R].\
 			</span>", "<span class='notice'>You assemble \a [R].</span>")
 		R.add_fingerprint(user)

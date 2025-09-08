@@ -35,6 +35,7 @@
 		icon_state = "[initial(icon_state)][chambered ? "" : "-e"][suppressed ? "-suppressed" : "" ][magazine && istype(magazine, /obj/item/ammo_box/magazine/e45/e45_extended) ? "-expended" : ""]"
 
 /obj/item/gun/ballistic/automatic/pistol/enforcer/nomag
+	pin = /obj/item/firing_pin/alert_level/blue
 	spawnwithmagazine = FALSE
 
 /obj/item/gun/ballistic/automatic/pistol/enforcerred
@@ -45,6 +46,11 @@
 	w_class = WEIGHT_CLASS_NORMAL
 	mag_type = /obj/item/ammo_box/magazine/e45
 	can_suppress = TRUE
+	burst_shot_delay = 2
+	burst_size = 2
+	fire_delay = 2.5
+	fire_select_modes = list(SELECT_SEMI_AUTOMATIC, SELECT_BURST_SHOT, SELECT_FULLY_AUTOMATIC)
+	automatic_burst_overlay = TRUE
 	can_flashlight = 1
 	flight_x_offset = 18
 	flight_y_offset = 14
