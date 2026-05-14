@@ -1,3 +1,7 @@
+/proc/_isclownjob(mob/honker)
+	var/datum/job/clowncheck = SSjob.GetJob(honker.job)
+	return istype(clowncheck, /datum/job/clown)
+
 /datum/job/clown
 	title = "Clown"
 	flag = CLOWN
@@ -8,13 +12,20 @@
 	spawn_positions = 2
 	supervisors = "the head of personnel"
 	selection_color = "#dddddd"
+	alt_titles = list(
+		"Comedian",
+		"Cumedian",
+		"Jester",
+		"Joker",
+		"Sexy Clown"
+		)
 
 	outfit = /datum/outfit/job/clown
 	departments = DEPARTMENT_BITFLAG_SERVICE
 	plasma_outfit = /datum/outfit/plasmaman/clown
 
-	access = list(ACCESS_THEATRE)
-	minimal_access = list(ACCESS_THEATRE)
+	access = list(ACCESS_THEATRE, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
+	minimal_access = list(ACCESS_THEATRE, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
 	paycheck = PAYCHECK_MINIMAL
 	paycheck_department = ACCOUNT_SRV
 

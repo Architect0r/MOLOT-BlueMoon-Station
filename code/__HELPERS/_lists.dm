@@ -510,13 +510,15 @@
 
 	return L
 
-//same, but returns nothing and acts on list in place
+//same, but returns nothing and acts on list in place, and returns same list
 /proc/shuffle_inplace(list/L)
 	if(!L)
 		return
 
 	for(var/i=1, i<L.len, ++i)
 		L.Swap(i,rand(i,L.len))
+
+	return L
 
 //Return a list with no duplicate entries
 /proc/uniqueList(list/L)
@@ -874,9 +876,12 @@
 	. = default
 	return json_encode(L)
 
+//json decode that will return null on parse error instead of runtiming.
 /proc/safe_json_decode(string, default = list())
-	. = default
-	return json_decode(string)
+	try
+		return json_decode(string)
+	catch
+		return null
 
 /**
  * Custom binary search sorted insert utilising comparison procs instead of vars.

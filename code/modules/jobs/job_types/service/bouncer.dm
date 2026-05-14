@@ -13,8 +13,8 @@
 	outfit = /datum/outfit/job/bouncer
 	plasma_outfit = /datum/outfit/plasmaman/bar
 
-	access = list(ACCESS_HYDROPONICS, ACCESS_BAR, ACCESS_KITCHEN, ACCESS_MORGUE, ACCESS_WEAPONS, ACCESS_MINERAL_STOREROOM)
-	minimal_access = list(ACCESS_BAR, ACCESS_MINERAL_STOREROOM)
+	access = list(ACCESS_HYDROPONICS, ACCESS_BAR, ACCESS_KITCHEN, ACCESS_MORGUE, ACCESS_WEAPONS, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
+	minimal_access = list(ACCESS_BAR, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
 	paycheck = PAYCHECK_EASY
 	paycheck_department = ACCOUNT_SRV
 	bounty_types = CIV_JOB_DRINK
@@ -28,12 +28,15 @@
 	)
 
 	alt_titles = list(
-		"Bodyguard",
-		"Hired Muscle",
-		"Service Guard",
 		"Barmaid Sentinel",
+		"Bodyguard",
+		"Cocksucker",
+		"Doorman",
+		"Doorwoman",
+		"Hired Muscle",
+		"Public Defender",
+		"Service Guard",
 		"Slapper",
-		"Cocksucker"
 		)
 
 /////////////////////////////
@@ -110,11 +113,7 @@
 	desc = "A storage case for a Mk. 58 Enforcer. Peace through power!"
 
 /obj/item/storage/secure/briefcase/bouncer/e45_box/PopulateContents()
-	var/obj/item/gun/ballistic/automatic/pistol/enforcer/pistol = new /obj/item/gun/ballistic/automatic/pistol/enforcer/nomag(src)
-	var/pin_type = initial(/obj/item/gun/ballistic/automatic/pistol/enforcer::pin)
-	if(pin_type)
-		QDEL_NULL(pistol.pin)
-		pistol.pin = new pin_type(pistol) // Нет никого смысла ограничивать пистолет баунсеру на синий код, это не СБ
+	new /obj/item/gun/ballistic/automatic/pistol/enforcer/nomag(src)
 	new /obj/item/ammo_box/magazine/e45/taser(src)
 	new /obj/item/ammo_box/magazine/e45/taser(src)
 	new /obj/item/ammo_box/magazine/e45/taser(src)

@@ -73,12 +73,13 @@
 
 	//usr << browse_rsc('windowbak.png')		// This has been moved to the mob's Login() proc
 
-
 												// Declaring a doctype is necessary to enable BYOND's crappy browser's more advanced CSS functionality
+	var/zoom_head = usr?.client?.legacy_zoom_head("pai") || ""
 	dat = {"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">
 			<html>
 			<head>
 				<meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+				[zoom_head]
 				<style type=\"text/css\">
 					body { background-image:url('html/paigrid.png'); }
 
@@ -232,18 +233,18 @@
 		// Accessing medical records
 		if("medicalrecord")
 			if(subscreen == 1)
-				medicalActive1 = find_record("id", href_list["med_rec"], GLOB.data_core.general)
+				medicalActive1 = GLOB.data_core.general_by_id[href_list["med_rec"]]
 				if(medicalActive1)
-					medicalActive2 = find_record("id", href_list["med_rec"], GLOB.data_core.medical)
+					medicalActive2 = GLOB.data_core.medical_by_id[href_list["med_rec"]]
 				if(!medicalActive2)
 					medicalActive1 = null
 					temp = "Unable to locate requested security record. Record may have been deleted, or never have existed."
 
 		if("securityrecord")
 			if(subscreen == 1)
-				securityActive1 = find_record("id", href_list["sec_rec"], GLOB.data_core.general)
+				securityActive1 = GLOB.data_core.general_by_id[href_list["sec_rec"]]
 				if(securityActive1)
-					securityActive2 = find_record("id", href_list["sec_rec"], GLOB.data_core.security)
+					securityActive2 = GLOB.data_core.security_by_id[href_list["sec_rec"]]
 				if(!securityActive2)
 					securityActive1 = null
 					temp = "Unable to locate requested security record. Record may have been deleted, or never have existed."

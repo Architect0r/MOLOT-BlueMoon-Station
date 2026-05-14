@@ -109,6 +109,8 @@ SUBSYSTEM_DEF(job)
 			return FALSE
 		if(job.is_species_blacklisted(player.client)) //BLUEMOON ADDITION - XENO SUPREMACY
 			return FALSE //BLUEMOON ADDITION - XENO SUPREMACY
+		if(!player.client.prefs.pref_species.qualifies_for_rank(rank, player.client.prefs.features))
+			return FALSE
 		var/position_limit = job.total_positions
 		if(!latejoin)
 			position_limit = job.spawn_positions
@@ -495,7 +497,7 @@ SUBSYSTEM_DEF(job)
 		SSpersistence.antag_rep_change[M.client.ckey] += job.GetAntagRep()
 
 		if(M.client.holder)
-			if(CONFIG_GET(flag/auto_deadmin_players) || (M.client.prefs?.deadmin & DEADMIN_ALWAYS))
+			if(CONFIG_GET(flag/auto_deadmin_players) || (M.client.prefs?.deadmin & DEADMIN_ONSPAWN))
 				M.client.holder.auto_deadmin()
 			else
 				handle_auto_deadmin_roles(M.client, rank)
@@ -516,24 +518,31 @@ SUBSYSTEM_DEF(job)
 			flavor_display_text += "\n<li>Ввиду критической нехватки персонала, ваша ID-карта имеет дополнительный доступ.</li>"
 		if(job.custom_spawn_text)
 			flavor_display_text += "\n<li>[capitalize(job.custom_spawn_text)]</li>"
-	if(H.mind.assigned_role == "Head of Security") // Секция добавления штук для ГСБ
-		for(var/obj/structure/safe/floor/syndi/armory/brigsafe in world)
-			var/code_text = "[brigsafe.tumblers.Join("-")]"
-			flavor_display_text += "\n<li><span class='red'>Вам известен код сейфа оружейной:<br><B>[code_text].</B></span>\n</li>"
-			H.mind.memory += ("Код сейфа оружейной: [code_text].\n") // Нет, add_memory не работает, этот брутфорс был нужен.
 	if(ishuman(H))
 		var/mob/living/carbon/human/wageslave = H
 		flavor_display_text += "\n<li>Номер вашего банковского аккаунта - [wageslave.account_id].</li>"
 		H.add_memory("Номер вашего банковского аккаунта - [wageslave.account_id].")
-	to_chat(M, examine_block(flavor_display_text))
 	// BLUEMOON EDIT END
 	if(job && H)
 		if(job.dresscodecompliant)// CIT CHANGE - dress code compliance
 			equip_loadout(N, H) // CIT CHANGE - allows players to spawn with loadout items
 		job.after_spawn(H, M.client, joined_late) // note: this happens before the mob has a key! M will always have a client, H might not.
 		post_equip_loadout(N, H)//CIT CHANGE - makes players spawn with in-backpack loadout items properly. A little hacky but it works
-
+		// BLUEMOON ADDITION
+		switch(rank)
+			if("Head of Security") // Секция добавления штук для ГСБ
+				var/station_armory = GLOB.areas_by_type[/area/ai_monitored/security/armory]
+				if(station_armory)
+					var/obj/structure/safe/floor/syndi/armory/brigsafe
+					for(brigsafe in station_armory)
+						var/code_text = "[brigsafe.tumblers.Join("-")]"
+						flavor_display_text += "\n<li><span class='red'>Вам известен код сейфа оружейной:<br><B>[code_text].</B></span>\n</li>"
+						H.mind.memory += ("Код сейфа оружейной: [code_text].\n") // Нет, add_memory не работает, этот брутфорс был нужен.
+		// BLUEMOON EDIT END
 		handle_roundstart_items(H, M.ckey, H.mind.assigned_role, H.mind.special_role)
+		if(ishuman(H))
+			bm_deliver_metadollar_purchases(H, M.client)
+	to_chat(M, examine_block(flavor_display_text))
 
 	var/list/tcg_cards
 	if(ishuman(H))
@@ -544,20 +553,21 @@ SUBSYSTEM_DEF(job)
 	if(tcg_cards)
 		var/obj/item/tcgcard_binder/binder = new(get_turf(H))
 		H.equip_to_slot_if_possible(binder, ITEM_SLOT_BACKPACK, disable_warning = TRUE, bypass_equip_delay_self = TRUE)
-		for(var/card_type in N.client.prefs.tcg_cards)
+		for(var/card_type in tcg_cards)
 			if(card_type)
-				if(islist(H.client.prefs.tcg_cards[card_type]))
-					for(var/duplicate in N.client.prefs.tcg_cards[card_type])
+				if(islist(tcg_cards[card_type]))
+					for(var/duplicate in tcg_cards[card_type])
 						var/obj/item/tcg_card/card = new(get_turf(H), card_type, duplicate)
 						card.forceMove(binder)
 						binder.cards.Add(card)
 				else
-					var/obj/item/tcg_card/card = new(get_turf(H), card_type, N.client.prefs.tcg_cards[card_type])
+					var/obj/item/tcg_card/card = new(get_turf(H), card_type, tcg_cards[card_type])
 					card.forceMove(binder)
 					binder.cards.Add(card)
 		binder.check_for_exodia()
-		if(length(N.client.prefs.tcg_decks))
-			binder.decks = N.client.prefs.tcg_decks
+		var/list/tcg_decks = H.client?.prefs?.tcg_decks || N?.client?.prefs?.tcg_decks
+		if(length(tcg_decks))
+			binder.decks = tcg_decks
 
 	if(ambition_text)
 		to_chat(M, span_notice(ambition_text))
@@ -811,6 +821,8 @@ SUBSYSTEM_DEF(job)
 			I.name = i[LOADOUT_CUSTOM_NAME]
 		if(i[LOADOUT_CUSTOM_DESCRIPTION])
 			I.desc = i[LOADOUT_CUSTOM_DESCRIPTION]
+		if(isclothing(I) && islist(i["loadout_examtooltip"]))
+			I:custom_examine_tooltip = list(i["loadout_examtooltip"][1], i["loadout_examtooltip"][2])
 		if(i["loadout_custom_tagname"]) //for collars with tagnames
 			var/obj/item/clothing/neck/petcollar/collar = I
 			if(istype(collar))
@@ -818,6 +830,7 @@ SUBSYSTEM_DEF(job)
 				collar.name = "[initial(collar.name)] - [collar.tagname]"
 
 		var/already_equiped = FALSE
+		var/list/bag_contents = null
 		if(G.slot == ITEM_SLOT_ACCESSORY && istype(I, /obj/item/clothing/accessory))
 			var/obj/item/clothing/accessory/A = I
 			var/obj/item/clothing/wear = M.get_item_by_slot(A.accessory_slot)
@@ -827,7 +840,12 @@ SUBSYSTEM_DEF(job)
 		if(!already_equiped && replace_clothing && G.slot)
 			var/obj/item/existing = M.get_item_by_slot(G.slot)
 			if(existing)
-				M.dropItemToGround(existing, TRUE)
+				if(G.slot == ITEM_SLOT_BACK)
+					bag_contents = list()
+					SEND_SIGNAL(existing, COMSIG_TRY_STORAGE_RETURN_INVENTORY, bag_contents, FALSE)
+				// BLUEMOON FIX — при замене униформы/костюма не выбрасываем зависимые предметы (ID, ремень, карманы, кобуру) каскадом
+				var/should_invdrop = !(G.slot == ITEM_SLOT_ICLOTHING || G.slot == ITEM_SLOT_OCLOTHING)
+				M.dropItemToGround(existing, TRUE, FALSE, should_invdrop)
 				if(iscarbon(M))
 					var/mob/living/carbon/RC = M
 					var/obj/item/storage/backpack/RB = RC.back
@@ -842,7 +860,7 @@ SUBSYSTEM_DEF(job)
 			if(iscarbon(M))
 				var/mob/living/carbon/C = M
 				var/obj/item/storage/backpack/B = C.back
-				if(!B || !SEND_SIGNAL(B, COMSIG_TRY_STORAGE_INSERT, I, null, TRUE, TRUE)) // Otherwise, try to put it in the backpack, for carbons.
+				if(!B || istype(I, /obj/item/storage/backpack) || !SEND_SIGNAL(B, COMSIG_TRY_STORAGE_INSERT, I, null, TRUE, TRUE)) // Otherwise, try to put it in the backpack, for carbons.
 					if(can_drop)
 						I.forceMove(get_turf(C))
 					else
@@ -852,6 +870,12 @@ SUBSYSTEM_DEF(job)
 					I.forceMove(get_turf(M)) // If everything fails, just put it on the floor under the mob.
 				else
 					qdel(I)
+		if(bag_contents?.len && !QDELETED(I) && iscarbon(M))
+			var/mob/living/carbon/CB = M
+			if(CB.back == I)
+				for(var/obj/item/stored_item in bag_contents)
+					if(!QDELETED(stored_item))
+						SEND_SIGNAL(I, COMSIG_TRY_STORAGE_INSERT, stored_item, null, TRUE, TRUE)
 		// BLUEMOON ADD START - выбор вещей из лодаута как family heirloom
 		if(i[LOADOUT_IS_HEIRLOOM] && !QDELETED(I) && heirloomer)
 			I.item_flags |= FAMILY_HEIRLOOM
@@ -939,6 +963,8 @@ SUBSYSTEM_DEF(job)
 			I.name = i[LOADOUT_CUSTOM_NAME]
 		if(i[LOADOUT_CUSTOM_DESCRIPTION])
 			I.desc = i[LOADOUT_CUSTOM_DESCRIPTION]
+		if(isclothing(I) && islist(i["loadout_examtooltip"]))
+			I:custom_examine_tooltip = list(i["loadout_examtooltip"][1], i["loadout_examtooltip"][2])
 		if(i["loadout_custom_tagname"]) //for collars with tagnames
 			var/obj/item/clothing/neck/petcollar/collar = I
 			if(istype(collar))
@@ -955,7 +981,9 @@ SUBSYSTEM_DEF(job)
 		if(!already_equiped && replace_clothing && G.slot)
 			var/obj/item/existing = M.get_item_by_slot(G.slot)
 			if(existing)
-				M.dropItemToGround(existing, TRUE)
+				// BLUEMOON FIX — при замене униформы/костюма не выбрасываем зависимые предметы (ID, ремень, карманы, кобуру) каскадом
+				var/should_invdrop = !(G.slot == ITEM_SLOT_ICLOTHING || G.slot == ITEM_SLOT_OCLOTHING)
+				M.dropItemToGround(existing, TRUE, FALSE, should_invdrop)
 				if(iscarbon(M))
 					var/mob/living/carbon/RC = M
 					var/obj/item/storage/backpack/RB = RC.back

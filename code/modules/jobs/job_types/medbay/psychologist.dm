@@ -12,11 +12,27 @@
 	exp_requirements = 240
 	exp_type = EXP_TYPE_CREW
 
+	alt_titles = list(
+		"Counsellor",
+		"Hypnosis Expert",
+		"Hypnotherapist",
+		"Hypnotist",
+		"Psychiatrist",
+		"Psycho-Slut",
+		"Psychotherapist",
+		"Rental Daddy",
+		"Rental Mommy",
+		"Sex Therapist",
+		"Sexual Advisor",
+		"The Rapist",
+		"Therapist",
+		"Trust Service Specialist"
+		)
 
 	outfit = /datum/outfit/job/doctor/psychologist
 
-	access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_CLONING, ACCESS_MINERAL_STOREROOM, ACCESS_PSYCH)
-	minimal_access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_CLONING, ACCESS_MINERAL_STOREROOM, ACCESS_PSYCH)
+	access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_CLONING, ACCESS_MINERAL_STOREROOM, ACCESS_PSYCH, ACCESS_PRODUCTION_MEDICAL)
+	minimal_access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_CLONING, ACCESS_MINERAL_STOREROOM, ACCESS_PSYCH, ACCESS_PRODUCTION_MEDICAL)
 
 	display_order = JOB_DISPLAY_ORDER_PSYCH
 

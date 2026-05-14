@@ -95,9 +95,11 @@
 	SHOULD_CALL_PARENT(TRUE)
 
 	for(var/datum/hud/hud in viewers)
-		if(!hud.mymob)
-			continue
-		HideFrom(hud.mymob)
+		var/atom/movable/screen/movable/action_button/button = viewers[hud]
+		if(hud.mymob)
+			HideFrom(hud.mymob)
+		else if(button)
+			qdel(button) // Mob destroyed; remove orphaned button to prevent GC failure
 	LAZYREMOVE(remove_from?.actions, src) // We aren't always properly inserted into the viewers list, gotta make sure that action's cleared
 	viewers = list()
 
@@ -111,7 +113,7 @@
 	))
 
 	if(target == owner)
-		RegisterSignal(target, COMSIG_PARENT_QDELETING, PROC_REF(clear_ref))
+		RegisterSignal(target, COMSIG_PARENT_QDELETING, PROC_REF(clear_ref), override = TRUE)
 	UnregisterSignal(remove_from, COMSIG_MOB_KEYDOWN)
 	if(owner == remove_from)
 		owner = null
@@ -204,7 +206,7 @@
 
 /datum/action/proc/update_button_status(atom/movable/screen/movable/action_button/current_button, force = FALSE)
 	current_button.update_keybind_maptext(full_key)
-	if(IsAvailable())
+	if(IsAvailable(TRUE))
 		current_button.color = rgb(255,255,255,255)
 	else
 		current_button.color = transparent_when_unavailable ? rgb(128,0,0,128) : rgb(128,0,0)
@@ -305,8 +307,9 @@
 
 /datum/action/item_action/Destroy()
 	var/obj/item/I = target
-	I.actions -= src
-	UNSETEMPTY(I.actions)
+	if(I?.actions)
+		I.actions -= src
+		UNSETEMPTY(I.actions)
 	return ..()
 
 /datum/action/item_action/Trigger(trigger_flags)
@@ -991,8 +994,8 @@
 	var/small_icon_state
 
 /datum/action/small_sprite/queen
-	small_icon = 'icons/mob/alien.dmi'
-	small_icon_state = "alienq"
+	small_icon = 'icons/Xeno/castes/queen.dmi'
+	small_icon_state = "Queen Walking"
 
 /datum/action/small_sprite/drake
 	small_icon = 'icons/mob/lavaland/lavaland_monsters.dmi'

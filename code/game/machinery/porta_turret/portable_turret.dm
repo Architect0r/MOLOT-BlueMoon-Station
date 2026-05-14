@@ -251,6 +251,11 @@ DEFINE_BITFIELD(turret_flags, list(
 				return TRUE
 			else
 				to_chat(usr, "<span class='warning'>It has to be secured first!</span>")
+		if("ai_auth")
+			if(issilicon(usr) || IsAdminGhost(usr))
+				locked = !locked
+				update_icon()
+				return TRUE
 		if("authweapon")
 			turret_flags ^= TURRET_FLAG_AUTH_WEAPONS
 			return TRUE
@@ -341,8 +346,6 @@ DEFINE_BITFIELD(turret_flags, list(
 		else
 			to_chat(user, "<span class='alert'>Доступ запрещён.</span>")
 	else if(I.tool_behaviour == TOOL_MULTITOOL && !locked)
-		if(!multitool_check_buffer(user, I))
-			return
 		I.buffer = src
 		to_chat(user, "<span class='notice'>You add [src] to [I]'s buffer.</span>")
 	else
@@ -412,7 +415,7 @@ DEFINE_BITFIELD(turret_flags, list(
 
 /obj/machinery/porta_turret/welder_act(mob/living/user, obj/item/I)
 	. = TRUE
-	if(obj_integrity < max_integrity) //BLUEMOON EDIT: removed cover && since it broke the logic and considered the turret to be at 100% at all times. This bug is from 2021, hello. 
+	if(obj_integrity < max_integrity) //BLUEMOON EDIT: removed cover && since it broke the logic and considered the turret to be at 100% at all times. This bug is from 2021, hello.
 		if(!I.tool_start_check(user, amount=0))
 			return
 		user.visible_message("[user] чинит турель сваркой.", \
@@ -577,8 +580,8 @@ DEFINE_BITFIELD(turret_flags, list(
 
 	if(turret_flags & TURRET_FLAG_SHOOT_CRIMINALS)	//if the turret can check the records, check if they are set to *Arrest* on records
 		var/perpname = perp.get_face_name(perp.get_id_name())
-		var/datum/data/record/R = find_record("name", perpname, GLOB.data_core.security)
-		if(!R || (R.fields["criminal"] == SEC_RECORD_STATUS_ARREST || SEC_RECORD_STATUS_EXECUTE || SEC_RECORD_STATUS_INCARCERATED))
+		var/datum/data/record/R = GLOB.data_core.security_by_name[perpname]
+		if(!R || (R.fields["criminal"] in list(SEC_RECORD_STATUS_ARREST, SEC_RECORD_STATUS_EXECUTE, SEC_RECORD_STATUS_INCARCERATED)))
 			threatcount += 4
 
 	if((turret_flags & TURRET_FLAG_SHOOT_UNSHIELDED) && (!HAS_TRAIT(perp, TRAIT_MINDSHIELD)))
@@ -970,10 +973,11 @@ DEFINE_BITFIELD(turret_flags, list(
 		return
 
 	if(control_area)
-		control_area = get_area_instance_from_text(control_area)
+		var/legacy_control_area = control_area
+		control_area = get_area_instance_from_text(legacy_control_area)
 		if(control_area == null)
 			control_area = get_area(src)
-			stack_trace("Bad control_area path for [src], [src.control_area]")
+			WARNING("Bad control_area path for [src]: [legacy_control_area]. Falling back to [control_area].")
 	else if(!control_area)
 		control_area = get_area(src)
 
@@ -992,8 +996,6 @@ DEFINE_BITFIELD(turret_flags, list(
 		return
 
 	if(I.tool_behaviour == TOOL_MULTITOOL)
-		if(!multitool_check_buffer(user, I))
-			return
 		if(I.buffer && istype(I.buffer, /obj/machinery/porta_turret))
 			turrets |= I.buffer
 			to_chat(user, "<span class='notice'>You link \the [I.buffer] with \the [src].</span>")

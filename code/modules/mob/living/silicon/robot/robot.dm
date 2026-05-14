@@ -106,14 +106,18 @@
 	modularInterface.plane = ABOVE_HUD_PLANE
 
 /mob/living/silicon/robot/Destroy()
+	QDEL_NULL(profile)
 	if(connected_ai)
 		set_connected_ai(null)
 	if(shell)
 		GLOB.available_ai_shells -= src
 	QDEL_NULL(modularInterface)
 	QDEL_NULL(wires)
+	module_active = null
+	for(var/i in 1 to held_items.len)
+		held_items[i] = null
 	QDEL_NULL(module)
-	QDEL_NULL(eye_lights)
+	eye_lights = null
 	QDEL_NULL(inv1)
 	QDEL_NULL(inv2)
 	QDEL_NULL(inv3)
@@ -691,7 +695,7 @@
 	. = ..()
 	radio = new /obj/item/radio/borg/syndicate(src)
 	laws = new /datum/ai_laws/syndicate_override()
-	addtimer(CALLBACK(src, PROC_REF(show_playstyle)), 5)
+	addtimer(CALLBACK(src, PROC_REF(show_playstyle)), 5, TIMER_DELETE_ME)
 
 /mob/living/silicon/robot/modules/syndicate/create_modularInterface()
 	if(!modularInterface)
@@ -749,7 +753,7 @@
 	. = ..()
 	radio = new /obj/item/radio/borg/inteq(src)
 	laws = new /datum/ai_laws/inteq_override()
-	addtimer(CALLBACK(src, PROC_REF(show_playstyle)), 5)
+	addtimer(CALLBACK(src, PROC_REF(show_playstyle)), 5, TIMER_DELETE_ME)
 
 /mob/living/silicon/robot/modules/inteq/create_modularInterface()
 	if(!modularInterface)
@@ -868,7 +872,7 @@
 
 	previous_health = health
 
-/mob/living/silicon/robot/update_sight()
+/mob/living/silicon/robot/update_sight(forced = TRUE)
 	if(!client)
 		return
 	if(stat == DEAD)
@@ -1269,6 +1273,28 @@
 		var/mob/unbuckle_me_now = i
 		unbuckle_mob(unbuckle_me_now, FALSE)
 
+/mob/living/silicon/robot/proc/camera_remove(drop_assembly = FALSE)
+	if(QDELETED(builtInCamera))
+		return
+
+	if(drop_assembly)
+		var/cyborg_turf_loc = get_turf(src)
+		new /obj/item/wallframe/camera (cyborg_turf_loc)
+		new /obj/item/stack/cable_coil(cyborg_turf_loc, 2)
+	QDEL_NULL(builtInCamera)
+
+/mob/living/silicon/robot/proc/camera_restore()
+	if(!QDELETED(builtInCamera) || scrambledcodes)
+		return
+
+	builtInCamera = new (src)
+	builtInCamera.c_tag = real_name
+	builtInCamera.network = list("ss13")
+	builtInCamera.internal_light = FALSE
+
+	if(wires?.is_cut(WIRE_CAMERA))
+		builtInCamera.toggle_cam(src, 0)
+
 /mob/living/silicon/robot/proc/TryConnectToAI(mob/living/silicon/ai/connect_to)
 	set_connected_ai(connect_to || select_active_ai_with_fewest_borgs(z))
 	if(connected_ai)
@@ -1297,40 +1323,26 @@
 	set name = "Switch Rest Style"
 	set category = "Robot Commands"
 	set desc = "Select your resting pose."
-	sitting = 0
-	bellyup = 0
-	deep_rest = 0		//DarkSer request by Gardelin0
-	wag_rest = 0		//DarkSer request by Gardelin0
-	wag_sit = 0			//DarkSer request by Gardelin0
 
-	if(module.drakerest == TRUE)	//DarkSer request by Gardelin0
-		var/choice_drake = tgui_alert(usr, "Select resting pose", "Pose", list("Resting", "Sitting", "Belly up", "Napping", "Resting Wag", "Sitting Wag"))
-		switch(choice_drake)
-			if("Resting")
-				update_icons()
-				return FALSE
-			if("Sitting")
-				sitting = 1
-			if("Belly up")
-				bellyup = 1
-			if("Napping")
-				deep_rest = 1
-			if("Resting Wag")
-				wag_rest = 1
-			if("Sitting Wag")
-				wag_sit = 1
-		update_icons()
-	if(module.drakerest == FALSE)
-		var/choice = tgui_alert(usr, "Select resting pose", "Pose", list("Resting", "Sitting", "Belly up"))
-		switch(choice)
-			if("Resting")
-				update_icons()
-				return FALSE
-			if("Sitting")
-				sitting = 1
-			if("Belly up")
-				bellyup = 1
-		update_icons()
+	var/list/poses = list("Resting", "Sitting", "Belly up")
+	if(module.drakerest)
+		poses.Add("Napping", "Resting Wag", "Sitting Wag")
+
+	var/choice = tgui_input_list(usr, "Select resting pose", "Pose", poses)
+	switch(choice)
+		if("Resting")
+			resting_state = "rest"
+		if("Sitting")
+			resting_state = "sit"
+		if("Belly up")
+			resting_state = "bellyup"
+		if("Napping")
+			resting_state = "rest_deep"
+		if("Resting Wag")
+			resting_state = "rest_alt"
+		if("Sitting Wag")
+			resting_state = "sit_alt"
+	update_icons()
 
 /mob/living/silicon/robot/verb/viewmanifest()
 	set category = "Robot Commands"
@@ -1377,19 +1389,35 @@
 	if(program)
 		program.force_full_update()
 
-/mob/living/silicon/robot/get_tooltip_data()
-	var/t_He = ru_who(TRUE)
-	var/t_is = p_are()
-	. = list()
-	var/borg_type = module ? module : "Default"
-//This isn't even used normally, but if that ever changes, just uncomment this
-/*	var/obj/item/borg_chameleon/chameleon = locate() in src
+/// Проверка на инженерную маскировку
+/mob/living/silicon/robot/proc/chameleon_module()
+	var/obj/item/borg_chameleon/chameleon = locate() in src
 	if(!chameleon)
 		chameleon = locate() in src.module
 	if(chameleon?.active)
-		borg_type = "Engineering"
-*/
-	. += "[t_He] [t_is] a [borg_type] unit"
+		return TRUE
+	else
+		return FALSE
+
+/// Проверка на модуль антагролей
+/mob/living/silicon/robot/proc/check_allegiance()
+	if(chameleon_module())
+		return
+
+	if(module.type in GLOB.syndicate_cyborg_modules)
+		return " синдикатовского производства"
+	if(module.type in GLOB.inteq_cyborg_modules)
+		return " принадлежности InteQ"
+	if(module.type in GLOB.spider_cyborg_modules)
+		return " Паучьего Клана"
+
+/mob/living/silicon/robot/get_tooltip_data()
+	. = list()
+	var/borg_type = module ? module.name : "стандартный"
+	if(chameleon_module())
+		borg_type = "инженерный"
+
+	. += "Это [module_to_ru_adjective(borg_type)] киборг[check_allegiance()]"
 	if(activity)
 		. += activity
 	SEND_SIGNAL(src, COMSIG_PARENT_EXAMINE, usr, .)

@@ -15,7 +15,35 @@
 	exp_type = EXP_TYPE_COMMAND
 	exp_type_department = EXP_TYPE_COMMAND
 	considered_combat_role = TRUE
-
+	custom_spawn_text = "не забывайте о том, что ваша запасная карта должна находиться на территории мостика. И <b>прошу</b>, не переименовывайте станцию во что-нибудь похабное..."
+	alt_titles = list(
+		"Admiral",
+		"Cap-Slut",
+		"Catpain",
+		"Chief Command",
+		"Chief Executive Officer",
+		"Cockpitain",
+		"Colony Overseer",
+		"Commanding Officer",
+		"Condom",
+		"Consul",
+		"Cuntpitain",
+		"Facility Director",
+		"Grey Cardinals",
+		"Head of Command",
+		"Sectorial Commander",
+		"Senator",
+		"Site Director",
+		"Site Manager",
+		"Station Commander",
+		"Station Director",
+		"Station Leader",
+		"Station Master",
+		"Station Mistress",
+		"Station Overseer",
+		"Stationmaster",
+		"Gubernator"
+		)
 
 	outfit = /datum/outfit/job/captain
 	plasma_outfit = /datum/outfit/plasmaman/captain
@@ -26,12 +54,10 @@
 	paycheck = PAYCHECK_COMMAND
 	paycheck_department = ACCOUNT_SEC
 
-	mind_traits = list(TRAIT_CAPTAIN_METABOLISM, TRAIT_DISK_VERIFIER)
-
 	display_order = JOB_DISPLAY_ORDER_CAPTAIN
 	departments = DEPARTMENT_BITFLAG_COMMAND
 
-	mind_traits = list(TRAIT_FENCER)
+	mind_traits = list(TRAIT_FENCER, TRAIT_CAPTAIN_METABOLISM, TRAIT_DISK_VERIFIER)
 
 	blacklisted_quirks = list(/datum/quirk/mute, /datum/quirk/brainproblems, /datum/quirk/insanity, /datum/quirk/blindness, /datum/quirk/illiterate, /datum/quirk/onelife)
 	threat = 5
@@ -55,7 +81,7 @@
 	var/displayed_rank = H.client?.prefs?.alt_titles_preferences[title]
 	if(!displayed_rank)	//Default to Captain
 		displayed_rank = "Капитан"
-	SSticker.OnRoundstart(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(minor_announce), "[displayed_rank] [H.nameless ? "" : "[H.real_name] "] прибывает на [station_name()]!"))
+	SSticker.OnRoundstart(CALLBACK(GLOBAL_PROC, GLOBAL_PROC_REF(announce_captain_arrival), displayed_rank, H.nameless ? null : H.real_name))
 
 /datum/outfit/job/captain
 	name = "Captain"
@@ -71,7 +97,7 @@
 	shoes = /obj/item/clothing/shoes/laceup
 	head = /obj/item/clothing/head/caphat
 
-	backpack_contents = list( /obj/item/station_charter=1, /obj/item/modular_computer/tablet/preset/advanced=1, /obj/item/stamp/command=1)
+	backpack_contents = list( /obj/item/station_charter=1, /obj/item/modular_computer/tablet/preset/advanced/command=1, /obj/item/stamp/command=1)
 	box = /obj/item/storage/box/survival/command
 
 	backpack = /obj/item/storage/backpack/captain

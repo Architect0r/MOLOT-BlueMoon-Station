@@ -8,12 +8,53 @@
 	spawn_positions = 1
 	supervisors = "the head of personnel"
 	selection_color = "#dddddd"
+	alt_titles = list(
+		"Tiger Cooperative Disciple", //Триглав выше, для удобства
+		"Bichop",
+		"Bishop",
+		"Cleric",
+		"Disciple",
+		"Esotericist",
+		"Ghost Hunter",
+		"Guru",
+		"High Priest",
+		"High Priestess",
+		"Imam",
+		"Junior Inquisitor",
+		"Keeper of Cum",
+		"Magister",
+		"Medium",
+		"Monk",
+		"Morale Officer",
+		"Nun",
+		"Occultism Fan",
+		"Oracle",
+		"Paranormalist",
+		"Pontiff",
+		"Pope",
+		"Preacher",
+		"Priest",
+		"Priestess",
+		"Prior",
+		"Psychic",
+		"Rabbi",
+		"Reverend",
+		"Ritualist",
+		"Shaman",
+		"Shrine Guardian",
+		"Shrine Maiden",
+		"Spiritual Mentor",
+		"Techpriest",
+		"Thaumaturge",
+		"Theologist",
+		"Voodoo Sorcerer",
+		)
 
 	outfit = /datum/outfit/job/chaplain
 	plasma_outfit = /datum/outfit/plasmaman/chaplain
 
-	access = list(ACCESS_MORGUE, ACCESS_CHAPEL_OFFICE, ACCESS_CREMATORIUM, ACCESS_THEATRE)
-	minimal_access = list(ACCESS_MORGUE, ACCESS_CHAPEL_OFFICE, ACCESS_CREMATORIUM, ACCESS_THEATRE)
+	access = list(ACCESS_MORGUE, ACCESS_CHAPEL_OFFICE, ACCESS_CREMATORIUM, ACCESS_THEATRE, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
+	minimal_access = list(ACCESS_MORGUE, ACCESS_CHAPEL_OFFICE, ACCESS_CREMATORIUM, ACCESS_THEATRE, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
 	paycheck = PAYCHECK_EASY
 	paycheck_department = ACCOUNT_CIV
 

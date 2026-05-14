@@ -200,6 +200,10 @@
 				/obj/item/reagent_containers/syringe/contraband/bath_salts = 1,
 				/obj/item/reagent_containers/syringe/contraband/fentanyl = 1,
 				/obj/item/reagent_containers/syringe/contraband/morphine = 1,
+				/obj/item/reagent_containers/syringe/contraband/labebium = 1,
+				/obj/item/reagent_containers/syringe/contraband/pendosovka = 1,
+				/obj/item/reagent_containers/syringe/contraband/zvezdochka = 1,
+				/obj/item/reagent_containers/syringe/contraband/heroin = 1,
 				/obj/item/storage/pill_bottle/happy = 1,
 				/obj/item/storage/pill_bottle/lsd = 1,
 				/obj/item/storage/pill_bottle/psicodine = 1,
@@ -544,7 +548,8 @@
 				/obj/item/ai_module/core/full/reporter,
 				/obj/item/ai_module/core/full/robocop,
 				/obj/item/ai_module/core/full/liveandletlive,
-				/obj/item/ai_module/core/full/hulkamania
+				/obj/item/ai_module/core/full/hulkamania,
+				/obj/item/ai_module/core/full/gentleman
 				)
 
 /obj/effect/spawner/lootdrop/ai_module_harmful // These will get the shuttle called
@@ -666,11 +671,10 @@
 
 /obj/effect/spawner/lootdrop/techstorage/command
 	name = "secure command circuit board spawner"
-	lootcount = 3
+	lootcount = 2
 	loot = list(
 				/obj/item/circuitboard/computer/crew,
-				/obj/item/circuitboard/computer/communications,
-				/obj/item/circuitboard/computer/card
+				/obj/item/circuitboard/computer/communications
 				)
 
 /obj/effect/spawner/lootdrop/techstorage/RnD_secure

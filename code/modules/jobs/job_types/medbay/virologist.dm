@@ -10,12 +10,24 @@
 	selection_color = "#74b5e0"
 	exp_type = EXP_TYPE_CREW
 	exp_requirements = 60
+	alt_titles = list(
+		"Virologist Intern", //Стажер выше, для удобства
+		"Bioweapon Scientist",
+		"Biochemist",
+		"Epidemiologist",
+		"Microbiologist",
+		"Monkey Destroyer",
+		"Pathologist",
+		"Plague Doctor",
+		"Viro-Slut",
+		"Viro-Stud"
+		)
 
 	outfit = /datum/outfit/job/virologist
 	plasma_outfit = /datum/outfit/plasmaman/viro
 
-	access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_SURGERY, ACCESS_CHEMISTRY, ACCESS_VIROLOGY, ACCESS_GENETICS, ACCESS_CLONING, ACCESS_MINERAL_STOREROOM)
-	minimal_access = list(ACCESS_MEDICAL, ACCESS_VIROLOGY, ACCESS_MINERAL_STOREROOM)
+	access = list(ACCESS_MEDICAL, ACCESS_MORGUE, ACCESS_SURGERY, ACCESS_CHEMISTRY, ACCESS_VIROLOGY, ACCESS_GENETICS, ACCESS_CLONING, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_MEDICAL)
+	minimal_access = list(ACCESS_MEDICAL, ACCESS_VIROLOGY, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_MEDICAL)
 	paycheck = PAYCHECK_MEDIUM
 	paycheck_department = ACCOUNT_MED
 	bounty_types = CIV_JOB_VIRO

@@ -113,8 +113,8 @@ Class Procs:
 		//0 = dont run the auto
 		//1 = run auto, use idle
 		//2 = run auto, use active
-	var/idle_power_usage = 0
-	var/active_power_usage = 0
+	var/idle_power_usage = 100
+	var/active_power_usage = 500
 	var/power_channel = EQUIP
 		//EQUIP,ENVIRON or LIGHT
 	var/list/component_parts = null //list of all the parts used to build it, if made from certain kinds of frames.
@@ -569,18 +569,19 @@ Class Procs:
 		return TRUE
 
 /obj/machinery/proc/default_deconstruction_screwdriver(mob/user, icon_state_open, icon_state_closed, obj/item/I)
-	if(!(flags_1 & NODECONSTRUCT_1) && I.tool_behaviour == TOOL_SCREWDRIVER)
-		I.play_tool_sound(src, 50)
-		if(!panel_open)
-			panel_open = TRUE
-			icon_state = icon_state_open
-			to_chat(user, "<span class='notice'>Вы скручиваете винты панели обслуживания [src].</span>")
-		else
-			panel_open = FALSE
-			icon_state = icon_state_closed
-			to_chat(user, "<span class='notice'>Вы вкручиваете панель обслуживания [src] обратно.</span>")
-		return TRUE
-	return FALSE
+	if((flags_1 & NODECONSTRUCT_1) || I.tool_behaviour != TOOL_SCREWDRIVER)
+		return FALSE
+
+	I.play_tool_sound(src, 50)
+	panel_open = !panel_open
+	if(panel_open)
+		icon_state = icon_state_open
+		to_chat(user, "<span class='notice'>Вы скручиваете винты панели обслуживания [src].</span>")
+	else
+		icon_state = icon_state_closed
+		to_chat(user, "<span class='notice'>Вы вкручиваете панель обслуживания [src] обратно.</span>")
+	update_icon()
+	return TRUE
 
 /obj/machinery/proc/default_change_direction_wrench(mob/user, obj/item/I)
 	if(panel_open && I.tool_behaviour == TOOL_WRENCH)
@@ -692,11 +693,11 @@ Class Procs:
 		var/healthpercent = (obj_integrity/max_integrity) * 100
 		switch(healthpercent)
 			if(50 to 99)
-				. += "Выглядит слегка поврежденным."
+				. += span_warning("Выглядит слегка поврежденным.")
 			if(25 to 50)
-				. += "Выглядит крайне поврежденным."
+				. += span_warning("Выглядит крайне поврежденным.")
 			if(0 to 25)
-				. += "<span class='warning'>Вот-вот развалится!</span>"
+				. += span_warning("Вот-вот развалится!")
 	if(user.research_scanner && component_parts)
 		. += display_parts(user, TRUE)
 

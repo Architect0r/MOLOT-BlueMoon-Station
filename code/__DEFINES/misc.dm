@@ -166,18 +166,6 @@ GLOBAL_LIST_EMPTY(bloody_footprints_cache)
 #define BLOOD_STATE_NOT_BLOODY		"no blood whatsoever"
 #define BLOOD_AMOUNT_PER_DECAL		20
 
-//Blood Decal Colors
-#define BLOOD_COLOR_HUMAN			"#dc0000"
-#define BLOOD_COLOR_XENO			"#9cff75"
-#define BLOOD_COLOR_OIL				"#301d02"
-#define BLOOD_COLOR_SYNTHETIC		"#3f48aa"
-#define BLOOD_COLOR_SLIME			"#00ff90"
-#define BLOOD_COLOR_LIZARD			"#db004D"
-#define BLOOD_COLOR_UNIVERSAL		"#db3300"
-#define BLOOD_COLOR_BUG				"#ffc933"
-#define BLOOD_COLOR_PLANT			"#3d610e"
-
-
 //suit sensors: sensor_mode defines
 
 #define SENSOR_OFF 0
@@ -292,17 +280,17 @@ GLOBAL_LIST_INIT(pda_reskins, list(
 GLOBAL_LIST_INIT(payed_ert, list(
 	list(
 		"available" = TRUE,
-		"price" = 40000,
-		"name" = "Доставщики питцы",
+		"price" = 25000,
+		"name" = "Доставщики Питцы",
 		"disc" = "Нечего есть? Поешьте питцы.",
 		"mission" = "Накормите станцию питцей. Вы не полноправное ОБР и подчиняетесь капитану станции в разумных пределах. Готовьте, развлекайте экипаж и веселитесь.",
-		"size" = 3,
+		"size" = 5,
 		"link" = /datum/ert/pizza,
 	),
 	list(
 		"available" = TRUE,
-		"price" = 80000,
-		"name" = "Развлекательная труппа",
+		"price" = 50000,
+		"name" = "Развлекательная Труппа",
 		"disc" = "Смена стала скучной? -Пора вызывать этих ребят",
 		"mission" = "Развеселите экипаж. Вы не полноправное ОБР и подчиняетесь капитану станции в разумных пределах. Стройте, творите, сделайте смену веселее.",
 		"teamsize" = 5,
@@ -310,30 +298,39 @@ GLOBAL_LIST_INIT(payed_ert, list(
 	),
 	list(
 		"available" = TRUE,
-		"price" = 85000,
-		"name" = "Отряд зачистки",
+		"price" = 75000,
+		"name" = "Отряд Зачистки",
 		"disc" = "Вся грязь и вредители на станции будут уничтожены",
 		"mission" = "Очистите станцию. Вы не полноправное ОБР и подчиняетесь капитану станции в разумных пределах. Приложите все усилия, что бы станция сверкала.",
-		"teamsize" = 3,
+		"teamsize" = 5,
 		"link" = /datum/ert/janitor,
 	),
 	list(
 		"available" = TRUE,
-		"price" = 160000,
-		"name" = "Санитарная бригада",
+		"price" = 100000,
+		"name" = "Санитарная Бригада",
 		"disc" = "Горы трупов и полное отсуствие медиков? Этот вопрос решаем",
 		"mission" = "Лечите экипаж. Вы не полноправное ОБР и подчиняетесь капитану станции в разумных пределах.",
-		"teamsize" = 4,
+		"teamsize" = 5,
 		"link" = /datum/ert/hsc,
 	),
 	list(
 		"available" = TRUE,
-		"price" = 240000,
+		"price" = 150000,
 		"name" = "Ремонтная бригада",
 		"disc" = "Разгермы, последствия аварий, подача питания - они справятся со всем",
 		"mission" = "Ремонт и строительство - это ваша работа. Вы не полноправное ОБР и подчиняетесь капитану станции в разумных пределах.",
-		"teamsize" = 4,
+		"teamsize" = 5,
 		"link" = /datum/ert/engineer_ert,
+	),
+	list(
+		"available" = TRUE,
+		"price" = 200000,
+		"name" = "Отряд Быстрого Реагирования",
+		"disc" = "Вам требуется помощь здесь и сейчас, а ЦК не отвечает уже пять минут? Вызывайте! Они обязательно справятся.",
+		"mission" = "Защитите станцию любой ценой и докажите свою состоятельность!",
+		"teamsize" = 5,
+		"link" = /datum/ert/green,
 	),
 ))
 
@@ -553,6 +550,7 @@ GLOBAL_LIST_INIT(payed_ert, list(
 
 //Filters
 #define AMBIENT_OCCLUSION(_size, _color) list("type"="drop_shadow","x"=0,"y"=-2,"size"=_size,"color"=_color)
+#define AMBIENT_OCCLUSION_SCALED(_base_size, _color, _blur_level) list("type"="drop_shadow","x"=0,"y"=-2,"size"=(_base_size) + (_blur_level) * 0.5,"color"=_color)
 #define EYE_BLUR(size) list("type"="blur", "size"=size)
 #define GRAVITY_MOTION_BLUR list("type"="motion_blur","x"=0,"y"=0)
 
@@ -628,6 +626,8 @@ GLOBAL_LIST_INIT(payed_ert, list(
 #define NOTIFY_JUMP "jump"
 #define NOTIFY_ATTACK "attack"
 #define NOTIFY_ORBIT "orbit"
+/// Ghost alert: jump to target turf then try attack_ghost (possess / interact)
+#define NOTIFY_POSSESS "possess"
 
 GLOBAL_LIST_INIT(month_names, list("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"))
 GLOBAL_LIST_INIT(day_names, list("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"))

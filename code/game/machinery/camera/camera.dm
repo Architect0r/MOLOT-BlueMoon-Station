@@ -306,9 +306,9 @@
 		if (isarea(myarea))
 			LAZYREMOVE(myarea.cameras, src)
 	GLOB.cameranet.updateChunk(x, y, z)
-	var/change_msg = "deactivates"
+	var/change_msg = "отключает"
 	if(status)
-		change_msg = "reactivates"
+		change_msg = "подключает"
 		triggerCameraAlarm()
 		if(!QDELETED(src)) //We'll be doing it anyway in destroy
 			addtimer(CALLBACK(src, PROC_REF(cancelCameraAlarm)), 100)
@@ -402,3 +402,13 @@
 		user.sight = 0
 		user.see_in_dark = 2
 	return TRUE
+
+// (ADD) Pe4henika bluemoon -- start
+/obj/machinery/camera/update_icon_state()
+    if(!status)
+        icon_state = "[initial(icon_state)]1"
+    else if (machine_stat & EMPED)
+        icon_state = "[initial(icon_state)]emp"
+    else
+        icon_state = "[initial(icon_state)][in_use_lights > 0 ? "_in_use" : ""]"
+// (ADD) Pe4henika bluemoon -- end

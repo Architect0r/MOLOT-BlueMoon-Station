@@ -8,12 +8,30 @@
 	spawn_positions = 2
 	supervisors = "the head of personnel"
 	selection_color = "#bbe291"
+	alt_titles = list(
+		"Janitor Assistant", //Стажер выше, для удобства
+		"Cleaner",
+		"Concierge",
+		"Cum Cleaner",
+		"Custodial Technician",
+		"Custodian",
+		"Disposal Unit",
+		"Groundskepper",
+		"Janitorial Specialist",
+		"Liquidator",
+		"Maid",
+		"Maintenance Technician",
+		"Sanitation Technician",
+		"Slutty Maid",
+		"Sweeper",
+		"Trash Can"
+		)
 
 	outfit = /datum/outfit/job/janitor
 	plasma_outfit = /datum/outfit/plasmaman/janitor
 
-	access = list(ACCESS_JANITOR, ACCESS_MAINT_TUNNELS, ACCESS_MINERAL_STOREROOM)
-	minimal_access = list(ACCESS_JANITOR, ACCESS_MAINT_TUNNELS, ACCESS_MINERAL_STOREROOM)
+	access = list(ACCESS_JANITOR, ACCESS_MAINT_TUNNELS, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
+	minimal_access = list(ACCESS_JANITOR, ACCESS_MAINT_TUNNELS, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
 	paycheck = PAYCHECK_EASY
 	paycheck_department = ACCOUNT_SRV
 

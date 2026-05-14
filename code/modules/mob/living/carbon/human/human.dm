@@ -46,9 +46,12 @@
 	AddElement(/datum/element/strippable, GLOB.strippable_human_items, TYPE_PROC_REF(/mob/living/carbon/human, should_strip))
 
 /mob/living/carbon/human/Destroy()
+	QDEL_NULL(profile)
 	QDEL_NULL(physiology)
 	QDEL_NULL_LIST(vore_organs) // CITADEL EDIT belly stuff
 	GLOB.human_list -= src
+	GLOB.suit_sensors_list -= src
+	GLOB.latejoiners -= src
 	return ..()
 
 /mob/living/carbon/human/prepare_data_huds()
@@ -125,7 +128,7 @@
 			var/mob/living/carbon/human/H = usr
 			var/perpname = get_face_name(get_id_name(""))
 			if(istype(H.glasses, /obj/item/clothing/glasses/hud) || istype(H.getorganslot(ORGAN_SLOT_HUD), /obj/item/organ/cyberimp/eyes/hud))
-				var/datum/data/record/R = find_record("name", perpname, GLOB.data_core.general)
+				var/datum/data/record/R = GLOB.data_core.general_by_name[perpname]
 				if(href_list["photo_front"] || href_list["photo_side"])
 					if(R)
 						if(!H.canUseHUD())
@@ -157,7 +160,7 @@
 							to_chat(H, "<span class='warning'>ERROR: Invalid Access</span>")
 							return
 						if(perpname)
-							R = find_record("name", perpname, GLOB.data_core.security)
+							R = GLOB.data_core.security_by_name[perpname]
 							if(R)
 								if(href_list["status"])
 									var/setcriminal = input(usr, "Specify a new criminal status for this person.", "Security HUD", R.fields["criminal"]) in list(SEC_RECORD_STATUS_NONE, SEC_RECORD_STATUS_ARREST, SEC_RECORD_STATUS_EXECUTE, SEC_RECORD_STATUS_INCARCERATED, SEC_RECORD_STATUS_RELEASED, SEC_RECORD_STATUS_PAROLLED, SEC_RECORD_STATUS_DEMOTE, SEC_RECORD_STATUS_SEARCH, SEC_RECORD_STATUS_MONITOR, SEC_RECORD_STATUS_DISCHARGED, "Отмена")
@@ -443,7 +446,7 @@
 	//Check for arrest warrant
 	if(judgement_criteria & JUDGE_RECORDCHECK)
 		var/perpname = get_face_name(get_id_name())
-		var/datum/data/record/R = find_record("name", perpname, GLOB.data_core.security)
+		var/datum/data/record/R = GLOB.data_core.security_by_name[perpname]
 		if(R && R.fields["criminal"])
 			switch(R.fields["criminal"])
 				if(SEC_RECORD_STATUS_EXECUTE)
@@ -667,10 +670,19 @@
 		..()
 
 /mob/living/carbon/human/replace_records_name(oldname,newname) // Only humans have records right now, move this up if changed.
-	for(var/list/L in list(GLOB.data_core.general,GLOB.data_core.medical,GLOB.data_core.security,GLOB.data_core.locked))
-		var/datum/data/record/R = find_record("name", oldname, L)
+	if(oldname == newname)
+		return
+	// Update indexed records (general, medical, security)
+	for(var/list/index in list(GLOB.data_core.general_by_name, GLOB.data_core.medical_by_name, GLOB.data_core.security_by_name))
+		var/datum/data/record/R = index[oldname]
 		if(R)
 			R.fields["name"] = newname
+			index[newname] = R
+			index -= oldname
+	// Locked records are not name-indexed — use linear search
+	var/datum/data/record/locked_record = find_record("name", oldname, GLOB.data_core.locked)
+	if(locked_record)
+		locked_record.fields["name"] = newname
 
 /mob/living/carbon/human/get_total_tint()
 	. = ..()
@@ -957,8 +969,8 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 	else if(HAS_TRAIT(src, TRAIT_QUICK_CARRY) || target.mob_weight < MOB_WEIGHT_NORMAL)
 		carrydelay = 27.5 // BLUEMOON EDIT making this a little bit useful
 		skills_space = "быстро "
-	// BLUEMOON ADDITION AHEAD - тяжёлых и сверхтяжёлых персонажей нельзя нести на плече
-	if(target.mob_weight > MOB_WEIGHT_NORMAL)
+	// BLUEMOON ADDITION AHEAD - тяжёлых и сверхтяжёлых персонажей нельзя нести на плече, если вы не такой-же
+	if(max(mob_weight, MOB_WEIGHT_NORMAL) < target.mob_weight)
 		to_chat(src, span_warning("Вы пытаетесь поднять [target], но [target.ru_who()] слишком тяжелая!"))
 		return
 	// BLUEMOON ADDITION END
@@ -979,17 +991,22 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 		else
 			to_chat(src, span_notice("Вам не удалось поднять [src]."))
 
+#define PIGGYBACK_DELAY_BASE 3.5 SECONDS
+#define PIGGYBACK_DELAYADD_HEAVY 1 SECONDS
+#define PIGGYBACK_DELAYADD_HEAVY_SUPER 3.5 SECONDS
+
 /mob/living/carbon/human/proc/piggyback(mob/living/carbon/target)
 	if(can_piggyback(target))
 		visible_message(span_notice("[target] начинает забираться на [src]..."))
 
 		// BLUEMOON ADDITION START - тяжёлые персонажи дольше забираются на спину
-		var/climb_on_time = 1.5 SECONDS
-		switch(target.mob_weight)
-			if(MOB_WEIGHT_HEAVY_SUPER)
-				climb_on_time = 4 SECONDS
-			if(MOB_WEIGHT_HEAVY)
-				climb_on_time = 2.5 SECONDS
+		var/climb_on_time = PIGGYBACK_DELAY_BASE
+		if(mob_weight < target.mob_weight)
+			switch(target.mob_weight)
+				if(MOB_WEIGHT_HEAVY_SUPER)
+					climb_on_time += PIGGYBACK_DELAYADD_HEAVY_SUPER
+				if(MOB_WEIGHT_HEAVY)
+					climb_on_time += PIGGYBACK_DELAYADD_HEAVY
 		// BLUEMOON ADDITION END
 
 		if(do_after(target, climb_on_time, src, IGNORE_INCAPACITATED, extra_checks = CALLBACK(src, PROC_REF(can_piggyback), target)))
@@ -998,7 +1015,7 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 					target.visible_message(span_warning("[target] не может уцепиться за [src]!"))
 					return
 				// BLUEMOON ADDITION START
-				if(target.mob_weight > MOB_WEIGHT_NORMAL)
+				if(target.mob_weight > max(mob_weight, MOB_WEIGHT_NORMAL))
 					target.visible_message(span_warning("[target] слишком много весит для [src]!"))
 					var/obj/item/bodypart/affecting = get_bodypart(BODY_ZONE_CHEST)
 					var/wound_bon = 100
@@ -1019,13 +1036,17 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 					Knockdown(3 SECONDS) // Knocking down the unlucky guy
 					target.Knockdown(1) // simply make the oversized one fall
 					if(get_turf(target) != get_turf(src))
-						target.throw_at(get_turf(src), 1, 1, FALSE, FALSE)
+						target.throw_at(get_turf(src), 1, 1, src, FALSE, FALSE)
 					// BLUEMOON ADDITION END
 				buckle_mob(target, TRUE, TRUE, buckle_type = RIDING_PIGGYBACK, auto_by_type = TRUE)
 		else
 			visible_message(span_warning("[target] не удаётся забраться на [src]!"))
 	else
 		to_chat(target, span_warning("Ты не можешь прокатиться на спине [src] прямо сейчас!"))
+
+#undef PIGGYBACK_DELAY_BASE
+#undef PIGGYBACK_DELAYADD_HEAVY
+#undef PIGGYBACK_DELAYADD_HEAVY_SUPER
 
 /mob/living/carbon/human/buckle_mob(mob/living/target, force = FALSE, check_loc = TRUE, lying_buckle = 0, hands_needed = 0, target_hands_needed = 0, buckle_type = RIDING_PIGGYBACK, auto_by_type = FALSE)
 	if(!force)//humans are only meant to be ridden through piggybacking and special cases
@@ -1390,7 +1411,7 @@ Mark this mob, then navigate to the preferences of the client you desire and cal
 				to_chat(src, span_warning("\The [S] pulls \the [hand] from your grip!"))
 
 ///Sets up the jump component for the mob. Proc args can be altered so different mobs have different 'default' jump settings
-/mob/living/proc/set_jump_component(duration = 0.5 SECONDS, cooldown = 1 SECONDS, cost = 64, height = 16, sound = null, flags = JUMP_SHADOW, flags_pass = PASSTABLE)
+/mob/living/proc/set_jump_component(duration = 0.5 SECONDS, cooldown = 1 SECONDS, cost = 48, height = 16, sound = null, flags = JUMP_SHADOW, flags_pass = PASSTABLE)
 	if(HAS_TRAIT(src, TRAIT_FREERUNNING))
 		AddComponent(/datum/component/jump, _jump_duration = duration, _jump_cooldown = cooldown, _stamina_cost = 32, _jump_height = height, _jump_sound = sound, _jump_flags = flags, _jumper_allow_pass_flags = flags_pass)
 	else

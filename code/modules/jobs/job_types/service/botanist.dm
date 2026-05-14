@@ -8,12 +8,30 @@
 	spawn_positions = 2
 	supervisors = "the head of personnel"
 	selection_color = "#bbe291"
+	alt_titles = list(
+		"Junior Botanist", //Стажер выше, для удобства
+		"Apiarist",
+		"Apiculturist",
+		"Beekeeper",
+		"Botanical Researcher",
+		"Druid",
+		"Farmer",
+		"Florist",
+		"Gardener",
+		"Herbalist",
+		"Hydroponicist",
+		"Mycologist",
+		"Plants Breeder",
+		"Soiler",
+		"Vintner",
+		"Xenobotanist"
+		)
 
 	outfit = /datum/outfit/job/botanist
 	plasma_outfit = /datum/outfit/plasmaman/botany
 
-	access = list(ACCESS_HYDROPONICS, ACCESS_BAR, ACCESS_KITCHEN, ACCESS_MORGUE, ACCESS_MINERAL_STOREROOM)
-	minimal_access = list(ACCESS_HYDROPONICS, ACCESS_MORGUE, ACCESS_MINERAL_STOREROOM)
+	access = list(ACCESS_HYDROPONICS, ACCESS_BAR, ACCESS_KITCHEN, ACCESS_MORGUE, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
+	minimal_access = list(ACCESS_HYDROPONICS, ACCESS_MORGUE, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SERVICE)
 	paycheck = PAYCHECK_EASY
 	paycheck_department = ACCOUNT_SRV
 	bounty_types = CIV_JOB_GROW

@@ -10,13 +10,31 @@
 	selection_color = "#9574cd"
 	exp_requirements = 60
 	exp_type = EXP_TYPE_CREW
+	alt_titles = list(
+		"Junior Roboticist", //Стажер выше, для удобства
+		"Cybersun Specialist", //Триглав выше, для удобства
+		"Biomechanical Engineer",
+		"Borgs Raper",
+		"Borgs Slut",
+		"Cyberneticist",
+		"Droid Mechanic",
+		"Machinist",
+		"Mechanic",
+		"Mechatronic Engineer",
+		"MOD Mechanic",
+		"Ripperdoc",
+		"Robo-Slut",
+		"Robotics Operator",
+		"Synth Technician",
+		"Techpriest Biologis"
+		)
 
 	outfit = /datum/outfit/job/roboticist
 	departments = DEPARTMENT_BITFLAG_SCIENCE
 	plasma_outfit = /datum/outfit/plasmaman/robotics
 
-	access = list(ACCESS_ROBOTICS, ACCESS_TOX, ACCESS_TOX_STORAGE, ACCESS_TECH_STORAGE, ACCESS_MORGUE, ACCESS_RESEARCH, ACCESS_MINERAL_STOREROOM, ACCESS_XENOBIOLOGY, ACCESS_GENETICS)
-	minimal_access = list(ACCESS_ROBOTICS, ACCESS_TECH_STORAGE, ACCESS_MORGUE, ACCESS_RESEARCH, ACCESS_MINERAL_STOREROOM)
+	access = list(ACCESS_ROBOTICS, ACCESS_TOX, ACCESS_TOX_STORAGE, ACCESS_TECH_STORAGE, ACCESS_MORGUE, ACCESS_RESEARCH, ACCESS_MINERAL_STOREROOM, ACCESS_XENOBIOLOGY, ACCESS_GENETICS, ACCESS_PRODUCTION_SCIENCE)
+	minimal_access = list(ACCESS_ROBOTICS, ACCESS_TECH_STORAGE, ACCESS_MORGUE, ACCESS_RESEARCH, ACCESS_MINERAL_STOREROOM, ACCESS_PRODUCTION_SCIENCE)
 	paycheck = PAYCHECK_MEDIUM
 	paycheck_department = ACCOUNT_SCI
 	bounty_types = CIV_JOB_ROBO

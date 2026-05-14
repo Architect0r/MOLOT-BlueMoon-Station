@@ -90,6 +90,10 @@
 	if(cable)
 		QDEL_NULL(cable)
 	hackdoor = null
+	medicalActive1 = null
+	medicalActive2 = null
+	securityActive1 = null
+	securityActive2 = null
 	if (loc != card)
 		card.forceMove(drop_location())
 	card.pai = null
@@ -288,8 +292,8 @@
 	..()
 	P.toggle_integrated_light()
 
-/mob/living/silicon/pai/Process_Spacemove(movement_dir = 0)
-	. = ..()
+/mob/living/silicon/pai/Process_Spacemove(movement_dir = 0, continuous_move = FALSE)
+	. = ..(movement_dir, continuous_move)
 	if(!.)
 		add_movespeed_modifier(/datum/movespeed_modifier/pai_spacewalk)
 		return TRUE

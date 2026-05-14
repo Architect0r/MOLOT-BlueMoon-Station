@@ -31,10 +31,9 @@
 		/obj/item/storage/hypospraykit/brute = 3,
 		/obj/item/storage/hypospraykit/enlarge = 2,
 		/obj/item/reagent_containers/glass/bottle/vial/small = 5,
-		/obj/item/storage/briefcase/medical = 2,
 		/obj/item/stack/sticky_tape/surgical = 3,
 		/obj/item/healthanalyzer/wound = 4,
-		/obj/item/reagent_containers/hypospray/medipen = 4,
+		/obj/item/reagent_containers/hypospray/medipen = 6,
 		/obj/item/stack/medical/ointment = 2,
 		/obj/item/stack/medical/suture = 2,
 		/obj/item/stack/medical/bone_gel = 4,
@@ -53,13 +52,14 @@
 		/obj/item/reagent_containers/medspray/synthflesh = 2,
 		/obj/item/storage/box/hug/medical = 1,
 		/obj/item/storage/pill_bottle/psicodine = 3, // SPLURT EDIT 2 -> 3
-		/obj/item/reagent_containers/hypospray/medipen = 3,
 		/obj/item/storage/belt/medical = 3,
 		/obj/item/wrench/medical = 1,
 		/obj/item/storage/belt/medolier/full = 2,
 		/obj/item/gun/syringe/dart = 2,
-		/obj/item/storage/briefcase/medical = 2,
-		/obj/item/plunger/reinforced = 2
+		/obj/item/storage/backpack/duffelbag/med/surgery = 2,
+		/obj/item/plunger/reinforced = 2,
+		/obj/item/construction/plumbing = 1,
+
 	)
 	refill_canister = /obj/item/vending_refill/medical
 	default_price = PRICE_ALMOST_CHEAP
@@ -91,7 +91,7 @@
 		/obj/item/reagent_containers/glass/bottle/potass_iodide = 5,
 		/obj/item/reagent_containers/glass/bottle/salglu_solution = 3,
 		/obj/item/reagent_containers/syringe/antiviral = 5,
-		/obj/item/reagent_containers/hypospray/medipen = 4,
+		/obj/item/reagent_containers/hypospray/medipen = 6,
 		/obj/item/stack/medical/ointment = 2,
 		/obj/item/stack/medical/suture = 2,
 		/obj/item/stack/medical/bone_gel = 4,
@@ -113,7 +113,6 @@
 	)
 	premium = list(
 		/obj/item/storage/pill_bottle/psicodine = 2,
-		/obj/item/reagent_containers/hypospray/medipen = 3,
 		/obj/item/reagent_containers/hypospray/medipen/atropine = 2,
 		/obj/item/storage/firstaid/regular = 3,
 		/obj/item/storage/firstaid/brute = 2,
